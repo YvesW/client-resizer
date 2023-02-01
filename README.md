@@ -47,6 +47,3 @@ If you experience any issues or have any concerns, please reach out to YvesW via
 
 mm-yyyy:
 - No changes yet.
-
-
-
