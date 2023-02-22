@@ -31,6 +31,8 @@ E.g. ID String:<br>
 E.g. a fully configured monitor looks like this:<br>
 ![Fully configured monitor](src/main/resources/img/fully-configured-monitor.png)
 
+If you also want to resize your client when loading a different RuneLite config profile, then enable the "Resize when switching RuneLite config profile" option. If you don't understand what this means, you should probably leave this option disabled (default).
+
 ### Hotkey-based resizing
 - Open the config panel of Client Resizer (gear icon).
 - Open the "Hotkey Resizing" category.
@@ -45,5 +47,6 @@ If you experience any issues or have any concerns, please reach out to YvesW via
 
 ## Changelog
 
-mm-yyyy:
-- No changes yet.
+02-2023:
+- Fix the icon not displaying.
+- Add the option to automatically resize the client when you change the RuneLite config profile if the current monitor matches one of your configured monitor attributes.

@@ -47,10 +47,21 @@ public interface ClientResizerConfig extends Config {
 	}
 
 	@ConfigItem(
+			keyName = "resizeWhenConfigChanged",
+			name = "Resize when switching RuneLite config profile",
+			description = "Resize the client when you change the RuneLite config profile if the current monitor matches one of your configured monitor attributes.",
+			position = 1,
+			section = automaticResizingSettings
+	)
+	default boolean resizeWhenConfigChanged() {
+		return false;
+	}
+
+	@ConfigItem(
 			keyName = "autoSize1Dimension",
 			name = "Size 1 dimension",
 			description = "The game will resize to this dimension when moved to the specified monitor.",
-			position = 1,
+			position = 2,
 			section = automaticResizingSettings
 	)
 	default Dimension autoSize1Dimension() {
@@ -61,7 +72,7 @@ public interface ClientResizerConfig extends Config {
 			keyName = "autoSize1Attribute",
 			name = "Size 1 monitor attribute type",
 			description = "The type of monitor attribute (i.e. the type of the monitor attribute value you've inputted below).",
-			position = 2,
+			position = 3,
 			section = automaticResizingSettings
 	)
 	default MonitorAttribute autoSize1Attribute() {
@@ -75,7 +86,7 @@ public interface ClientResizerConfig extends Config {
 			"Get this value by selecting it in the dropdown in the most bottom category ('Copy attribute of current monitor') and pasting it here.<br>"+
 			"Make sure the type of attribute above matches the type of attribute you are pasting (e.g. 'Refresh Rate' if you are pasting a refresh rate).<br>"+
 			"After pasting, click in the game window once for the variable to be registered.",
-			position = 3,
+			position = 4,
 			section = automaticResizingSettings
 	)
 	default String autoSize1Value()	{
@@ -86,7 +97,7 @@ public interface ClientResizerConfig extends Config {
 			keyName = "autoSize2Dimension",
 			name = "Size 2 dimension",
 			description = "The game will resize to this dimension when moved to the specified monitor.",
-			position = 4,
+			position = 5,
 			section = automaticResizingSettings
 	)
 	default Dimension autoSize2Dimension() {
@@ -97,7 +108,7 @@ public interface ClientResizerConfig extends Config {
 			keyName = "autoSize2Attribute",
 			name = "Size 2 monitor attribute type",
 			description = "The type of monitor attribute (i.e. the type of the monitor attribute value you've inputted below).",
-			position = 5,
+			position = 6,
 			section = automaticResizingSettings
 	)
 	default MonitorAttribute autoSize2Attribute() {
@@ -111,7 +122,7 @@ public interface ClientResizerConfig extends Config {
 					"Get this value by selecting it in the dropdown in the most bottom category ('Copy attribute of current monitor') and pasting it here.<br>"+
 					"Make sure the type of attribute above matches the type of attribute you are pasting (e.g. 'Refresh Rate' if you are pasting a refresh rate).<br>"+
 					"After pasting, click in the game window once for the variable to be registered.",
-			position = 6,
+			position = 7,
 			section = automaticResizingSettings
 	)
 	default String autoSize2Value()	{
@@ -122,7 +133,7 @@ public interface ClientResizerConfig extends Config {
 			keyName = "autoSize3Dimension",
 			name = "Size 3 dimension",
 			description = "The game will resize to this dimension when moved to the specified monitor.",
-			position = 7,
+			position = 8,
 			section = automaticResizingSettings
 	)
 	default Dimension autoSize3Dimension() {
@@ -133,7 +144,7 @@ public interface ClientResizerConfig extends Config {
 			keyName = "autoSize3Attribute",
 			name = "Size 3 monitor attribute type",
 			description = "The type of monitor attribute (i.e. the type of the monitor attribute value you've inputted below).",
-			position = 8,
+			position = 9,
 			section = automaticResizingSettings
 	)
 	default MonitorAttribute autoSize3Attribute() {
@@ -147,7 +158,7 @@ public interface ClientResizerConfig extends Config {
 					"Get this value by selecting it in the dropdown in the most bottom category ('Copy attribute of current monitor') and pasting it here.<br>"+
 					"Make sure the type of attribute above matches the type of attribute you are pasting (e.g. 'Refresh Rate' if you are pasting a refresh rate).<br>"+
 					"After pasting, click in the game window once for the variable to be registered.",
-			position = 9,
+			position = 10,
 			section = automaticResizingSettings
 	)
 	default String autoSize3Value() {
@@ -158,7 +169,7 @@ public interface ClientResizerConfig extends Config {
 			keyName = "autoSize4Dimension",
 			name = "Size 4 dimension",
 			description = "The game will resize to this dimension when moved to the specified monitor.",
-			position = 10,
+			position = 11,
 			section = automaticResizingSettings
 	)
 	default Dimension autoSize4Dimension() {
@@ -169,7 +180,7 @@ public interface ClientResizerConfig extends Config {
 			keyName = "autoSize4Attribute",
 			name = "Size 4 monitor attribute type",
 			description = "The type of monitor attribute (i.e. the type of the monitor attribute value you've inputted below).",
-			position = 11,
+			position = 12,
 			section = automaticResizingSettings
 	)
 	default MonitorAttribute autoSize4Attribute() {
@@ -183,7 +194,7 @@ public interface ClientResizerConfig extends Config {
 					"Get this value by selecting it in the dropdown in the most bottom category ('Copy attribute of current monitor') and pasting it here.<br>"+
 					"Make sure the type of attribute above matches the type of attribute you are pasting (e.g. 'Refresh Rate' if you are pasting a refresh rate).<br>"+
 					"After pasting, click in the game window once for the variable to be registered.",
-			position = 12,
+			position = 13,
 			section = automaticResizingSettings
 	)
 	default String autoSize4Value() {
@@ -194,7 +205,7 @@ public interface ClientResizerConfig extends Config {
 			keyName = "autoSize5Dimension",
 			name = "Size 5 dimension",
 			description = "The game will resize to this dimension when moved to the specified monitor.",
-			position = 13,
+			position = 14,
 			section = automaticResizingSettings
 	)
 	default Dimension autoSize5Dimension() {
@@ -205,7 +216,7 @@ public interface ClientResizerConfig extends Config {
 			keyName = "autoSize5Attribute",
 			name = "Size 5 monitor attribute type",
 			description = "The type of monitor attribute (i.e. the type of the monitor attribute value you've inputted below).",
-			position = 14,
+			position = 15,
 			section = automaticResizingSettings
 	)
 	default MonitorAttribute autoSize5Attribute() {
@@ -219,7 +230,7 @@ public interface ClientResizerConfig extends Config {
 					"Get this value by selecting it in the dropdown in the most bottom category ('Copy attribute of current monitor') and pasting it here.<br>"+
 					"Make sure the type of attribute above matches the type of attribute you are pasting (e.g. 'Refresh Rate' if you are pasting a refresh rate).<br>"+
 					"After pasting, click in the game window once for the variable to be registered.",
-			position = 15,
+			position = 16,
 			section = automaticResizingSettings
 	)
 	default String autoSize5Value() {
@@ -230,7 +241,7 @@ public interface ClientResizerConfig extends Config {
 			keyName = "autoSize6Dimension",
 			name = "Size 6 dimension",
 			description = "The game will resize to this dimension when moved to the specified monitor.",
-			position = 16,
+			position = 17,
 			section = automaticResizingSettings
 	)
 	default Dimension autoSize6Dimension() {
@@ -241,7 +252,7 @@ public interface ClientResizerConfig extends Config {
 			keyName = "autoSize6Attribute",
 			name = "Size 6 monitor attribute type",
 			description = "The type of monitor attribute (i.e. the type of the monitor attribute value you've inputted below).",
-			position = 17,
+			position = 18,
 			section = automaticResizingSettings
 	)
 	default MonitorAttribute autoSize6Attribute() {
@@ -255,7 +266,7 @@ public interface ClientResizerConfig extends Config {
 					"Get this value by selecting it in the dropdown in the most bottom category ('Copy attribute of current monitor') and pasting it here.<br>"+
 					"Make sure the type of attribute above matches the type of attribute you are pasting (e.g. 'Refresh Rate' if you are pasting a refresh rate).<br>"+
 					"After pasting, click in the game window once for the variable to be registered.",
-			position = 18,
+			position = 19,
 			section = automaticResizingSettings
 	)
 	default String autoSize6Value() {
@@ -266,7 +277,7 @@ public interface ClientResizerConfig extends Config {
 			keyName = "autoSize7Dimension",
 			name = "Size 7 dimension",
 			description = "The game will resize to this dimension when moved to the specified monitor.",
-			position = 19,
+			position = 20,
 			section = automaticResizingSettings
 	)
 	default Dimension autoSize7Dimension() {
@@ -277,7 +288,7 @@ public interface ClientResizerConfig extends Config {
 			keyName = "autoSize7Attribute",
 			name = "Size 7 monitor attribute type",
 			description = "The type of monitor attribute (i.e. the type of the monitor attribute value you've inputted below).",
-			position = 20,
+			position = 21,
 			section = automaticResizingSettings
 	)
 	default MonitorAttribute autoSize7Attribute() {
@@ -291,7 +302,7 @@ public interface ClientResizerConfig extends Config {
 					"Get this value by selecting it in the dropdown in the most bottom category ('Copy attribute of current monitor') and pasting it here.<br>"+
 					"Make sure the type of attribute above matches the type of attribute you are pasting (e.g. 'Refresh Rate' if you are pasting a refresh rate).<br>"+
 					"After pasting, click in the game window once for the variable to be registered.",
-			position = 21,
+			position = 22,
 			section = automaticResizingSettings
 	)
 	default String autoSize7Value() {
@@ -302,7 +313,7 @@ public interface ClientResizerConfig extends Config {
 			keyName = "autoSize8Dimension",
 			name = "Size 8 dimension",
 			description = "The game will resize to this dimension when moved to the specified monitor.",
-			position = 22,
+			position = 23,
 			section = automaticResizingSettings
 	)
 	default Dimension autoSize8Dimension() {
@@ -313,7 +324,7 @@ public interface ClientResizerConfig extends Config {
 			keyName = "autoSize8Attribute",
 			name = "Size 8 monitor attribute type",
 			description = "The type of monitor attribute (i.e. the type of the monitor attribute value you've inputted below).",
-			position = 23,
+			position = 24,
 			section = automaticResizingSettings
 	)
 	default MonitorAttribute autoSize8Attribute() {
@@ -327,7 +338,7 @@ public interface ClientResizerConfig extends Config {
 					"Get this value by selecting it in the dropdown in the most bottom category ('Copy attribute of current monitor') and pasting it here.<br>"+
 					"Make sure the type of attribute above matches the type of attribute you are pasting (e.g. 'Refresh Rate' if you are pasting a refresh rate).<br>"+
 					"After pasting, click in the game window once for the variable to be registered.",
-			position = 24,
+			position = 25,
 			section = automaticResizingSettings
 	)
 	default String autoSize8Value() {
@@ -338,7 +349,7 @@ public interface ClientResizerConfig extends Config {
 			keyName = "autoSize9Dimension",
 			name = "Size 9 dimension",
 			description = "The game will resize to this dimension when moved to the specified monitor.",
-			position = 25,
+			position = 26,
 			section = automaticResizingSettings
 	)
 	default Dimension autoSize9Dimension() {
@@ -349,7 +360,7 @@ public interface ClientResizerConfig extends Config {
 			keyName = "autoSize9Attribute",
 			name = "Size 9 monitor attribute type",
 			description = "The type of monitor attribute (i.e. the type of the monitor attribute value you've inputted below).",
-			position = 26,
+			position = 27,
 			section = automaticResizingSettings
 	)
 	default MonitorAttribute autoSize9Attribute() {
@@ -363,7 +374,7 @@ public interface ClientResizerConfig extends Config {
 					"Get this value by selecting it in the dropdown in the most bottom category ('Copy attribute of current monitor') and pasting it here.<br>"+
 					"Make sure the type of attribute above matches the type of attribute you are pasting (e.g. 'Refresh Rate' if you are pasting a refresh rate).<br>"+
 					"After pasting, click in the game window once for the variable to be registered.",
-			position = 27,
+			position = 28,
 			section = automaticResizingSettings
 	)
 	default String autoSize9Value() {
@@ -374,7 +385,7 @@ public interface ClientResizerConfig extends Config {
 			keyName = "autoSize10Dimension",
 			name = "Size 10 dimension",
 			description = "The game will resize to this dimension when moved to the specified monitor.",
-			position = 28,
+			position = 29,
 			section = automaticResizingSettings
 	)
 	default Dimension autoSize10Dimension() {
@@ -385,7 +396,7 @@ public interface ClientResizerConfig extends Config {
 			keyName = "autoSize10Attribute",
 			name = "Size 10 monitor attribute type",
 			description = "The type of monitor attribute (i.e. the type of the monitor attribute value you've inputted below).",
-			position = 29,
+			position = 30,
 			section = automaticResizingSettings
 	)
 	default MonitorAttribute autoSize10Attribute() {
@@ -399,7 +410,7 @@ public interface ClientResizerConfig extends Config {
 					"Get this value by selecting it in the dropdown in the most bottom category ('Copy attribute of current monitor') and pasting it here.<br>"+
 					"Make sure the type of attribute above matches the type of attribute you are pasting (e.g. 'Refresh Rate' if you are pasting a refresh rate).<br>"+
 					"After pasting, click in the game window once for the variable to be registered.",
-			position = 30,
+			position = 31,
 			section = automaticResizingSettings
 	)
 	default String autoSize10Value() {

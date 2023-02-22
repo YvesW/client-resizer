@@ -27,6 +27,7 @@ public class ClientResizerPlugin extends Plugin {
 
     // ------------- Wall of config vars -------------
     private boolean resizeAttributeUnchanged;
+    private boolean resizeWhenConfigChanged;
     private Dimension autoSize1Dimension;
     private MonitorAttribute autoSize1Attribute;
     private String autoSize1Value;
@@ -129,6 +130,7 @@ public class ClientResizerPlugin extends Plugin {
 
     private void updateConfig() {
         resizeAttributeUnchanged = config.resizeAttributeUnchanged();
+        resizeWhenConfigChanged = config.resizeWhenConfigChanged();
         autoSize1Dimension = config.autoSize1Dimension();
         autoSize1Attribute = config.autoSize1Attribute();
         autoSize1Value = config.autoSize1Value();
