@@ -47,13 +47,14 @@ public interface ClientResizerConfig extends Config {
 	}
 
 	@ConfigItem(
-			keyName = "resizeWhenConfigChanged",
+			keyName = "resizeWhenConfigProfileChanged",
 			name = "Resize when switching RuneLite config profile",
-			description = "Resize the client when you change the RuneLite config profile if the current monitor matches one of your configured monitor attributes.",
+			description = "Resize the client when you change the RuneLite config profile if the current monitor matches one of your configured monitor attributes.<br>"
+			+"If you do not understand what this setting does, leave this disabled.",
 			position = 1,
 			section = automaticResizingSettings
 	)
-	default boolean resizeWhenConfigChanged() {
+	default boolean resizeWhenConfigProfileChanged() {
 		return false;
 	}
 

@@ -27,7 +27,7 @@ public class ClientResizerPlugin extends Plugin {
 
     // ------------- Wall of config vars -------------
     private boolean resizeAttributeUnchanged;
-    private boolean resizeWhenConfigChanged;
+    private boolean resizeWhenConfigProfileChanged;
     private Dimension autoSize1Dimension;
     private MonitorAttribute autoSize1Attribute;
     private String autoSize1Value;
@@ -85,6 +85,7 @@ public class ClientResizerPlugin extends Plugin {
     private static GraphicsDevice currentMonitor;
     private static GraphicsDevice previousMonitor;
     private static GameState currentGameState;
+    private static boolean hasProfileChanged = false;
     private static String previousIDstring;
     private static Rectangle previousBounds;
     private static Dimension previousDimensions;
@@ -130,7 +131,7 @@ public class ClientResizerPlugin extends Plugin {
 
     private void updateConfig() {
         resizeAttributeUnchanged = config.resizeAttributeUnchanged();
-        resizeWhenConfigChanged = config.resizeWhenConfigChanged();
+        resizeWhenConfigProfileChanged = config.resizeWhenConfigProfileChanged();
         autoSize1Dimension = config.autoSize1Dimension();
         autoSize1Attribute = config.autoSize1Attribute();
         autoSize1Value = config.autoSize1Value();
@@ -201,6 +202,15 @@ public class ClientResizerPlugin extends Plugin {
     public void onGameTick(GameTick gameTick) {
         //onGameTick only fires while logged in!
         monitorCheck();
+    }
+
+    @Subscribe
+    public void onProfileChanged(ProfileChanged profileChanged) {
+        updateConfig();
+        if (resizeWhenConfigProfileChanged) {
+            hasProfileChanged = true; //Attribute doesn't change when switching profiles so use bool as workaround in case "Resize if attribute is unchanged" is disabled.
+            resizeClient();
+        }
     }
 
     private void setDefaultDimensions() {
@@ -298,11 +308,12 @@ public class ClientResizerPlugin extends Plugin {
                 if (resizeAttributeUnchanged) {
                     setGameSize(DimensionsArray[i]);
                 }
-                if (!resizeAttributeUnchanged && hasAttributeChanged(AttributesArray[i])) { //If the user disables the option to resize when the current monitor has changed but the value of the specified attribute (Dimensions or Refresh Rate) is the same
+                if (!resizeAttributeUnchanged && (hasAttributeChanged(AttributesArray[i]) || hasProfileChanged)) { //If the user disables the option to resize when the current monitor has changed but the value of the specified attribute (Dimensions or Refresh Rate) is the same
                     setGameSize(DimensionsArray[i]);
                 }
             }
         }
+        hasProfileChanged = false;
         updatePreviousAttributes(); //To remember attributes so a proper comparison can be done with the previous attributes
     }
 

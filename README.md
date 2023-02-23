@@ -48,5 +48,5 @@ If you experience any issues or have any concerns, please reach out to YvesW via
 ## Changelog
 
 02-2023:
-- Fix the icon not displaying.
-- Add the option to automatically resize the client when you change the RuneLite config profile if the current monitor matches one of your configured monitor attributes.
+- Fixed the icon not being displayed.
+- Added the option to automatically resize the client when changing the RuneLite config profile if the current monitor matches one of the configured monitor attributes.
