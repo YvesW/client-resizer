@@ -6,6 +6,7 @@ Also annoyed by having to change your client's size (game size) every time you m
 **This plugin adds the following features:**
 - Automatically resize your client when it's moved to a different monitor. This can be configured per monitor attribute, e.g. per ID string (differs for every monitor), resolution (dimension) or refresh rate.
 - Hotkey-based resizing. Set a hotkey (e.g. Ctrl+L) and resize the client to a size of your choosing.
+- Resize your client when switching RL config profiles if this isn't done by the config profiles themselves yet. Set up automatic resizing for your monitors with different game sizes per RL config profile. Then enable `Resize when switching RuneLite config profile`.
 
 The plugin still respects all the other settings in the "RuneLite" > "Window Settings" config. For that reason, I personally suggest using the following RuneLite Window Settings:<br>
 ![RuneLite window settings](src/main/resources/img/runelite-window-settings.png)<br>
@@ -46,6 +47,9 @@ Not tested on macOS or Linux; results may vary.
 If you experience any issues or have any concerns, please reach out to YvesW via a GitHub Issue, by Discord direct messaging or via the RuneLite Discord by mentioning @Yves W.
 
 ## Changelog
+
+07-2023:
+- Added the option to also change "Resizable Scaling" from the stretched mode plugin when using automatic resizing.
 
 02-2023:
 - Fixed the icon not being displayed.
