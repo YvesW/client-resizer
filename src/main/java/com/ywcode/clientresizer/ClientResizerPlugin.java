@@ -4,6 +4,7 @@ import com.google.inject.*;
 import lombok.extern.slf4j.*;
 import net.runelite.api.*;
 import net.runelite.api.events.*;
+import net.runelite.client.callback.*;
 import net.runelite.client.config.*;
 import net.runelite.client.eventbus.*;
 import net.runelite.client.events.*;
@@ -106,6 +107,9 @@ public class ClientResizerPlugin extends Plugin {
 
     @Inject
     private KeyManager keyManager;
+
+    @Inject
+    private ClientThread clientThread;
 
     @Override
     public void startUp() throws Exception {
@@ -368,11 +372,25 @@ public class ClientResizerPlugin extends Plugin {
         int processedWidth = Math.max(Math.min(dimension.width, 7680), Constants.GAME_FIXED_WIDTH);
         int processedHeight = Math.max(Math.min(dimension.height, 2160), Constants.GAME_FIXED_HEIGHT);
         Dimension processedGameSize = new Dimension(processedWidth, processedHeight);
-        configManager.setConfiguration("runelite", "gameSize", processedGameSize);
-        //mouseReleased/mouseEntered doesn't report when clicked on undecorated title bar (custom chrome off)
-        //While dragging the client with custom chrome off, the resize gets briefly applied but then removed.
-        //Even bad workarounds like applying +1 and then back to preferable dimension when mouseReleased or mouseEntered (cursor can't be in title bar), didn't work. => Setting changed but client did not resize. Does still work on Win+Arrow key though for some reason...
-        //Same for injecting the client Applet and checking the size of that, then keep setting/switching the value till the Applet dimension = preferred dimension
+        Dimension currentSize = configManager.getConfiguration("runelite", "gameSize", Dimension.class);
+        //Check if current size in config does not equal the size the config is going to get set to.
+        //Otherwise, every time it'd match but not resize, a chat message would be spammed.
+        //If client dimensions are unlocked and the edges are dragged, setting the config to the same value as already in there does not change it.
+        //Thus doing configManager.setConfiguration("runelite", "gameSize", processedGameSize) while currentSize.equals(processedGameSize) does nothing, meaning that doing that'd be pointless
+        if (!currentSize.equals(processedGameSize)) {
+            configManager.setConfiguration("runelite", "gameSize", processedGameSize);
+            //mouseReleased/mouseEntered doesn't report when clicked on undecorated title bar (custom chrome off)
+            //While dragging the client with custom chrome off, the resize gets briefly applied but then removed.
+            //Even bad workarounds like applying +1 and then back to preferable dimension when mouseReleased or mouseEntered (cursor can't be in title bar), didn't work. => Setting changed but client did not resize. Does still work on Win+Arrow key though for some reason...
+            //Same for injecting the client Applet and checking the size of that, then keep setting/switching the value till the Applet dimension = preferred dimension
+            //TODO: Add option to change stretched mode UI scaling % when changing client size, both for automatic AND for hotkey resizing probably
+
+            //client.addChatMessage has to be called on clientThread. Doesn't cause any error if not called on client.getGameState() == GameState.LOGGED_IN
+            clientThread.invokeLater(() -> {
+                client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Your RuneLite game size / client size was changed by the Client Resizer plugin. Check your config if you'd like to change this.", "");
+                //TODO: If streched mode UI scaling % changing is added, also add this to the message
+            });
+        }
     }
 
     private boolean hasAttributeChanged(MonitorAttribute inputAttribute) { //Check if attribute has changed (true on startup due to null check)
