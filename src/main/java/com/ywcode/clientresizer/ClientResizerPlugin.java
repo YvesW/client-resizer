@@ -193,7 +193,7 @@ public class ClientResizerPlugin extends Plugin {
     @Subscribe
     public void onBeforeRender(BeforeRender beforeRender) {
         //onGameTick only fires while logged in! Use onBeforeRender or onPostClientTick if not logged in!
-        if (currentGameState != GameState.LOGGED_IN) {
+        if (currentGameState != GameState.LOGGED_IN && currentGameState != GameState.UNKNOWN && currentGameState != GameState.STARTING) {
             monitorCheck();
         }
     }
