@@ -86,7 +86,7 @@ public class ClientResizerPlugin extends Plugin {
     private static GraphicsDevice currentMonitor;
     private static GraphicsDevice previousMonitor;
     private static GameState currentGameState;
-    private static boolean hasProfileChanged = false;
+    private static boolean hasProfileChanged; ////The default value for a boolean (primitive) is false.
     private static String previousIDstring;
     private static Rectangle previousBounds;
     private static Dimension previousDimensions;
