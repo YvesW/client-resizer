@@ -86,7 +86,7 @@ public class ClientResizerPlugin extends Plugin {
     private static GraphicsDevice currentMonitor;
     private static GraphicsDevice previousMonitor;
     private static GameState currentGameState;
-    private static boolean hasProfileChanged; ////The default value for a boolean (primitive) is false.
+    private static boolean hasProfileChanged; //The default value for a boolean (primitive) is false.
     private static String previousIDstring;
     private static Rectangle previousBounds;
     private static Dimension previousDimensions;
@@ -257,7 +257,7 @@ public class ClientResizerPlugin extends Plugin {
 
     private void monitorCheck() {
         graphicsConfig = clientUI.getGraphicsConfiguration();
-        currentMonitor = graphicsConfig.getDevice(); // Actually relevant here to refresh the current monitor since I opted to use static variables instead of local variable that update per function.
+        currentMonitor = graphicsConfig.getDevice(); // Actually relevant here to refresh the current monitor since I opted to use static variables instead of local variable that update per method.
         if (hasMonitorChanged()) {
             copyAttributeToClipboard();
             resizeClient();
