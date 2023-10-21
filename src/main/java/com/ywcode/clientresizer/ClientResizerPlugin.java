@@ -21,7 +21,7 @@ import java.util.regex.*;
 @PluginDescriptor(
         name = "Client Resizer",
         description = "Allows for automatic or hotkey-based resizing of the client.",
-        tags = {"client,resize,automatic,pixels,refresh rate,game size,size,screen size,monitor,display,screen,autoresize"}
+        tags = {"client,resize,automatic,pixels,refresh rate,game size,size,screen size,monitor,display,screen,autoresize,hotkey,hot key,stretched mode,resizable scaling,scaling"}
 )
 
 public class ClientResizerPlugin extends Plugin {
