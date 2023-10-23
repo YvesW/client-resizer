@@ -1,6 +1,7 @@
 package com.ywcode.clientresizer;
 
 import com.google.inject.*;
+import lombok.*;
 import lombok.extern.slf4j.*;
 import net.runelite.api.*;
 import net.runelite.api.events.*;
@@ -26,7 +27,8 @@ import java.util.regex.*;
 
 public class ClientResizerPlugin extends Plugin {
 
-    // ------------- Wall of config vars -------------
+    //------------- Wall of config vars -------------
+    //Vars are quite heavily cached so should probably just config.configKey()
     private static boolean resizeAttributeUnchanged;
     private static boolean resizeWhenConfigProfileChanged;
     private static Dimension autoSize1Dimension;
@@ -79,8 +81,48 @@ public class ClientResizerPlugin extends Plugin {
     private static Keybind hotkey9Key;
     private static Dimension hotkey10Dimension;
     private static Keybind hotkey10Key;
+    private static boolean resizableScalingAutomatic1;
+    private static int resizableScalingAutomatic1Percent;
+    private static boolean resizableScalingAutomatic2;
+    private static int resizableScalingAutomatic2Percent;
+    private static boolean resizableScalingAutomatic3;
+    private static int resizableScalingAutomatic3Percent;
+    private static boolean resizableScalingAutomatic4;
+    private static int resizableScalingAutomatic4Percent;
+    private static boolean resizableScalingAutomatic5;
+    private static int resizableScalingAutomatic5Percent;
+    private static boolean resizableScalingAutomatic6;
+    private static int resizableScalingAutomatic6Percent;
+    private static boolean resizableScalingAutomatic7;
+    private static int resizableScalingAutomatic7Percent;
+    private static boolean resizableScalingAutomatic8;
+    private static int resizableScalingAutomatic8Percent;
+    private static boolean resizableScalingAutomatic9;
+    private static int resizableScalingAutomatic9Percent;
+    private static boolean resizableScalingAutomatic10;
+    private static int resizableScalingAutomatic10Percent;
+    private static boolean resizableScalingHotkey1;
+    private static int resizableScalingHotkey1Percent;
+    private static boolean resizableScalingHotkey2;
+    private static int resizableScalingHotkey2Percent;
+    private static boolean resizableScalingHotkey3;
+    private static int resizableScalingHotkey3Percent;
+    private static boolean resizableScalingHotkey4;
+    private static int resizableScalingHotkey4Percent;
+    private static boolean resizableScalingHotkey5;
+    private static int resizableScalingHotkey5Percent;
+    private static boolean resizableScalingHotkey6;
+    private static int resizableScalingHotkey6Percent;
+    private static boolean resizableScalingHotkey7;
+    private static int resizableScalingHotkey7Percent;
+    private static boolean resizableScalingHotkey8;
+    private static int resizableScalingHotkey8Percent;
+    private static boolean resizableScalingHotkey9;
+    private static int resizableScalingHotkey9Percent;
+    private static boolean resizableScalingHotkey10;
+    private static int resizableScalingHotkey10Percent;
     private static MonitorAttribute copyAttribute;
-    // ------------- End of wall of config vars -------------
+    //------------- End of wall of config vars -------------
 
     private static GraphicsConfiguration graphicsConfig;
     private static GraphicsDevice currentMonitor;
@@ -92,6 +134,8 @@ public class ClientResizerPlugin extends Plugin {
     private static Dimension previousDimensions;
     private static int previousRefreshRate;
     private static final Pattern numericPattern = Pattern.compile("-?\\d+(\\.\\d+)?");
+    @Getter
+    private static int defaultResizableScaling = 50; //Stretched mode plugin default
 
     @Inject
     private Client client;
@@ -113,6 +157,7 @@ public class ClientResizerPlugin extends Plugin {
 
     @Override
     public void startUp() throws Exception {
+        defaultResizableScaling = configManager.getConfiguration("stretchedmode", "scalingFactor", Integer.class); //Default might be set to 50 initially, but will set to its current value on reset at least
         updateConfig();
         setDefaultDimensions();
         registerHotkeyListeners();
@@ -186,6 +231,46 @@ public class ClientResizerPlugin extends Plugin {
         hotkey9Key = config.hotkey9Key();
         hotkey10Dimension = config.hotkey10Dimension();
         hotkey10Key = config.hotkey10Key();
+        resizableScalingAutomatic1 = config.resizableScalingAutomatic1();
+        resizableScalingAutomatic1Percent = config.resizableScalingAutomatic1Percent();
+        resizableScalingAutomatic2 = config.resizableScalingAutomatic2();
+        resizableScalingAutomatic2Percent = config.resizableScalingAutomatic2Percent();
+        resizableScalingAutomatic3 = config.resizableScalingAutomatic3();
+        resizableScalingAutomatic3Percent = config.resizableScalingAutomatic3Percent();
+        resizableScalingAutomatic4 = config.resizableScalingAutomatic4();
+        resizableScalingAutomatic4Percent = config.resizableScalingAutomatic4Percent();
+        resizableScalingAutomatic5 = config.resizableScalingAutomatic5();
+        resizableScalingAutomatic5Percent = config.resizableScalingAutomatic5Percent();
+        resizableScalingAutomatic6 = config.resizableScalingAutomatic6();
+        resizableScalingAutomatic6Percent = config.resizableScalingAutomatic6Percent();
+        resizableScalingAutomatic7 = config.resizableScalingAutomatic7();
+        resizableScalingAutomatic7Percent = config.resizableScalingAutomatic7Percent();
+        resizableScalingAutomatic8 = config.resizableScalingAutomatic8();
+        resizableScalingAutomatic8Percent = config.resizableScalingAutomatic8Percent();
+        resizableScalingAutomatic9 = config.resizableScalingAutomatic9();
+        resizableScalingAutomatic9Percent = config.resizableScalingAutomatic9Percent();
+        resizableScalingAutomatic10 = config.resizableScalingAutomatic10();
+        resizableScalingAutomatic10Percent = config.resizableScalingAutomatic10Percent();
+        resizableScalingHotkey1 = config.resizableScalingHotkey1();
+        resizableScalingHotkey1Percent = config.resizableScalingHotkey1Percent();
+        resizableScalingHotkey2 = config.resizableScalingHotkey2();
+        resizableScalingHotkey2Percent = config.resizableScalingHotkey2Percent();
+        resizableScalingHotkey3 = config.resizableScalingHotkey3();
+        resizableScalingHotkey3Percent = config.resizableScalingHotkey3Percent();
+        resizableScalingHotkey4 = config.resizableScalingHotkey4();
+        resizableScalingHotkey4Percent = config.resizableScalingHotkey4Percent();
+        resizableScalingHotkey5 = config.resizableScalingHotkey5();
+        resizableScalingHotkey5Percent = config.resizableScalingHotkey5Percent();
+        resizableScalingHotkey6 = config.resizableScalingHotkey6();
+        resizableScalingHotkey6Percent = config.resizableScalingHotkey6Percent();
+        resizableScalingHotkey7 = config.resizableScalingHotkey7();
+        resizableScalingHotkey7Percent = config.resizableScalingHotkey7Percent();
+        resizableScalingHotkey8 = config.resizableScalingHotkey8();
+        resizableScalingHotkey8Percent = config.resizableScalingHotkey8Percent();
+        resizableScalingHotkey9 = config.resizableScalingHotkey9();
+        resizableScalingHotkey9Percent = config.resizableScalingHotkey9Percent();
+        resizableScalingHotkey10 = config.resizableScalingHotkey10();
+        resizableScalingHotkey10Percent = config.resizableScalingHotkey10Percent();
         copyAttribute = config.copyAttribute();
     }
 
@@ -304,6 +389,9 @@ public class ClientResizerPlugin extends Plugin {
         MonitorAttribute[] AttributesArray = new MonitorAttribute[]{autoSize1Attribute, autoSize2Attribute, autoSize3Attribute, autoSize4Attribute, autoSize5Attribute, autoSize6Attribute, autoSize7Attribute, autoSize8Attribute, autoSize9Attribute, autoSize10Attribute};
         String[] ValuesStringArray = new String[]{autoSize1Value, autoSize2Value, autoSize3Value, autoSize4Value, autoSize5Value, autoSize6Value, autoSize7Value, autoSize8Value, autoSize9Value, autoSize10Value};
         Dimension[] DimensionsArray = new Dimension[]{autoSize1Dimension, autoSize2Dimension, autoSize3Dimension, autoSize4Dimension, autoSize5Dimension, autoSize6Dimension, autoSize7Dimension, autoSize8Dimension, autoSize9Dimension, autoSize10Dimension};
+        Boolean[] resizableScalingBoolArray = new Boolean[]{resizableScalingAutomatic1, resizableScalingAutomatic2, resizableScalingAutomatic3, resizableScalingAutomatic4, resizableScalingAutomatic5, resizableScalingAutomatic6, resizableScalingAutomatic7, resizableScalingAutomatic8, resizableScalingAutomatic9, resizableScalingAutomatic10};
+        Integer[] resizableScalingPercentArray = new Integer[]{resizableScalingAutomatic1Percent, resizableScalingAutomatic2Percent, resizableScalingAutomatic3Percent, resizableScalingAutomatic4Percent, resizableScalingAutomatic5Percent, resizableScalingAutomatic6Percent, resizableScalingAutomatic7Percent, resizableScalingAutomatic8Percent, resizableScalingAutomatic9Percent, resizableScalingAutomatic10Percent};
+
         for (int i = 0; i < AttributesArray.length; i++) {
             //if MonitorAttribute != disabled, the Value/String input by the user is properly processed (+ has proper format) and if processed Value/String matches value of current monitor, then setGameSize to the inputted Dimension
             if (AttributesArray[i] != MonitorAttribute.Disabled &&
@@ -311,9 +399,15 @@ public class ClientResizerPlugin extends Plugin {
                     processAttributeString(AttributesArray[i], ValuesStringArray[i]).equals(currentMonitorValueForAttribute(AttributesArray[i]))) {
                 if (resizeAttributeUnchanged) {
                     setGameSize(DimensionsArray[i]);
+                    if (resizableScalingBoolArray[i]) {
+                        setResizableScaling(resizableScalingPercentArray[i]);
+                    }
                 }
                 if (!resizeAttributeUnchanged && (hasAttributeChanged(AttributesArray[i]) || hasProfileChanged)) { //If the user disables the option to resize when the current monitor has changed but the value of the specified attribute (Dimensions or Refresh Rate) is the same
                     setGameSize(DimensionsArray[i]);
+                    if (resizableScalingBoolArray[i]) {
+                        setResizableScaling(resizableScalingPercentArray[i]);
+                    }
                 }
             }
         }
@@ -368,7 +462,7 @@ public class ClientResizerPlugin extends Plugin {
     }
 
     private void setGameSize(Dimension dimension) {
-        //Processing probably irrelevant sine ClientUI.java contains the same code, but why not.
+        //Processing probably irrelevant since ClientUI.java contains the same code, but why not.
         int processedWidth = Math.max(Math.min(dimension.width, 7680), Constants.GAME_FIXED_WIDTH);
         int processedHeight = Math.max(Math.min(dimension.height, 2160), Constants.GAME_FIXED_HEIGHT);
         Dimension processedGameSize = new Dimension(processedWidth, processedHeight);
@@ -383,12 +477,24 @@ public class ClientResizerPlugin extends Plugin {
             //While dragging the client with custom chrome off, the resize gets briefly applied but then removed.
             //Even bad workarounds like applying +1 and then back to preferable dimension when mouseReleased or mouseEntered (cursor can't be in title bar), didn't work. => Setting changed but client did not resize. Does still work on Win+Arrow key though for some reason...
             //Same for injecting the client Applet and checking the size of that, then keep setting/switching the value till the Applet dimension = preferred dimension
-            //TODO: Add option to change stretched mode UI scaling % when changing client size, both for automatic AND for hotkey resizing probably
 
             //client.addChatMessage has to be called on clientThread. Doesn't cause any error if not called on client.getGameState() == GameState.LOGGED_IN
             clientThread.invokeLater(() -> {
                 client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Your RuneLite game size / client size was changed by the Client Resizer plugin. Check your config if you'd like to change this.", "");
-                //TODO: If streched mode UI scaling % changing is added, also add this to the message
+            });
+        }
+    }
+
+    private void setResizableScaling(int resizableScalingPercent) {
+        int currentResizableScalingPercent = configManager.getConfiguration("stretchedmode", "scalingFactor", Integer.class);
+        //Check if current resizable scaling percent in config does not equal the resizable scaling percent the config is going to get set to.
+        //Otherwise, every time it'd match but not resize, a chat message would be spammed.
+        if (currentResizableScalingPercent != resizableScalingPercent) {
+            configManager.setConfiguration("stretchedmode", "scalingFactor", resizableScalingPercent);
+
+            //client.addChatMessage has to be called on clientThread. Doesn't cause any error if not called on client.getGameState() == GameState.LOGGED_IN
+            clientThread.invokeLater(() -> {
+                client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Your resizable scaling (stretched mode plugin) was changed by the Client Resizer plugin. Check your config if you'd like to change this.", "");
             });
         }
     }
@@ -456,6 +562,9 @@ public class ClientResizerPlugin extends Plugin {
         @Override
         public void hotkeyPressed() {
             setGameSize(hotkey1Dimension);
+            if (resizableScalingHotkey1) {
+                setResizableScaling(resizableScalingHotkey1Percent);
+            }
         }
 
         @Override
@@ -472,6 +581,9 @@ public class ClientResizerPlugin extends Plugin {
         @Override
         public void hotkeyPressed() {
             setGameSize(hotkey2Dimension);
+            if (resizableScalingHotkey2) {
+                setResizableScaling(resizableScalingHotkey2Percent);
+            }
         }
 
         @Override
@@ -488,6 +600,9 @@ public class ClientResizerPlugin extends Plugin {
         @Override
         public void hotkeyPressed() {
             setGameSize(hotkey3Dimension);
+            if (resizableScalingHotkey3) {
+                setResizableScaling(resizableScalingHotkey3Percent);
+            }
         }
 
         @Override
@@ -504,6 +619,9 @@ public class ClientResizerPlugin extends Plugin {
         @Override
         public void hotkeyPressed() {
             setGameSize(hotkey4Dimension);
+            if (resizableScalingHotkey4) {
+                setResizableScaling(resizableScalingHotkey4Percent);
+            }
         }
 
         @Override
@@ -520,6 +638,9 @@ public class ClientResizerPlugin extends Plugin {
         @Override
         public void hotkeyPressed() {
             setGameSize(hotkey5Dimension);
+            if (resizableScalingHotkey5) {
+                setResizableScaling(resizableScalingHotkey5Percent);
+            }
         }
 
         @Override
@@ -536,6 +657,9 @@ public class ClientResizerPlugin extends Plugin {
         @Override
         public void hotkeyPressed() {
             setGameSize(hotkey6Dimension);
+            if (resizableScalingHotkey6) {
+                setResizableScaling(resizableScalingHotkey6Percent);
+            }
         }
 
         @Override
@@ -552,6 +676,9 @@ public class ClientResizerPlugin extends Plugin {
         @Override
         public void hotkeyPressed() {
             setGameSize(hotkey7Dimension);
+            if (resizableScalingHotkey7) {
+                setResizableScaling(resizableScalingHotkey7Percent);
+            }
         }
 
         @Override
@@ -568,6 +695,9 @@ public class ClientResizerPlugin extends Plugin {
         @Override
         public void hotkeyPressed() {
             setGameSize(hotkey8Dimension);
+            if (resizableScalingHotkey8) {
+                setResizableScaling(resizableScalingHotkey8Percent);
+            }
         }
 
         @Override
@@ -584,6 +714,9 @@ public class ClientResizerPlugin extends Plugin {
         @Override
         public void hotkeyPressed() {
             setGameSize(hotkey9Dimension);
+            if (resizableScalingHotkey9) {
+                setResizableScaling(resizableScalingHotkey9Percent);
+            }
         }
 
         @Override
@@ -600,6 +733,9 @@ public class ClientResizerPlugin extends Plugin {
         @Override
         public void hotkeyPressed() {
             setGameSize(hotkey10Dimension);
+            if (resizableScalingHotkey10) {
+                setResizableScaling(resizableScalingHotkey10Percent);
+            }
         }
 
         @Override

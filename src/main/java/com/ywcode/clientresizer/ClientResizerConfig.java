@@ -9,8 +9,8 @@ public interface ClientResizerConfig extends Config {
 
 	@ConfigSection(
 			name = "Automatic Resizing",
-			description = "Automatic window resizing based on the current monitor<br>"+
-			"Note: It's recommended to enable 'Enable custom window chrome' in RuneLite > Window Settings",
+			description = "Automatic window resizing based on the current monitor<br>" +
+					"Note: It's recommended to enable 'Enable custom window chrome' in RuneLite > Window Settings",
 			position = 0,
 			closedByDefault = true
 	)
@@ -19,16 +19,25 @@ public interface ClientResizerConfig extends Config {
 	@ConfigSection(
 			name = "Hotkey Resizing",
 			description = "Hotkey based resizing<br>"
-			+"Note: It's recommended to enable 'Enable custom window chrome' in RuneLite > Window Settings",
+					+ "Note: It's recommended to enable 'Enable custom window chrome' in RuneLite > Window Settings",
 			position = 1,
 			closedByDefault = true
 	)
 	String hotkeyResizingSettings = "hotkeyResizingSettings";
 
 	@ConfigSection(
+			name = "Resizable Scaling",
+			description = "Resizable Scaling (stretched mode plugin)<br>"
+					+ "Note: Requires the stretched mode plugin to be enabled.",
+			position = 2,
+			closedByDefault = true
+	)
+	String resizableScalingSettings = "resizableScalingSettings";
+
+	@ConfigSection(
 			name = "Current Monitor Info",
 			description = "Information about the current monitor",
-			position = 2,
+			position = 3,
 			closedByDefault = false
 	)
 	String currentMonitorInfoSettings = "currentMonitorInfoSettings";
@@ -37,7 +46,7 @@ public interface ClientResizerConfig extends Config {
 			keyName = "resizeAttributeUnchanged",
 			name = "Resize if attribute is unchanged",
 			description = "Resize the client if the attribute you've configured is the same as the one of the previous monitor.<br>"
-			+"e.g. if both your monitors are 60Hz and the attribute you've set is 'Refresh Rate' and you've changed your client size,<br>"+
+					+ "e.g. if both your monitors are 60Hz and the attribute you've set is 'Refresh Rate' and you've changed your client size,<br>" +
 					"the client will not be resized when moving to the other monitor if this setting is turned OFF.",
 			position = 0,
 			section = automaticResizingSettings
@@ -50,7 +59,7 @@ public interface ClientResizerConfig extends Config {
 			keyName = "resizeWhenConfigProfileChanged",
 			name = "Resize when switching RuneLite config profile",
 			description = "Resize the client when you change the RuneLite config profile if the current monitor matches one of your configured monitor attributes.<br>"
-			+"If you do not understand what this setting does, leave this disabled.",
+					+ "If you do not understand what this setting does, leave this disabled.",
 			position = 1,
 			section = automaticResizingSettings
 	)
@@ -83,14 +92,14 @@ public interface ClientResizerConfig extends Config {
 	@ConfigItem(
 			keyName = "autoSize1Value",
 			name = "Size 1 monitor attribute value",
-			description = "The value of the monitor attribute the plugin looks for.<br>"+
-			"Get this value by selecting it in the dropdown in the most bottom category ('Copy attribute of current monitor') and pasting it here.<br>"+
-			"Make sure the type of attribute above matches the type of attribute you are pasting (e.g. 'Refresh Rate' if you are pasting a refresh rate).<br>"+
-			"After pasting, click in the game window once for the variable to be registered.",
+			description = "The value of the monitor attribute the plugin looks for.<br>" +
+					"Get this value by selecting it in the dropdown in the most bottom category ('Copy attribute of current monitor') and pasting it here.<br>" +
+					"Make sure the type of attribute above matches the type of attribute you are pasting (e.g. 'Refresh Rate' if you are pasting a refresh rate).<br>" +
+					"After pasting, click in the game window once for the variable to be registered.",
 			position = 4,
 			section = automaticResizingSettings
 	)
-	default String autoSize1Value()	{
+	default String autoSize1Value() {
 		return "";
 	}
 
@@ -119,14 +128,14 @@ public interface ClientResizerConfig extends Config {
 	@ConfigItem(
 			keyName = "autoSize2Value",
 			name = "Size 2 monitor attribute value",
-			description = "The value of the monitor attribute the plugin looks for.<br>"+
-					"Get this value by selecting it in the dropdown in the most bottom category ('Copy attribute of current monitor') and pasting it here.<br>"+
-					"Make sure the type of attribute above matches the type of attribute you are pasting (e.g. 'Refresh Rate' if you are pasting a refresh rate).<br>"+
+			description = "The value of the monitor attribute the plugin looks for.<br>" +
+					"Get this value by selecting it in the dropdown in the most bottom category ('Copy attribute of current monitor') and pasting it here.<br>" +
+					"Make sure the type of attribute above matches the type of attribute you are pasting (e.g. 'Refresh Rate' if you are pasting a refresh rate).<br>" +
 					"After pasting, click in the game window once for the variable to be registered.",
 			position = 7,
 			section = automaticResizingSettings
 	)
-	default String autoSize2Value()	{
+	default String autoSize2Value() {
 		return "";
 	}
 
@@ -155,9 +164,9 @@ public interface ClientResizerConfig extends Config {
 	@ConfigItem(
 			keyName = "autoSize3Value",
 			name = "Size 3 monitor attribute value",
-			description = "The value of the monitor attribute the plugin looks for.<br>"+
-					"Get this value by selecting it in the dropdown in the most bottom category ('Copy attribute of current monitor') and pasting it here.<br>"+
-					"Make sure the type of attribute above matches the type of attribute you are pasting (e.g. 'Refresh Rate' if you are pasting a refresh rate).<br>"+
+			description = "The value of the monitor attribute the plugin looks for.<br>" +
+					"Get this value by selecting it in the dropdown in the most bottom category ('Copy attribute of current monitor') and pasting it here.<br>" +
+					"Make sure the type of attribute above matches the type of attribute you are pasting (e.g. 'Refresh Rate' if you are pasting a refresh rate).<br>" +
 					"After pasting, click in the game window once for the variable to be registered.",
 			position = 10,
 			section = automaticResizingSettings
@@ -191,9 +200,9 @@ public interface ClientResizerConfig extends Config {
 	@ConfigItem(
 			keyName = "autoSize4Value",
 			name = "Size 4 monitor attribute value",
-			description = "The value of the monitor attribute the plugin looks for.<br>"+
-					"Get this value by selecting it in the dropdown in the most bottom category ('Copy attribute of current monitor') and pasting it here.<br>"+
-					"Make sure the type of attribute above matches the type of attribute you are pasting (e.g. 'Refresh Rate' if you are pasting a refresh rate).<br>"+
+			description = "The value of the monitor attribute the plugin looks for.<br>" +
+					"Get this value by selecting it in the dropdown in the most bottom category ('Copy attribute of current monitor') and pasting it here.<br>" +
+					"Make sure the type of attribute above matches the type of attribute you are pasting (e.g. 'Refresh Rate' if you are pasting a refresh rate).<br>" +
 					"After pasting, click in the game window once for the variable to be registered.",
 			position = 13,
 			section = automaticResizingSettings
@@ -227,9 +236,9 @@ public interface ClientResizerConfig extends Config {
 	@ConfigItem(
 			keyName = "autoSize5Value",
 			name = "Size 5 monitor attribute value",
-			description = "The value of the monitor attribute the plugin looks for.<br>"+
-					"Get this value by selecting it in the dropdown in the most bottom category ('Copy attribute of current monitor') and pasting it here.<br>"+
-					"Make sure the type of attribute above matches the type of attribute you are pasting (e.g. 'Refresh Rate' if you are pasting a refresh rate).<br>"+
+			description = "The value of the monitor attribute the plugin looks for.<br>" +
+					"Get this value by selecting it in the dropdown in the most bottom category ('Copy attribute of current monitor') and pasting it here.<br>" +
+					"Make sure the type of attribute above matches the type of attribute you are pasting (e.g. 'Refresh Rate' if you are pasting a refresh rate).<br>" +
 					"After pasting, click in the game window once for the variable to be registered.",
 			position = 16,
 			section = automaticResizingSettings
@@ -263,9 +272,9 @@ public interface ClientResizerConfig extends Config {
 	@ConfigItem(
 			keyName = "autoSize6Value",
 			name = "Size 6 monitor attribute value",
-			description = "The value of the monitor attribute the plugin looks for.<br>"+
-					"Get this value by selecting it in the dropdown in the most bottom category ('Copy attribute of current monitor') and pasting it here.<br>"+
-					"Make sure the type of attribute above matches the type of attribute you are pasting (e.g. 'Refresh Rate' if you are pasting a refresh rate).<br>"+
+			description = "The value of the monitor attribute the plugin looks for.<br>" +
+					"Get this value by selecting it in the dropdown in the most bottom category ('Copy attribute of current monitor') and pasting it here.<br>" +
+					"Make sure the type of attribute above matches the type of attribute you are pasting (e.g. 'Refresh Rate' if you are pasting a refresh rate).<br>" +
 					"After pasting, click in the game window once for the variable to be registered.",
 			position = 19,
 			section = automaticResizingSettings
@@ -299,9 +308,9 @@ public interface ClientResizerConfig extends Config {
 	@ConfigItem(
 			keyName = "autoSize7Value",
 			name = "Size 7 monitor attribute value",
-			description = "The value of the monitor attribute the plugin looks for.<br>"+
-					"Get this value by selecting it in the dropdown in the most bottom category ('Copy attribute of current monitor') and pasting it here.<br>"+
-					"Make sure the type of attribute above matches the type of attribute you are pasting (e.g. 'Refresh Rate' if you are pasting a refresh rate).<br>"+
+			description = "The value of the monitor attribute the plugin looks for.<br>" +
+					"Get this value by selecting it in the dropdown in the most bottom category ('Copy attribute of current monitor') and pasting it here.<br>" +
+					"Make sure the type of attribute above matches the type of attribute you are pasting (e.g. 'Refresh Rate' if you are pasting a refresh rate).<br>" +
 					"After pasting, click in the game window once for the variable to be registered.",
 			position = 22,
 			section = automaticResizingSettings
@@ -335,9 +344,9 @@ public interface ClientResizerConfig extends Config {
 	@ConfigItem(
 			keyName = "autoSize8Value",
 			name = "Size 8 monitor attribute value",
-			description = "The value of the monitor attribute the plugin looks for.<br>"+
-					"Get this value by selecting it in the dropdown in the most bottom category ('Copy attribute of current monitor') and pasting it here.<br>"+
-					"Make sure the type of attribute above matches the type of attribute you are pasting (e.g. 'Refresh Rate' if you are pasting a refresh rate).<br>"+
+			description = "The value of the monitor attribute the plugin looks for.<br>" +
+					"Get this value by selecting it in the dropdown in the most bottom category ('Copy attribute of current monitor') and pasting it here.<br>" +
+					"Make sure the type of attribute above matches the type of attribute you are pasting (e.g. 'Refresh Rate' if you are pasting a refresh rate).<br>" +
 					"After pasting, click in the game window once for the variable to be registered.",
 			position = 25,
 			section = automaticResizingSettings
@@ -371,9 +380,9 @@ public interface ClientResizerConfig extends Config {
 	@ConfigItem(
 			keyName = "autoSize9Value",
 			name = "Size 9 monitor attribute value",
-			description = "The value of the monitor attribute the plugin looks for.<br>"+
-					"Get this value by selecting it in the dropdown in the most bottom category ('Copy attribute of current monitor') and pasting it here.<br>"+
-					"Make sure the type of attribute above matches the type of attribute you are pasting (e.g. 'Refresh Rate' if you are pasting a refresh rate).<br>"+
+			description = "The value of the monitor attribute the plugin looks for.<br>" +
+					"Get this value by selecting it in the dropdown in the most bottom category ('Copy attribute of current monitor') and pasting it here.<br>" +
+					"Make sure the type of attribute above matches the type of attribute you are pasting (e.g. 'Refresh Rate' if you are pasting a refresh rate).<br>" +
 					"After pasting, click in the game window once for the variable to be registered.",
 			position = 28,
 			section = automaticResizingSettings
@@ -407,9 +416,9 @@ public interface ClientResizerConfig extends Config {
 	@ConfigItem(
 			keyName = "autoSize10Value",
 			name = "Size 10 monitor attribute value",
-			description = "The value of the monitor attribute the plugin looks for.<br>"+
-					"Get this value by selecting it in the dropdown in the most bottom category ('Copy attribute of current monitor') and pasting it here.<br>"+
-					"Make sure the type of attribute above matches the type of attribute you are pasting (e.g. 'Refresh Rate' if you are pasting a refresh rate).<br>"+
+			description = "The value of the monitor attribute the plugin looks for.<br>" +
+					"Get this value by selecting it in the dropdown in the most bottom category ('Copy attribute of current monitor') and pasting it here.<br>" +
+					"Make sure the type of attribute above matches the type of attribute you are pasting (e.g. 'Refresh Rate' if you are pasting a refresh rate).<br>" +
 					"After pasting, click in the game window once for the variable to be registered.",
 			position = 31,
 			section = automaticResizingSettings
@@ -432,8 +441,8 @@ public interface ClientResizerConfig extends Config {
 	@ConfigItem(
 			keyName = "hotkey1Key",
 			name = "Size 1 hotkey",
-			description = "The hotkey you'd like to press to activate size 1 (above).<br>"+
-			"Can be a combination of keys (e.g. ctrl+L). Reset the key (to 'Not set') to disable this setting.",
+			description = "The hotkey you'd like to press to activate size 1 (above).<br>" +
+					"Can be a combination of keys (e.g. ctrl+L). Reset the key (to 'Not set') to disable this setting.",
 			position = 1,
 			section = hotkeyResizingSettings
 	)
@@ -455,8 +464,8 @@ public interface ClientResizerConfig extends Config {
 	@ConfigItem(
 			keyName = "hotkey2Key",
 			name = "Size 2 hotkey",
-			description = "The hotkey you'd like to press to activate size 2 (above).<br>"+
-			"Can be a combination of keys (e.g. ctrl+L). Reset the key (to 'Not set') to disable this setting.",
+			description = "The hotkey you'd like to press to activate size 2 (above).<br>" +
+					"Can be a combination of keys (e.g. ctrl+L). Reset the key (to 'Not set') to disable this setting.",
 			position = 3,
 			section = hotkeyResizingSettings
 	)
@@ -478,8 +487,8 @@ public interface ClientResizerConfig extends Config {
 	@ConfigItem(
 			keyName = "hotkey3Key",
 			name = "Size 3 hotkey",
-			description = "The hotkey you'd like to press to activate size 3 (above).<br>"+
-			"Can be a combination of keys (e.g. ctrl+L). Reset the key (to 'Not set') to disable this setting.",
+			description = "The hotkey you'd like to press to activate size 3 (above).<br>" +
+					"Can be a combination of keys (e.g. ctrl+L). Reset the key (to 'Not set') to disable this setting.",
 			position = 5,
 			section = hotkeyResizingSettings
 	)
@@ -501,8 +510,8 @@ public interface ClientResizerConfig extends Config {
 	@ConfigItem(
 			keyName = "hotkey4Key",
 			name = "Size 4 hotkey",
-			description = "The hotkey you'd like to press to activate size 4 (above).<br>"+
-			"Can be a combination of keys (e.g. ctrl+L). Reset the key (to 'Not set') to disable this setting.",
+			description = "The hotkey you'd like to press to activate size 4 (above).<br>" +
+					"Can be a combination of keys (e.g. ctrl+L). Reset the key (to 'Not set') to disable this setting.",
 			position = 7,
 			section = hotkeyResizingSettings
 	)
@@ -524,8 +533,8 @@ public interface ClientResizerConfig extends Config {
 	@ConfigItem(
 			keyName = "hotkey5Key",
 			name = "Size 5 hotkey",
-			description = "The hotkey you'd like to press to activate size 5 (above).<br>"+
-			"Can be a combination of keys (e.g. ctrl+L). Reset the key (to 'Not set') to disable this setting.",
+			description = "The hotkey you'd like to press to activate size 5 (above).<br>" +
+					"Can be a combination of keys (e.g. ctrl+L). Reset the key (to 'Not set') to disable this setting.",
 			position = 9,
 			section = hotkeyResizingSettings
 	)
@@ -547,8 +556,8 @@ public interface ClientResizerConfig extends Config {
 	@ConfigItem(
 			keyName = "hotkey6Key",
 			name = "Size 6 hotkey",
-			description = "The hotkey you'd like to press to activate size 6 (above).<br>"+
-			"Can be a combination of keys (e.g. ctrl+L). Reset the key (to 'Not set') to disable this setting.",
+			description = "The hotkey you'd like to press to activate size 6 (above).<br>" +
+					"Can be a combination of keys (e.g. ctrl+L). Reset the key (to 'Not set') to disable this setting.",
 			position = 11,
 			section = hotkeyResizingSettings
 	)
@@ -570,8 +579,8 @@ public interface ClientResizerConfig extends Config {
 	@ConfigItem(
 			keyName = "hotkey7Key",
 			name = "Size 7 hotkey",
-			description = "The hotkey you'd like to press to activate size 7 (above).<br>"+
-			"Can be a combination of keys (e.g. ctrl+L). Reset the key (to 'Not set') to disable this setting.",
+			description = "The hotkey you'd like to press to activate size 7 (above).<br>" +
+					"Can be a combination of keys (e.g. ctrl+L). Reset the key (to 'Not set') to disable this setting.",
 			position = 13,
 			section = hotkeyResizingSettings
 	)
@@ -593,8 +602,8 @@ public interface ClientResizerConfig extends Config {
 	@ConfigItem(
 			keyName = "hotkey8Key",
 			name = "Size 8 hotkey",
-			description = "The hotkey you'd like to press to activate size 8 (above).<br>"+
-			"Can be a combination of keys (e.g. ctrl+L). Reset the key (to 'Not set') to disable this setting.",
+			description = "The hotkey you'd like to press to activate size 8 (above).<br>" +
+					"Can be a combination of keys (e.g. ctrl+L). Reset the key (to 'Not set') to disable this setting.",
 			position = 15,
 			section = hotkeyResizingSettings
 	)
@@ -616,8 +625,8 @@ public interface ClientResizerConfig extends Config {
 	@ConfigItem(
 			keyName = "hotkey9Key",
 			name = "Size 9 hotkey",
-			description = "The hotkey you'd like to press to activate size 9 (above).<br>"+
-			"Can be a combination of keys (e.g. ctrl+L). Reset the key (to 'Not set') to disable this setting.",
+			description = "The hotkey you'd like to press to activate size 9 (above).<br>" +
+					"Can be a combination of keys (e.g. ctrl+L). Reset the key (to 'Not set') to disable this setting.",
 			position = 17,
 			section = hotkeyResizingSettings
 	)
@@ -639,8 +648,8 @@ public interface ClientResizerConfig extends Config {
 	@ConfigItem(
 			keyName = "hotkey10Key",
 			name = "Size 10 hotkey",
-			description = "The hotkey you'd like to press to activate size 10 (above).<br>"+
-			"Can be a combination of keys (e.g. ctrl+L). Reset the key (to 'Not set') to disable this setting.",
+			description = "The hotkey you'd like to press to activate size 10 (above).<br>" +
+					"Can be a combination of keys (e.g. ctrl+L). Reset the key (to 'Not set') to disable this setting.",
 			position = 19,
 			section = hotkeyResizingSettings
 	)
@@ -649,10 +658,550 @@ public interface ClientResizerConfig extends Config {
 	}
 
 	@ConfigItem(
+			keyName = "resizableScalingAutomatic1",
+			name = "Automatic 1",
+			description = "Enable setting resizable scaling (stretched mode) for automatic resizing 1.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 0,
+			section = resizableScalingSettings
+	)
+	default boolean resizableScalingAutomatic1() {
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingAutomatic1Percent",
+			name = "Automatic 1 percentage",
+			description = "Resizable scaling percentage (stretched mode) for automatic resizing 1.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 1,
+			section = resizableScalingSettings
+	)
+	@Units(
+			Units.PERCENT
+	)
+	default int resizableScalingAutomatic1Percent() {
+		return ClientResizerPlugin.getDefaultResizableScaling();
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingAutomatic2",
+			name = "Automatic 2",
+			description = "Enable setting resizable scaling (stretched mode) for automatic resizing 2.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 2,
+			section = resizableScalingSettings
+	)
+	default boolean resizableScalingAutomatic2() {
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingAutomatic2Percent",
+			name = "Automatic 2 percentage",
+			description = "Resizable scaling percentage (stretched mode) for automatic resizing 2.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 3,
+			section = resizableScalingSettings
+	)
+	@Units(
+			Units.PERCENT
+	)
+	default int resizableScalingAutomatic2Percent() {
+		return ClientResizerPlugin.getDefaultResizableScaling();
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingAutomatic3",
+			name = "Automatic 3",
+			description = "Enable setting resizable scaling (stretched mode) for automatic resizing 3.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 4,
+			section = resizableScalingSettings
+	)
+	default boolean resizableScalingAutomatic3() {
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingAutomatic3Percent",
+			name = "Automatic 3 percentage",
+			description = "Resizable scaling percentage (stretched mode) for automatic resizing 3.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 5,
+			section = resizableScalingSettings
+	)
+	@Units(
+			Units.PERCENT
+	)
+	default int resizableScalingAutomatic3Percent() {
+		return ClientResizerPlugin.getDefaultResizableScaling();
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingAutomatic4",
+			name = "Automatic 4",
+			description = "Enable setting resizable scaling (stretched mode) for automatic resizing 4.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 6,
+			section = resizableScalingSettings
+	)
+	default boolean resizableScalingAutomatic4() {
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingAutomatic4Percent",
+			name = "Automatic 4 percentage",
+			description = "Resizable scaling percentage (stretched mode) for automatic resizing 4.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 7,
+			section = resizableScalingSettings
+	)
+	@Units(
+			Units.PERCENT
+	)
+	default int resizableScalingAutomatic4Percent() {
+		return ClientResizerPlugin.getDefaultResizableScaling();
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingAutomatic5",
+			name = "Automatic 5",
+			description = "Enable setting resizable scaling (stretched mode) for automatic resizing 5.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 8,
+			section = resizableScalingSettings
+	)
+	default boolean resizableScalingAutomatic5() {
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingAutomatic5Percent",
+			name = "Automatic 5 percentage",
+			description = "Resizable scaling percentage (stretched mode) for automatic resizing 5.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 9,
+			section = resizableScalingSettings
+	)
+	@Units(
+			Units.PERCENT
+	)
+	default int resizableScalingAutomatic5Percent() {
+		return ClientResizerPlugin.getDefaultResizableScaling();
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingAutomatic6",
+			name = "Automatic 6",
+			description = "Enable setting resizable scaling (stretched mode) for automatic resizing 6.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 10,
+			section = resizableScalingSettings
+	)
+	default boolean resizableScalingAutomatic6() {
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingAutomatic6Percent",
+			name = "Automatic 6 percentage",
+			description = "Resizable scaling percentage (stretched mode) for automatic resizing 6.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 11,
+			section = resizableScalingSettings
+	)
+	@Units(
+			Units.PERCENT
+	)
+	default int resizableScalingAutomatic6Percent() {
+		return ClientResizerPlugin.getDefaultResizableScaling();
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingAutomatic7",
+			name = "Automatic 7",
+			description = "Enable setting resizable scaling (stretched mode) for automatic resizing 7.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 12,
+			section = resizableScalingSettings
+	)
+	default boolean resizableScalingAutomatic7() {
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingAutomatic7Percent",
+			name = "Automatic 7 percentage",
+			description = "Resizable scaling percentage (stretched mode) for automatic resizing 7.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 13,
+			section = resizableScalingSettings
+	)
+	@Units(
+			Units.PERCENT
+	)
+	default int resizableScalingAutomatic7Percent() {
+		return ClientResizerPlugin.getDefaultResizableScaling();
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingAutomatic8",
+			name = "Automatic 8",
+			description = "Enable setting resizable scaling (stretched mode) for automatic resizing 8.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 14,
+			section = resizableScalingSettings
+	)
+	default boolean resizableScalingAutomatic8() {
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingAutomatic8Percent",
+			name = "Automatic 8 percentage",
+			description = "Resizable scaling percentage (stretched mode) for automatic resizing 8.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 15,
+			section = resizableScalingSettings
+	)
+	@Units(
+			Units.PERCENT
+	)
+	default int resizableScalingAutomatic8Percent() {
+		return ClientResizerPlugin.getDefaultResizableScaling();
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingAutomatic9",
+			name = "Automatic 9",
+			description = "Enable setting resizable scaling (stretched mode) for automatic resizing 9.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 16,
+			section = resizableScalingSettings
+	)
+	default boolean resizableScalingAutomatic9() {
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingAutomatic9Percent",
+			name = "Automatic 9 percentage",
+			description = "Resizable scaling percentage (stretched mode) for automatic resizing 9.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 17,
+			section = resizableScalingSettings
+	)
+	@Units(
+			Units.PERCENT
+	)
+	default int resizableScalingAutomatic9Percent() {
+		return ClientResizerPlugin.getDefaultResizableScaling();
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingAutomatic10",
+			name = "Automatic 10",
+			description = "Enable setting resizable scaling (stretched mode) for automatic resizing 10.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 18,
+			section = resizableScalingSettings
+	)
+	default boolean resizableScalingAutomatic10() {
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingAutomatic10Percent",
+			name = "Automatic 10 percentage",
+			description = "Resizable scaling percentage (stretched mode) for automatic resizing 10.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 19,
+			section = resizableScalingSettings
+	)
+	@Units(
+			Units.PERCENT
+	)
+	default int resizableScalingAutomatic10Percent() {
+		return ClientResizerPlugin.getDefaultResizableScaling();
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingHotkey1",
+			name = "Hotkey 1",
+			description = "Enable setting resizable scaling (stretched mode) for hotkey resizing 1.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 20,
+			section = resizableScalingSettings
+	)
+	default boolean resizableScalingHotkey1() {
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingHotkey1Percent",
+			name = "Hotkey 1 percentage",
+			description = "Resizable scaling percentage (stretched mode) for hotkey resizing 1.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 21,
+			section = resizableScalingSettings
+	)
+	@Units(
+			Units.PERCENT
+	)
+	default int resizableScalingHotkey1Percent() {
+		return ClientResizerPlugin.getDefaultResizableScaling();
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingHotkey2",
+			name = "Hotkey 2",
+			description = "Enable setting resizable scaling (stretched mode) for Hotkey resizing 2.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 22,
+			section = resizableScalingSettings
+	)
+	default boolean resizableScalingHotkey2() {
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingHotkey2Percent",
+			name = "Hotkey 2 percentage",
+			description = "Resizable scaling percentage (stretched mode) for Hotkey resizing 2.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 23,
+			section = resizableScalingSettings
+	)
+	@Units(
+			Units.PERCENT
+	)
+	default int resizableScalingHotkey2Percent() {
+		return ClientResizerPlugin.getDefaultResizableScaling();
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingHotkey3",
+			name = "Hotkey 3",
+			description = "Enable setting resizable scaling (stretched mode) for Hotkey resizing 3.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 24,
+			section = resizableScalingSettings
+	)
+	default boolean resizableScalingHotkey3() {
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingHotkey3Percent",
+			name = "Hotkey 3 percentage",
+			description = "Resizable scaling percentage (stretched mode) for Hotkey resizing 3.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 25,
+			section = resizableScalingSettings
+	)
+	@Units(
+			Units.PERCENT
+	)
+	default int resizableScalingHotkey3Percent() {
+		return ClientResizerPlugin.getDefaultResizableScaling();
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingHotkey4",
+			name = "Hotkey 4",
+			description = "Enable setting resizable scaling (stretched mode) for Hotkey resizing 4.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 26,
+			section = resizableScalingSettings
+	)
+	default boolean resizableScalingHotkey4() {
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingHotkey4Percent",
+			name = "Hotkey 4 percentage",
+			description = "Resizable scaling percentage (stretched mode) for Hotkey resizing 4.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 27,
+			section = resizableScalingSettings
+	)
+	@Units(
+			Units.PERCENT
+	)
+	default int resizableScalingHotkey4Percent() {
+		return ClientResizerPlugin.getDefaultResizableScaling();
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingHotkey5",
+			name = "Hotkey 5",
+			description = "Enable setting resizable scaling (stretched mode) for Hotkey resizing 5.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 28,
+			section = resizableScalingSettings
+	)
+	default boolean resizableScalingHotkey5() {
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingHotkey5Percent",
+			name = "Hotkey 5 percentage",
+			description = "Resizable scaling percentage (stretched mode) for Hotkey resizing 5.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 29,
+			section = resizableScalingSettings
+	)
+	@Units(
+			Units.PERCENT
+	)
+	default int resizableScalingHotkey5Percent() {
+		return ClientResizerPlugin.getDefaultResizableScaling();
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingHotkey6",
+			name = "Hotkey 6",
+			description = "Enable setting resizable scaling (stretched mode) for Hotkey resizing 6.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 30,
+			section = resizableScalingSettings
+	)
+	default boolean resizableScalingHotkey6() {
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingHotkey6Percent",
+			name = "Hotkey 6 percentage",
+			description = "Resizable scaling percentage (stretched mode) for Hotkey resizing 6.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 31,
+			section = resizableScalingSettings
+	)
+	@Units(
+			Units.PERCENT
+	)
+	default int resizableScalingHotkey6Percent() {
+		return ClientResizerPlugin.getDefaultResizableScaling();
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingHotkey7",
+			name = "Hotkey 7",
+			description = "Enable setting resizable scaling (stretched mode) for Hotkey resizing 7.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 32,
+			section = resizableScalingSettings
+	)
+	default boolean resizableScalingHotkey7() {
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingHotkey7Percent",
+			name = "Hotkey 7 percentage",
+			description = "Resizable scaling percentage (stretched mode) for Hotkey resizing 7.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 33,
+			section = resizableScalingSettings
+	)
+	@Units(
+			Units.PERCENT
+	)
+	default int resizableScalingHotkey7Percent() {
+		return ClientResizerPlugin.getDefaultResizableScaling();
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingHotkey8",
+			name = "Hotkey 8",
+			description = "Enable setting resizable scaling (stretched mode) for Hotkey resizing 8.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 34,
+			section = resizableScalingSettings
+	)
+	default boolean resizableScalingHotkey8() {
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingHotkey8Percent",
+			name = "Hotkey 8 percentage",
+			description = "Resizable scaling percentage (stretched mode) for Hotkey resizing 8.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 35,
+			section = resizableScalingSettings
+	)
+	@Units(
+			Units.PERCENT
+	)
+	default int resizableScalingHotkey8Percent() {
+		return ClientResizerPlugin.getDefaultResizableScaling();
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingHotkey9",
+			name = "Hotkey 9",
+			description = "Enable setting resizable scaling (stretched mode) for Hotkey resizing 9.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 36,
+			section = resizableScalingSettings
+	)
+	default boolean resizableScalingHotkey9() {
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingHotkey9Percent",
+			name = "Hotkey 9 percentage",
+			description = "Resizable scaling percentage (stretched mode) for Hotkey resizing 9.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 37,
+			section = resizableScalingSettings
+	)
+	@Units(
+			Units.PERCENT
+	)
+	default int resizableScalingHotkey9Percent() {
+		return ClientResizerPlugin.getDefaultResizableScaling();
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingHotkey10",
+			name = "Hotkey 10",
+			description = "Enable setting resizable scaling (stretched mode) for hotkey resizing 10.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 38,
+			section = resizableScalingSettings
+	)
+	default boolean resizableScalingHotkey10() {
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "resizableScalingHotkey10Percent",
+			name = "Hotkey 10 percentage",
+			description = "Resizable scaling percentage (stretched mode) for hotkey resizing 10.<br>"
+					+ "This requires the stretched mode plugin to be enabled.",
+			position = 39,
+			section = resizableScalingSettings
+	)
+	@Units(
+			Units.PERCENT
+	)
+	default int resizableScalingHotkey10Percent() {
+		return ClientResizerPlugin.getDefaultResizableScaling();
+	}
+
+	@ConfigItem(
 			keyName = "copyAttribute",
 			name = "Copy attribute of current monitor",
-			description = "Copy this attribute of the current monitor to the clipboard<br>"+
-			"Gets disabled automatically on client or plugin restart to not clutter your clipboard.",
+			description = "Copy this attribute of the current monitor to the clipboard<br>" +
+					"Gets disabled automatically on client or plugin restart to not clutter your clipboard.",
 			position = 0,
 			section = currentMonitorInfoSettings
 	)
