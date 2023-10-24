@@ -157,7 +157,7 @@ public class ClientResizerPlugin extends Plugin {
 
     @Override
     public void startUp() throws Exception {
-        defaultResizableScaling = configManager.getConfiguration("stretchedmode", "scalingFactor", Integer.class); //Default might be set to 50 initially, but will set to its current value on reset at least
+        defaultResizableScaling = configManager.getConfiguration("stretchedmode", "scalingFactor", Integer.class); //Default might be set to 50 initially, but will set to its current value on reset at least. PM Can't do this on value initialization because then configManager hasn't been injected yet.
         updateConfig();
         setDefaultDimensions();
         registerHotkeyListeners();
