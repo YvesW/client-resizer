@@ -28,7 +28,7 @@ import java.util.regex.*;
 public class ClientResizerPlugin extends Plugin {
 
     //------------- Wall of config vars -------------
-    //Vars are quite heavily cached so should probably just config.configKey()
+    //Vars are quite heavily cached so could probably just config.configKey(). However, the best practice behavior in plugins is to have a bunch of variables to store the results of the config methods, and check it in startUp/onConfigChanged. It feels redundant, but it's better than hitting the reflective calls every frame. --LlemonDuck
     private static boolean resizeAttributeUnchanged;
     private static boolean resizeWhenConfigProfileChanged;
     private static Dimension autoSize1Dimension;
