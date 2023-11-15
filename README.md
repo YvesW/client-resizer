@@ -54,7 +54,7 @@ If you also want to resize your client when loading a different RuneLite config 
 ## Additional info
 Not tested on macOS or Linux; results may vary.
 
-If you experience any issues or have any concerns, please reach out to YvesW via a GitHub Issue, by Discord direct messaging or via the RuneLite Discord by mentioning @YvesW.
+If you experience any issues or have any concerns, please reach out to YvesW via a GitHub Issue, by Discord direct messaging or via the RuneLite Discord by mentioning @``YvesW``.
 
 ## Changelog
 09-2023:
