@@ -35,9 +35,17 @@ public interface ClientResizerConfig extends Config {
 	String resizableScalingSettings = "resizableScalingSettings";
 
 	@ConfigSection(
+			name = "Advanced",
+			description = "Advanced settings",
+			position = 3,
+			closedByDefault = true
+	)
+	String advancedSettings = "advancedSettings";
+
+	@ConfigSection(
 			name = "Current Monitor Info",
 			description = "Information about the current monitor",
-			position = 3,
+			position = 4,
 			closedByDefault = false
 	)
 	String currentMonitorInfoSettings = "currentMonitorInfoSettings";
@@ -1195,6 +1203,19 @@ public interface ClientResizerConfig extends Config {
 	)
 	default int resizableScalingHotkey10Percent() {
 		return ClientResizerPlugin.getDefaultResizableScaling();
+	}
+
+	@ConfigItem(
+			keyName = "showChatMessage",
+			name = "Show chat message",
+			description = "Show the chat message when changing the game size / client size or when changing the resizable scaling (stretched mode plugin).<br>"
+					+ "This setting is enabled by default. If you disable it, then DO remember that you are using this plugin!<br>"
+					+ "Do NOT complain in the RuneLite Discord that your client randomly changes in size or the UI scaling randomly changes.",
+			position = 0,
+			section = advancedSettings
+	)
+	default boolean showChatMessage() {
+		return true;
 	}
 
 	@ConfigItem(

@@ -121,6 +121,7 @@ public class ClientResizerPlugin extends Plugin {
     private static int resizableScalingHotkey9Percent;
     private static boolean resizableScalingHotkey10;
     private static int resizableScalingHotkey10Percent;
+    private static boolean showChatMessage;
     private static MonitorAttribute copyAttribute;
     //------------- End of wall of config vars -------------
 
@@ -271,6 +272,7 @@ public class ClientResizerPlugin extends Plugin {
         resizableScalingHotkey9Percent = config.resizableScalingHotkey9Percent();
         resizableScalingHotkey10 = config.resizableScalingHotkey10();
         resizableScalingHotkey10Percent = config.resizableScalingHotkey10Percent();
+        showChatMessage = config.showChatMessage();
         copyAttribute = config.copyAttribute();
     }
 
@@ -478,10 +480,12 @@ public class ClientResizerPlugin extends Plugin {
             //Even bad workarounds like applying +1 and then back to preferable dimension when mouseReleased or mouseEntered (cursor can't be in title bar), didn't work. => Setting changed but client did not resize. Does still work on Win+Arrow key though for some reason...
             //Same for injecting the client Applet and checking the size of that, then keep setting/switching the value till the Applet dimension = preferred dimension
 
-            //client.addChatMessage has to be called on clientThread. Doesn't cause any error if not called on client.getGameState() == GameState.LOGGED_IN
-            clientThread.invokeLater(() -> {
-                client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Your RuneLite game size / client size was changed by the Client Resizer plugin. Check your config if you'd like to change this.", "");
-            });
+            if (showChatMessage) {
+                //client.addChatMessage has to be called on clientThread. Doesn't cause any error if not called on client.getGameState() == GameState.LOGGED_IN
+                clientThread.invokeLater(() -> {
+                    client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Your RuneLite game size / client size was changed by the Client Resizer plugin. Check your config if you'd like to change this.", "");
+                });
+            }
         }
     }
 
@@ -492,10 +496,12 @@ public class ClientResizerPlugin extends Plugin {
         if (currentResizableScalingPercent != resizableScalingPercent) {
             configManager.setConfiguration("stretchedmode", "scalingFactor", resizableScalingPercent);
 
-            //client.addChatMessage has to be called on clientThread. Doesn't cause any error if not called on client.getGameState() == GameState.LOGGED_IN
-            clientThread.invokeLater(() -> {
-                client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Your resizable scaling (stretched mode plugin) was changed by the Client Resizer plugin. Check your config if you'd like to change this.", "");
-            });
+            if (showChatMessage) {
+                //client.addChatMessage has to be called on clientThread. Doesn't cause any error if not called on client.getGameState() == GameState.LOGGED_IN
+                clientThread.invokeLater(() -> {
+                    client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Your resizable scaling (stretched mode plugin) was changed by the Client Resizer plugin. Check your config if you'd like to change this.", "");
+                });
+            }
         }
     }
 
