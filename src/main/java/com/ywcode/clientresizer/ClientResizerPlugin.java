@@ -14,6 +14,7 @@ import net.runelite.client.plugins.*;
 import net.runelite.client.ui.*;
 import net.runelite.client.util.*;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.*;
 import java.util.regex.*;
@@ -22,7 +23,7 @@ import java.util.regex.*;
 @PluginDescriptor(
         name = "Client Resizer",
         description = "Allows for automatic or hotkey-based resizing of the client.",
-        tags = {"client,resize,automatic,pixels,refresh rate,game size,size,screen size,monitor,display,screen,autoresize,hotkey,hot key,stretched mode,resizable scaling,scaling"}
+        tags = {"client,resize,automatic,pixels,refresh rate,game size,size,screen size,monitor,display,screen,autoresize,hotkey,hot key,stretched mode,resizable scaling,scaling,position,reposition,location"}
 )
 
 public class ClientResizerPlugin extends Plugin {
@@ -121,7 +122,38 @@ public class ClientResizerPlugin extends Plugin {
     private static int resizableScalingHotkey9Percent;
     private static boolean resizableScalingHotkey10;
     private static int resizableScalingHotkey10Percent;
+    private static int hotkey1PositionX;
+    private static int hotkey1PositionY;
+    private static Keybind hotkey1PositionKey;
+    private static int hotkey2PositionX;
+    private static int hotkey2PositionY;
+    private static Keybind hotkey2PositionKey;
+    private static int hotkey3PositionX;
+    private static int hotkey3PositionY;
+    private static Keybind hotkey3PositionKey;
+    private static int hotkey4PositionX;
+    private static int hotkey4PositionY;
+    private static Keybind hotkey4PositionKey;
+    private static int hotkey5PositionX;
+    private static int hotkey5PositionY;
+    private static Keybind hotkey5PositionKey;
+    private static int hotkey6PositionX;
+    private static int hotkey6PositionY;
+    private static Keybind hotkey6PositionKey;
+    private static int hotkey7PositionX;
+    private static int hotkey7PositionY;
+    private static Keybind hotkey7PositionKey;
+    private static int hotkey8PositionX;
+    private static int hotkey8PositionY;
+    private static Keybind hotkey8PositionKey;
+    private static int hotkey9PositionX;
+    private static int hotkey9PositionY;
+    private static Keybind hotkey9PositionKey;
+    private static int hotkey10PositionX;
+    private static int hotkey10PositionY;
+    private static Keybind hotkey10PositionKey;
     private static boolean showChatMessage;
+    private static boolean showChatMessageReposition;
     private static MonitorAttribute copyAttribute;
     //------------- End of wall of config vars -------------
 
@@ -272,7 +304,38 @@ public class ClientResizerPlugin extends Plugin {
         resizableScalingHotkey9Percent = config.resizableScalingHotkey9Percent();
         resizableScalingHotkey10 = config.resizableScalingHotkey10();
         resizableScalingHotkey10Percent = config.resizableScalingHotkey10Percent();
+        hotkey1PositionX = config.hotkey1PositionX();
+        hotkey1PositionY = config.hotkey1PositionY();
+        hotkey1PositionKey = config.hotkey1PositionKey();
+        hotkey2PositionX = config.hotkey2PositionX();
+        hotkey2PositionY = config.hotkey2PositionY();
+        hotkey2PositionKey = config.hotkey2PositionKey();
+        hotkey3PositionX = config.hotkey3PositionX();
+        hotkey3PositionY = config.hotkey3PositionY();
+        hotkey3PositionKey = config.hotkey3PositionKey();
+        hotkey4PositionX = config.hotkey4PositionX();
+        hotkey4PositionY = config.hotkey4PositionY();
+        hotkey4PositionKey = config.hotkey4PositionKey();
+        hotkey5PositionX = config.hotkey5PositionX();
+        hotkey5PositionY = config.hotkey5PositionY();
+        hotkey5PositionKey = config.hotkey5PositionKey();
+        hotkey6PositionX = config.hotkey6PositionX();
+        hotkey6PositionY = config.hotkey6PositionY();
+        hotkey6PositionKey = config.hotkey6PositionKey();
+        hotkey7PositionX = config.hotkey7PositionX();
+        hotkey7PositionY = config.hotkey7PositionY();
+        hotkey7PositionKey = config.hotkey7PositionKey();
+        hotkey8PositionX = config.hotkey8PositionX();
+        hotkey8PositionY = config.hotkey8PositionY();
+        hotkey8PositionKey = config.hotkey8PositionKey();
+        hotkey9PositionX = config.hotkey9PositionX();
+        hotkey9PositionY = config.hotkey9PositionY();
+        hotkey9PositionKey = config.hotkey9PositionKey();
+        hotkey10PositionX = config.hotkey10PositionX();
+        hotkey10PositionY = config.hotkey10PositionY();
+        hotkey10PositionKey = config.hotkey10PositionKey();
         showChatMessage = config.showChatMessage();
+        showChatMessageReposition = config.showChatMessageReposition();
         copyAttribute = config.copyAttribute();
     }
 
@@ -343,6 +406,7 @@ public class ClientResizerPlugin extends Plugin {
     }
 
     private void monitorCheck() {
+        //Alternatively use client.getCanvas().getGraphicsConfiguration() if this breaks!
         graphicsConfig = clientUI.getGraphicsConfiguration();
         currentMonitor = graphicsConfig.getDevice(); // Actually relevant here to refresh the current monitor since I opted to use static variables instead of local variable that update per method.
         if (hasMonitorChanged()) {
@@ -353,7 +417,7 @@ public class ClientResizerPlugin extends Plugin {
         //GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
         //GraphicsDevice[] allMonitors = graphicsEnvironment.getScreenDevices();
 
-        //TODO: potentially add a widget that displays all the MonitorAttributes.
+        //Potentially add a widget that displays all the MonitorAttributes.
         // However, typing the attributes will likely result in a lot of user error, so opted not to for now and just to use the copy option.
         // If added:
         // Add boolean to Config above copyAttribute (default false)
@@ -532,6 +596,24 @@ public class ClientResizerPlugin extends Plugin {
         previousRefreshRate = (int) currentMonitorValueForAttribute(MonitorAttribute.RefreshRate);
     }
 
+    private void setClientPosition(int pointX, int pointY) {
+        JFrame topFrameClient = (JFrame) SwingUtilities.getWindowAncestor(client.getCanvas());
+        //To reset to middle, use:
+        //topFrameClient.setLocationRelativeTo(topFrame.getOwner());
+
+        //TODO: potentially add automatic repositioning of the client like automatic resizing, but this might automatically throw the client offscreen if configured very incorrectly.
+        // Thus, for let's not add this for now. Can reconsider in the future.
+        // If this is added, check how you check how you did resizeClient() (copy most of it probs), use processAtributeString, and check how you did setGameSize (copy most of it probs).
+
+        //client.addChatMessage has to be called on clientThread. Doesn't cause any error if not called on client.getGameState() == GameState.LOGGED_IN
+        if (showChatMessageReposition) {
+            clientThread.invokeLater(() -> {
+                client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "The position of your client was changed by the Client Resizer plugin. Check your config if you'd like to change this.", "");
+            });
+        }
+        topFrameClient.setLocation(pointX, pointY);
+    }
+
     private void registerHotkeyListeners() {
         keyManager.registerKeyListener(hotkeyListener1);
         keyManager.registerKeyListener(hotkeyListener2);
@@ -543,6 +625,16 @@ public class ClientResizerPlugin extends Plugin {
         keyManager.registerKeyListener(hotkeyListener8);
         keyManager.registerKeyListener(hotkeyListener9);
         keyManager.registerKeyListener(hotkeyListener10);
+        keyManager.registerKeyListener(hotkeyListenerPosition1);
+        keyManager.registerKeyListener(hotkeyListenerPosition2);
+        keyManager.registerKeyListener(hotkeyListenerPosition3);
+        keyManager.registerKeyListener(hotkeyListenerPosition4);
+        keyManager.registerKeyListener(hotkeyListenerPosition5);
+        keyManager.registerKeyListener(hotkeyListenerPosition6);
+        keyManager.registerKeyListener(hotkeyListenerPosition7);
+        keyManager.registerKeyListener(hotkeyListenerPosition8);
+        keyManager.registerKeyListener(hotkeyListenerPosition9);
+        keyManager.registerKeyListener(hotkeyListenerPosition10);
     }
 
     private void unregisterHotkeyListeners() {
@@ -556,6 +648,16 @@ public class ClientResizerPlugin extends Plugin {
         keyManager.unregisterKeyListener(hotkeyListener8);
         keyManager.unregisterKeyListener(hotkeyListener9);
         keyManager.unregisterKeyListener(hotkeyListener10);
+        keyManager.unregisterKeyListener(hotkeyListenerPosition1);
+        keyManager.unregisterKeyListener(hotkeyListenerPosition2);
+        keyManager.unregisterKeyListener(hotkeyListenerPosition3);
+        keyManager.unregisterKeyListener(hotkeyListenerPosition4);
+        keyManager.unregisterKeyListener(hotkeyListenerPosition5);
+        keyManager.unregisterKeyListener(hotkeyListenerPosition6);
+        keyManager.unregisterKeyListener(hotkeyListenerPosition7);
+        keyManager.unregisterKeyListener(hotkeyListenerPosition8);
+        keyManager.unregisterKeyListener(hotkeyListenerPosition9);
+        keyManager.unregisterKeyListener(hotkeyListenerPosition10);
     }
 
     // ------------- Wall of HotkeyListeners -------------
@@ -742,6 +844,166 @@ public class ClientResizerPlugin extends Plugin {
             if (resizableScalingHotkey10) {
                 setResizableScaling(resizableScalingHotkey10Percent);
             }
+        }
+
+        @Override
+        public void hotkeyReleased() {
+        }
+    };
+
+    private final HotkeyListener hotkeyListenerPosition1 = new HotkeyListener(() -> hotkey1PositionKey) {
+        @Override
+        public boolean isEnabledOnLoginScreen() {
+            return true;
+        }
+
+        @Override
+        public void hotkeyPressed() {
+            setClientPosition(hotkey1PositionX, hotkey1PositionY);
+        }
+
+        @Override
+        public void hotkeyReleased() {
+        }
+    };
+
+    private final HotkeyListener hotkeyListenerPosition2 = new HotkeyListener(() -> hotkey2PositionKey) {
+        @Override
+        public boolean isEnabledOnLoginScreen() {
+            return true;
+        }
+
+        @Override
+        public void hotkeyPressed() {
+            setClientPosition(hotkey2PositionX, hotkey2PositionY);
+        }
+
+        @Override
+        public void hotkeyReleased() {
+        }
+    };
+
+    private final HotkeyListener hotkeyListenerPosition3 = new HotkeyListener(() -> hotkey3PositionKey) {
+        @Override
+        public boolean isEnabledOnLoginScreen() {
+            return true;
+        }
+
+        @Override
+        public void hotkeyPressed() {
+            setClientPosition(hotkey3PositionX, hotkey3PositionY);
+        }
+
+        @Override
+        public void hotkeyReleased() {
+        }
+    };
+
+    private final HotkeyListener hotkeyListenerPosition4 = new HotkeyListener(() -> hotkey4PositionKey) {
+        @Override
+        public boolean isEnabledOnLoginScreen() {
+            return true;
+        }
+
+        @Override
+        public void hotkeyPressed() {
+            setClientPosition(hotkey4PositionX, hotkey4PositionY);
+        }
+
+        @Override
+        public void hotkeyReleased() {
+        }
+    };
+
+    private final HotkeyListener hotkeyListenerPosition5 = new HotkeyListener(() -> hotkey5PositionKey) {
+        @Override
+        public boolean isEnabledOnLoginScreen() {
+            return true;
+        }
+
+        @Override
+        public void hotkeyPressed() {
+            setClientPosition(hotkey5PositionX, hotkey5PositionY);
+        }
+
+        @Override
+        public void hotkeyReleased() {
+        }
+    };
+
+    private final HotkeyListener hotkeyListenerPosition6 = new HotkeyListener(() -> hotkey6PositionKey) {
+        @Override
+        public boolean isEnabledOnLoginScreen() {
+            return true;
+        }
+
+        @Override
+        public void hotkeyPressed() {
+            setClientPosition(hotkey6PositionX, hotkey6PositionY);
+        }
+
+        @Override
+        public void hotkeyReleased() {
+        }
+    };
+
+    private final HotkeyListener hotkeyListenerPosition7 = new HotkeyListener(() -> hotkey7PositionKey) {
+        @Override
+        public boolean isEnabledOnLoginScreen() {
+            return true;
+        }
+
+        @Override
+        public void hotkeyPressed() {
+            setClientPosition(hotkey7PositionX, hotkey7PositionY);
+        }
+
+        @Override
+        public void hotkeyReleased() {
+        }
+    };
+
+    private final HotkeyListener hotkeyListenerPosition8 = new HotkeyListener(() -> hotkey8PositionKey) {
+        @Override
+        public boolean isEnabledOnLoginScreen() {
+            return true;
+        }
+
+        @Override
+        public void hotkeyPressed() {
+            setClientPosition(hotkey8PositionX, hotkey8PositionY);
+        }
+
+        @Override
+        public void hotkeyReleased() {
+        }
+    };
+
+    private final HotkeyListener hotkeyListenerPosition9 = new HotkeyListener(() -> hotkey9PositionKey) {
+        @Override
+        public boolean isEnabledOnLoginScreen() {
+            return true;
+        }
+
+        @Override
+        public void hotkeyPressed() {
+            setClientPosition(hotkey9PositionX, hotkey9PositionY);
+        }
+
+        @Override
+        public void hotkeyReleased() {
+        }
+    };
+
+    private final HotkeyListener hotkeyListenerPosition10 = new HotkeyListener(() -> hotkey10PositionKey) {
+        @Override
+        public boolean isEnabledOnLoginScreen() {
+            return true;
+        }
+
+        @Override
+        public void hotkeyPressed() {
+            setClientPosition(hotkey10PositionX, hotkey10PositionY);
         }
 
         @Override

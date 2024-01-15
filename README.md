@@ -1,13 +1,14 @@
 # Client Resizer
 Also annoyed by having to change your client's size (game size) every time you move RuneLite to a different monitor or when doing a different activity?<br>
 
-**Client Resizer allows for automatic or hotkey-based resizing of the client.** It's especially useful for people that have multiple monitors of different sizes or resolutions, or for people that like to resize their client in specific scenarios (e.g. per activity).<br>
+**Client Resizer allows for automatic or hotkey-based resizing of the client.** It's especially useful for people that have multiple monitors of different sizes or resolutions, or for people that like to resize or (re)position their client in specific scenarios (e.g. per activity).<br>
 
 **This plugin adds the following features:**
 - Automatically resize your client when it's moved to a different monitor. This can be configured per monitor attribute, e.g. per ID string (differs for every monitor), resolution (dimension) or refresh rate.
 - Hotkey-based resizing. Set a hotkey (e.g. Ctrl+L) and resize the client to a size of your choosing.
 - Resize your client when switching RL config profiles if this isn't done by the config profiles themselves yet. Set up automatic resizing for your monitors with different game sizes per RL config profile. Then enable `Resize when switching RuneLite config profile`.
 - Change your resizable scaling (stretched mode plugin), either automatically or hotkey-based.
+- (Re)position your client using hotkeys. This allows you to get RL flush with your screen. Furthermore, this allows you to set the title bar offscreen at the top of the screen.
 
 The plugin still respects all the other settings in the "RuneLite" > "Window Settings" config. For that reason, I personally suggest using the following RuneLite Window Settings:<br>
 ![RuneLite window settings](docs/img/runelite-window-settings.png)<br>
@@ -51,12 +52,22 @@ If you also want to resize your client when loading a different RuneLite config 
 - Enter the resizable scaling percentage.<br>
 ![Resizable scaling](docs/img/resizable-scaling.png)
 
+### Hotkey based positioning
+- Open the config panel of Client Resizer (gear icon).
+- Open the "Position" category.
+- Set the "Position X" and "Position Y".
+- Set the corresponding hotkey. Combinations such as Ctrl + L are allowed.<br>
+  ![Fully configured position hotkey](docs/img/fully-configured-position-hotkey.png)
+
 ## Additional info
 Not tested on macOS or Linux; results may vary.
 
 If you experience any issues or have any concerns, please reach out to YvesW via a GitHub Issue, by Discord direct messaging or via the RuneLite Discord by mentioning @``YvesW``.
 
 ## Changelog
+01-2024:
+- Added the option to change the position/location of the client using hotkeys. Thanks to Hooder for the tip!
+
 09-2023:
 - Added the option to also change "Resizable Scaling" from the stretched mode plugin when using automatic or hotkey-based resizing.
 
