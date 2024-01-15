@@ -12,7 +12,7 @@ Also annoyed by having to change your client's size (game size) every time you m
 
 The plugin still respects all the other settings in the "RuneLite" > "Window Settings" config. For that reason, I personally suggest using the following RuneLite Window Settings:<br>
 ![RuneLite window settings](docs/img/runelite-window-settings.png)<br>
-*It is recommended to enable 'Enable custom window chrome' in 'RuneLite' > 'Window Settings' if you'd like to automatically resize the client when dragging it to a different monitor (enabled by default). Windows key + arrow does still automatically resize the client with custom chrome disabled. However, moving the client to a different monitor by dragging the title bar will not work with custom chrome disabled.*
+*Since the flatlaf update (RuneLite 1.10.20) automatically resizing the client when dragging it to a different monitor does not work anymore. Shift + Windows key + arrow or hotkey-based repositioning does still automatically resize the client though!*
 
 ## User Instructions / How to set up
 
@@ -66,6 +66,7 @@ If you experience any issues or have any concerns, please reach out to YvesW via
 
 ## Changelog
 01-2024:
+- Please note that the flatlaf changes kinda broke automatic resizing if you do it by dragging the client. Use Shift + Windows key + arrow or hotkey-based repositioning to move the client to another screen and make it reposition automatically, if you've set up automatic resizing.
 - Added the option to change the position/location of the client using hotkeys. Thanks to Hooder for the tip!
 
 09-2023:

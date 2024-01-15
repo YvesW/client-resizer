@@ -10,7 +10,7 @@ public interface ClientResizerConfig extends Config {
 	@ConfigSection(
 			name = "Automatic Resizing",
 			description = "Automatic window resizing based on the current monitor<br>" +
-					"Note: It's recommended to enable 'Enable custom window chrome' in RuneLite > Window Settings",
+					"Note: It's recommended to use Shift + Windows key + arrow or hotkey-based repositioning to reposition the client",
 			position = 0,
 			closedByDefault = true
 	)
@@ -19,7 +19,7 @@ public interface ClientResizerConfig extends Config {
 	@ConfigSection(
 			name = "Hotkey Resizing",
 			description = "Hotkey based resizing<br>"
-					+ "Note: It's recommended to enable 'Enable custom window chrome' in RuneLite > Window Settings",
+					+ "Note: It's recommended to use Shift + Windows key + arrow or hotkey-based repositioning to reposition the client",
 			position = 1,
 			closedByDefault = true
 	)
