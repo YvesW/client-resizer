@@ -35,9 +35,17 @@ public interface ClientResizerConfig extends Config {
 	String resizableScalingSettings = "resizableScalingSettings";
 
 	@ConfigSection(
+			name = "Hotkey repositioning",
+			description = "Change the position of the client with hotkeys.",
+			position = 3,
+			closedByDefault = true
+	)
+	String positionSettings = "positionSettings";
+
+	@ConfigSection(
 			name = "Advanced",
 			description = "Advanced settings",
-			position = 3,
+			position = 4,
 			closedByDefault = true
 	)
 	String advancedSettings = "advancedSettings";
@@ -45,7 +53,7 @@ public interface ClientResizerConfig extends Config {
 	@ConfigSection(
 			name = "Current Monitor Info",
 			description = "Information about the current monitor",
-			position = 4,
+			position = 5,
 			closedByDefault = false
 	)
 	String currentMonitorInfoSettings = "currentMonitorInfoSettings";
@@ -1206,8 +1214,428 @@ public interface ClientResizerConfig extends Config {
 	}
 
 	@ConfigItem(
+			keyName = "hotkey1PositionX",
+			name = "Position 1 X",
+			description = "The client will move itself to this position (X) when the specified hotkey is pressed.<br>" +
+					"Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+			position = 0,
+			section = positionSettings
+	)
+	@Range(
+			min = -100000
+	)
+	default int hotkey1PositionX() {
+		return 0;
+	}
+
+	@ConfigItem(
+			keyName = "hotkey1PositionY",
+			name = "Position 1 Y",
+			description = "The client will move itself to this position (Y) when the specified hotkey is pressed.<br>" +
+					"Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+			position = 1,
+			section = positionSettings
+	)
+	@Range(
+			min = -100000
+	)
+	default int hotkey1PositionY() {
+		return 0;
+	}
+
+	@ConfigItem(
+			keyName = "hotkey1PositionKey",
+			name = "Position 1 hotkey",
+			description = "The hotkey you'd like to press to activate position 1 (above).<br>" +
+					"Can be a combination of keys (e.g. ctrl+L). Reset the key (to 'Not set') to disable this setting.",
+			position = 2,
+			section = positionSettings
+	)
+	default Keybind hotkey1PositionKey() {
+		return Keybind.NOT_SET;
+	}
+
+	@ConfigItem(
+			keyName = "hotkey2PositionX",
+			name = "Position 2 X",
+			description = "The client will move itself to this position (X) when the specified hotkey is pressed.<br>" +
+					"Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+			position = 3,
+			section = positionSettings
+	)
+	@Range(
+			min = -100000
+	)
+	default int hotkey2PositionX() {
+		return 0;
+	}
+
+	@ConfigItem(
+			keyName = "hotkey2PositionY",
+			name = "Position 2 Y",
+			description = "The client will move itself to this position (Y) when the specified hotkey is pressed.<br>" +
+					"Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+			position = 4,
+			section = positionSettings
+	)
+	@Range(
+			min = -100000
+	)
+	default int hotkey2PositionY() {
+		return 0;
+	}
+
+	@ConfigItem(
+			keyName = "hotkey2PositionKey",
+			name = "Position 2 hotkey",
+			description = "The hotkey you'd like to press to activate position 2 (above).<br>" +
+					"Can be a combination of keys (e.g. ctrl+L). Reset the key (to 'Not set') to disable this setting.",
+			position = 5,
+			section = positionSettings
+	)
+	default Keybind hotkey2PositionKey() {
+		return Keybind.NOT_SET;
+	}
+
+	@ConfigItem(
+			keyName = "hotkey3PositionX",
+			name = "Position 3 X",
+			description = "The client will move itself to this position (X) when the specified hotkey is pressed.<br>" +
+					"Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+			position = 6,
+			section = positionSettings
+	)
+	@Range(
+			min = -100000
+	)
+	default int hotkey3PositionX() {
+		return 0;
+	}
+
+	@ConfigItem(
+			keyName = "hotkey3PositionY",
+			name = "Position 3 Y",
+			description = "The client will move itself to this position (Y) when the specified hotkey is pressed.<br>" +
+					"Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+			position = 7,
+			section = positionSettings
+	)
+	@Range(
+			min = -100000
+	)
+	default int hotkey3PositionY() {
+		return 0;
+	}
+
+	@ConfigItem(
+			keyName = "hotkey3PositionKey",
+			name = "Position 3 hotkey",
+			description = "The hotkey you'd like to press to activate position 3 (above).<br>" +
+					"Can be a combination of keys (e.g. ctrl+L). Reset the key (to 'Not set') to disable this setting.",
+			position = 8,
+			section = positionSettings
+	)
+	default Keybind hotkey3PositionKey() {
+		return Keybind.NOT_SET;
+	}
+
+	@ConfigItem(
+			keyName = "hotkey4PositionX",
+			name = "Position 4 X",
+			description = "The client will move itself to this position (X) when the specified hotkey is pressed.<br>" +
+					"Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+			position = 9,
+			section = positionSettings
+	)
+	@Range(
+			min = -100000
+	)
+	default int hotkey4PositionX() {
+		return 0;
+	}
+
+	@ConfigItem(
+			keyName = "hotkey4PositionY",
+			name = "Position 4 Y",
+			description = "The client will move itself to this position (Y) when the specified hotkey is pressed.<br>" +
+					"Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+			position = 10,
+			section = positionSettings
+	)
+	@Range(
+			min = -100000
+	)
+	default int hotkey4PositionY() {
+		return 0;
+	}
+
+	@ConfigItem(
+			keyName = "hotkey4PositionKey",
+			name = "Position 4 hotkey",
+			description = "The hotkey you'd like to press to activate position 4 (above).<br>" +
+					"Can be a combination of keys (e.g. ctrl+L). Reset the key (to 'Not set') to disable this setting.",
+			position = 11,
+			section = positionSettings
+	)
+	default Keybind hotkey4PositionKey() {
+		return Keybind.NOT_SET;
+	}
+
+	@ConfigItem(
+			keyName = "hotkey5PositionX",
+			name = "Position 5 X",
+			description = "The client will move itself to this position (X) when the specified hotkey is pressed.<br>" +
+					"Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+			position = 12,
+			section = positionSettings
+	)
+	@Range(
+			min = -100000
+	)
+	default int hotkey5PositionX() {
+		return 0;
+	}
+
+	@ConfigItem(
+			keyName = "hotkey5PositionY",
+			name = "Position 5 Y",
+			description = "The client will move itself to this position (Y) when the specified hotkey is pressed.<br>" +
+					"Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+			position = 13,
+			section = positionSettings
+	)
+	@Range(
+			min = -100000
+	)
+	default int hotkey5PositionY() {
+		return 0;
+	}
+
+	@ConfigItem(
+			keyName = "hotkey5PositionKey",
+			name = "Position 5 hotkey",
+			description = "The hotkey you'd like to press to activate position 5 (above).<br>" +
+					"Can be a combination of keys (e.g. ctrl+L). Reset the key (to 'Not set') to disable this setting.",
+			position = 14,
+			section = positionSettings
+	)
+	default Keybind hotkey5PositionKey() {
+		return Keybind.NOT_SET;
+	}
+
+	@ConfigItem(
+			keyName = "hotkey6PositionX",
+			name = "Position 6 X",
+			description = "The client will move itself to this position (X) when the specified hotkey is pressed.<br>" +
+					"Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+			position = 15,
+			section = positionSettings
+	)
+	@Range(
+			min = -100000
+	)
+	default int hotkey6PositionX() {
+		return 0;
+	}
+
+	@ConfigItem(
+			keyName = "hotkey6PositionY",
+			name = "Position 6 Y",
+			description = "The client will move itself to this position (Y) when the specified hotkey is pressed.<br>" +
+					"Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+			position = 16,
+			section = positionSettings
+	)
+	@Range(
+			min = -100000
+	)
+	default int hotkey6PositionY() {
+		return 0;
+	}
+
+	@ConfigItem(
+			keyName = "hotkey6PositionKey",
+			name = "Position 6 hotkey",
+			description = "The hotkey you'd like to press to activate position 6 (above).<br>" +
+					"Can be a combination of keys (e.g. ctrl+L). Reset the key (to 'Not set') to disable this setting.",
+			position = 17,
+			section = positionSettings
+	)
+	default Keybind hotkey6PositionKey() {
+		return Keybind.NOT_SET;
+	}
+
+	@ConfigItem(
+			keyName = "hotkey7PositionX",
+			name = "Position 7 X",
+			description = "The client will move itself to this position (X) when the specified hotkey is pressed.<br>" +
+					"Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+			position = 18,
+			section = positionSettings
+	)
+	@Range(
+			min = -100000
+	)
+	default int hotkey7PositionX() {
+		return 0;
+	}
+
+	@ConfigItem(
+			keyName = "hotkey7PositionY",
+			name = "Position 7 Y",
+			description = "The client will move itself to this position (Y) when the specified hotkey is pressed.<br>" +
+					"Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+			position = 19,
+			section = positionSettings
+	)
+	@Range(
+			min = -100000
+	)
+	default int hotkey7PositionY() {
+		return 0;
+	}
+
+	@ConfigItem(
+			keyName = "hotkey7PositionKey",
+			name = "Position 7 hotkey",
+			description = "The hotkey you'd like to press to activate position 7 (above).<br>" +
+					"Can be a combination of keys (e.g. ctrl+L). Reset the key (to 'Not set') to disable this setting.",
+			position = 20,
+			section = positionSettings
+	)
+	default Keybind hotkey7PositionKey() {
+		return Keybind.NOT_SET;
+	}
+
+	@ConfigItem(
+			keyName = "hotkey8PositionX",
+			name = "Position 8 X",
+			description = "The client will move itself to this position (X) when the specified hotkey is pressed.<br>" +
+					"Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+			position = 21,
+			section = positionSettings
+	)
+	@Range(
+			min = -100000
+	)
+	default int hotkey8PositionX() {
+		return 0;
+	}
+
+	@ConfigItem(
+			keyName = "hotkey8PositionY",
+			name = "Position 8 Y",
+			description = "The client will move itself to this position (Y) when the specified hotkey is pressed.<br>" +
+					"Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+			position = 22,
+			section = positionSettings
+	)
+	@Range(
+			min = -100000
+	)
+	default int hotkey8PositionY() {
+		return 0;
+	}
+
+	@ConfigItem(
+			keyName = "hotkey8PositionKey",
+			name = "Position 8 hotkey",
+			description = "The hotkey you'd like to press to activate position 8 (above).<br>" +
+					"Can be a combination of keys (e.g. ctrl+L). Reset the key (to 'Not set') to disable this setting.",
+			position = 23,
+			section = positionSettings
+	)
+	default Keybind hotkey8PositionKey() {
+		return Keybind.NOT_SET;
+	}
+
+	@ConfigItem(
+			keyName = "hotkey9PositionX",
+			name = "Position 9 X",
+			description = "The client will move itself to this position (X) when the specified hotkey is pressed.<br>" +
+					"Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+			position = 24,
+			section = positionSettings
+	)
+	@Range(
+			min = -100000
+	)
+	default int hotkey9PositionX() {
+		return 0;
+	}
+
+	@ConfigItem(
+			keyName = "hotkey9PositionY",
+			name = "Position 9 Y",
+			description = "The client will move itself to this position (Y) when the specified hotkey is pressed.<br>" +
+					"Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+			position = 25,
+			section = positionSettings
+	)
+	@Range(
+			min = -100000
+	)
+	default int hotkey9PositionY() {
+		return 0;
+	}
+
+	@ConfigItem(
+			keyName = "hotkey9PositionKey",
+			name = "Position 9 hotkey",
+			description = "The hotkey you'd like to press to activate position 9 (above).<br>" +
+					"Can be a combination of keys (e.g. ctrl+L). Reset the key (to 'Not set') to disable this setting.",
+			position = 26,
+			section = positionSettings
+	)
+	default Keybind hotkey9PositionKey() {
+		return Keybind.NOT_SET;
+	}
+
+	@ConfigItem(
+			keyName = "hotkey10PositionX",
+			name = "Position 10 X",
+			description = "The client will move itself to this position (X) when the specified hotkey is pressed.<br>" +
+					"Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+			position = 27,
+			section = positionSettings
+	)
+	@Range(
+			min = -100000
+	)
+	default int hotkey10PositionX() {
+		return 0;
+	}
+
+	@ConfigItem(
+			keyName = "hotkey10PositionY",
+			name = "Position 10 Y",
+			description = "The client will move itself to this position (Y) when the specified hotkey is pressed.<br>" +
+					"Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+			position = 28,
+			section = positionSettings
+	)
+	@Range(
+			min = -100000
+	)
+	default int hotkey10PositionY() {
+		return 0;
+	}
+
+	@ConfigItem(
+			keyName = "hotkey10PositionKey",
+			name = "Position 10 hotkey",
+			description = "The hotkey you'd like to press to activate position 10 (above).<br>" +
+					"Can be a combination of keys (e.g. ctrl+L). Reset the key (to 'Not set') to disable this setting.",
+			position = 29,
+			section = positionSettings
+	)
+	default Keybind hotkey10PositionKey() {
+		return Keybind.NOT_SET;
+	}
+
+	@ConfigItem(
 			keyName = "showChatMessage",
-			name = "Show chat message",
+			name = "Show resize chat message",
 			description = "Show the chat message when changing the game size / client size or when changing the resizable scaling (stretched mode plugin).<br>"
 					+ "This setting is enabled by default. If you disable it, then DO remember that you are using this plugin!<br>"
 					+ "Do NOT complain in the RuneLite Discord that your client randomly changes in size or the UI scaling randomly changes.",
@@ -1215,6 +1643,19 @@ public interface ClientResizerConfig extends Config {
 			section = advancedSettings
 	)
 	default boolean showChatMessage() {
+		return true;
+	}
+
+	@ConfigItem(
+			keyName = "showChatMessageReposition",
+			name = "Show reposition chat message",
+			description = "Show the chat message when repositioning the client.<br>"
+					+ "This setting is enabled by default. If you disable it, then DO remember that you are using this plugin!<br>"
+					+ "Do NOT complain in the RuneLite Discord that your client randomly repositions.",
+			position = 1,
+			section = advancedSettings
+	)
+	default boolean showChatMessageReposition() {
 		return true;
 	}
 
@@ -1228,5 +1669,18 @@ public interface ClientResizerConfig extends Config {
 	)
 	default MonitorAttribute copyAttribute() {
 		return MonitorAttribute.Disabled;
+	}
+
+	@ConfigItem(
+			keyName = "copyPosition",
+			name = "Copy client position",
+			description = "Copy the client position to the clipboard every game tick or, when logged out, after every frame. You can paste this to e.g. notepad to find out your client's current position.<br>" +
+					"Please note that this might make dragging your client a bit laggy (especially when not logged in). Please disable it when you are done.<br>" +
+					"Gets disabled automatically on client or plugin restart to not clutter your clipboard.",
+			position = 1,
+			section = currentMonitorInfoSettings
+	)
+	default boolean copyPosition() {
+		return false;
 	}
 }
