@@ -529,6 +529,7 @@ public class ClientResizerPlugin extends Plugin {
         updatePreviousAttributes(); //To remember attributes so a proper comparison can be done with the previous attributes
     }
 
+    //Process the attributes that are entered as string, return null if incorrectly formatted or MonitorAttribute.Disabled
     private Object processAttributeString(MonitorAttribute attributeType, String attributeString) {
         if (!(attributeString == null || attributeString.isEmpty() || attributeType == MonitorAttribute.Disabled)) {
             attributeString = attributeString.replaceAll("\\s+", ""); //Removes all whitespaces and non-visible characters (e.g., tab, \n)
@@ -638,6 +639,7 @@ public class ClientResizerPlugin extends Plugin {
     }
 
     private void updatePreviousAttributes() {
+        //Updates the previous attributes.
         previousIDstring = (String) currentMonitorValueForAttribute(MonitorAttribute.IDstring);
         previousBounds = (Rectangle) currentMonitorValueForAttribute(MonitorAttribute.Bounds);
         previousDimensions = (Dimension) currentMonitorValueForAttribute(MonitorAttribute.Dimensions);
@@ -645,6 +647,7 @@ public class ClientResizerPlugin extends Plugin {
     }
 
     private void copyPositionToClipboard() {
+        //Copies the position of the client to the clipboard.
         //Makes dragging the client a tad laggy if done in onBeforeRender, but this gets solved by simulating gameticks.
         if (copyPosition) {
             try {
@@ -681,6 +684,7 @@ public class ClientResizerPlugin extends Plugin {
     }
 
     private void registerHotkeyListeners() {
+        //Called in onStartuo to register the hotkeylisteners.
         keyManager.registerKeyListener(hotkeyListener1);
         keyManager.registerKeyListener(hotkeyListener2);
         keyManager.registerKeyListener(hotkeyListener3);
@@ -704,6 +708,7 @@ public class ClientResizerPlugin extends Plugin {
     }
 
     private void unregisterHotkeyListeners() {
+        //Called in onShutDown to unregister all hotkeylisteners.
         keyManager.unregisterKeyListener(hotkeyListener1);
         keyManager.unregisterKeyListener(hotkeyListener2);
         keyManager.unregisterKeyListener(hotkeyListener3);
