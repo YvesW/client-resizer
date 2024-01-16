@@ -1674,8 +1674,7 @@ public interface ClientResizerConfig extends Config {
     @ConfigItem(
             keyName = "copyPosition",
             name = "Copy client position",
-            description = "Copy the client position to the clipboard every game tick or, when logged out, after every frame. You can paste this to e.g. notepad to find out your client's current position.<br>"
-                    + "Please note that this might make dragging your client a bit laggy (especially when not logged in). Please disable it when you are done.<br>"
+            description = "Copy the client position to the clipboard every game tick. You can paste this to e.g. notepad to find out your client's current position.<br>"
                     + "Gets disabled automatically on client or plugin restart to not clutter your clipboard.",
             position = 1,
             section = currentMonitorInfoSettings

@@ -171,6 +171,8 @@ public class ClientResizerPlugin extends Plugin {
     private static final Pattern numericPattern = Pattern.compile("-?\\d+(\\.\\d+)?");
     @Getter
     private static int defaultResizableScaling = 50; //Stretched mode plugin default
+    private static long previousNanoTime; // Default value is 0
+    private static final long TICK_IN_NANOSECONDS = 600000000;
 
     @Inject
     private Client client;
@@ -387,7 +389,12 @@ public class ClientResizerPlugin extends Plugin {
     public void onBeforeRender(BeforeRender beforeRender) {
         //onGameTick only fires while logged in! Use onBeforeRender or onPostClientTick if not logged in!
         if (currentGameState != GameState.LOGGED_IN && currentGameState != GameState.UNKNOWN && currentGameState != GameState.STARTING) {
-            monitorCheck();
+            //Simulate gametick behavior to make BeforeRender and GameTick feel more similar.
+            long currentNanoTime = System.nanoTime();
+            if (currentNanoTime - previousNanoTime > TICK_IN_NANOSECONDS) { //It will fire immediately once when starting the plugin in the right gamestate (desired behavior IMO) and also immediately when logging out, but that is fine probs.
+                monitorCheck();
+                previousNanoTime = currentNanoTime;
+            }
         }
     }
 
@@ -638,6 +645,7 @@ public class ClientResizerPlugin extends Plugin {
     }
 
     private void copyPositionToClipboard() {
+        //Makes dragging the client a tad laggy if done in onBeforeRender, but this gets solved by simulating gameticks.
         if (copyPosition) {
             try {
                 JFrame topFrameClient = (JFrame) SwingUtilities.getWindowAncestor(client.getCanvas());
