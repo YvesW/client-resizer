@@ -173,6 +173,9 @@ public class ClientResizerPlugin extends Plugin {
     private static int defaultResizableScaling = 50; //Stretched mode plugin default
     private static long previousNanoTime; // Default value is 0
     private static final long TICK_IN_NANOSECONDS = 600000000;
+    private static boolean resizeChatMessageFlag; //Default = false
+    private static boolean repositionChatMessageFlag; //Default = false
+    private static boolean containInScreenChatMessageFlag; //Default = false
 
     @Inject
     private Client client;
@@ -401,6 +404,7 @@ public class ClientResizerPlugin extends Plugin {
     @Subscribe
     public void onGameTick(GameTick gameTick) {
         //onGameTick only fires while logged in!
+        checkChatMessageFlags();
         monitorCheck();
     }
 
@@ -529,8 +533,8 @@ public class ClientResizerPlugin extends Plugin {
         updatePreviousAttributes(); //To remember attributes so a proper comparison can be done with the previous attributes
     }
 
-    //Process the attributes that are entered as string, return null if incorrectly formatted or MonitorAttribute.Disabled
     private Object processAttributeString(MonitorAttribute attributeType, String attributeString) {
+        //Process the attributes that are entered as string, return null if incorrectly formatted or MonitorAttribute.Disabled
         if (!(attributeString == null || attributeString.isEmpty() || attributeType == MonitorAttribute.Disabled)) {
             attributeString = attributeString.replaceAll("\\s+", ""); //Removes all whitespaces and non-visible characters (e.g., tab, \n)
             switch (attributeType) {
@@ -599,24 +603,36 @@ public class ClientResizerPlugin extends Plugin {
         }
     }
 
-    //Send a chat message and if not logged in (i.e. resizing client upon opening the client), set a flag to send a message when the player logs in.
-    //type = the type of message (are we resizing, are we repositioning, are we containing in screen etc.)
-    private void sendGameChatMessage (ResizerMessageType type) {
+    private void sendGameChatMessage(ResizerMessageType type) {
+        //Send a chat message and if not logged in (i.e. resizing client upon opening the client), set a flag to send a message when the player logs in.
+        //type = the type of message (are we resizing, are we repositioning, are we containing in screen etc.)
         switch (type) {
             case RESIZE:
-                actuallySendMessage("Your RuneLite game size / client size was changed by the Client Resizer plugin. Check your config if you'd like to change this.");
+                if (currentGameState == GameState.LOGGED_IN || currentGameState == GameState.LOADING) {
+                    actuallySendMessage("Your RuneLite game size / client size was changed by the Client Resizer plugin. Check your config if you'd like to change this.");
+                } else {
+                    resizeChatMessageFlag = true;
+                }
                 break;
             case REPOSITION:
-                actuallySendMessage("Your client was repositioned by the Client Resizer plugin. Check your config if you'd like to change this.");
+                if (currentGameState == GameState.LOGGED_IN || currentGameState == GameState.LOADING) {
+                    actuallySendMessage("Your client was repositioned by the Client Resizer plugin. Check your config if you'd like to change this.");
+                } else {
+                    repositionChatMessageFlag = true;
+                }
                 break;
             case CONTAIN_IN_SCREEN:
-                actuallySendMessage("Your client was contained in the screen by the Client Resizer plugin. Check your config if you'd like to change this.");
+                if (currentGameState == GameState.LOGGED_IN || currentGameState == GameState.LOADING) {
+                    actuallySendMessage("Your client was contained in the screen by the Client Resizer plugin. Check your config if you'd like to change this.");
+                } else {
+                    containInScreenChatMessageFlag = true;
+                }
                 break;
         }
     }
 
-    //Used in the method above, which actually sends the message
     private void actuallySendMessage(String message) {
+        //Used in the method above, which actually sends the message
         //client.addChatMessage has to be called on clientThread. Doesn't cause any error if not called on client.getGameState() == GameState.LOGGED_IN
         clientThread.invokeLater(() -> {
             client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", message, "");
@@ -687,6 +703,7 @@ public class ClientResizerPlugin extends Plugin {
     }
 
     private void setClientPosition(int pointX, int pointY) {
+        //Sets the client position
         JFrame topFrameClient = (JFrame) SwingUtilities.getWindowAncestor(client.getCanvas());
         //To reset to middle, use:
         //topFrameClient.setLocationRelativeTo(topFrame.getOwner());
@@ -700,6 +717,22 @@ public class ClientResizerPlugin extends Plugin {
             sendGameChatMessage(ResizerMessageType.REPOSITION);
         }
         topFrameClient.setLocation(pointX, pointY);
+    }
+
+    private void checkChatMessageFlags() {
+        //Check if any of the message flags are set to true. If so, send the message and disable the flag.
+        if (resizeChatMessageFlag) {
+            resizeChatMessageFlag = false;
+            sendGameChatMessage(ResizerMessageType.RESIZE);
+        }
+        if (repositionChatMessageFlag) {
+            repositionChatMessageFlag = false;
+            sendGameChatMessage(ResizerMessageType.REPOSITION);
+        }
+        if (containInScreenChatMessageFlag) {
+            containInScreenChatMessageFlag = false;
+            sendGameChatMessage(ResizerMessageType.CONTAIN_IN_SCREEN);
+        }
     }
 
     private void registerHotkeyListeners() {
