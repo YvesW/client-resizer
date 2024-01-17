@@ -594,12 +594,33 @@ public class ClientResizerPlugin extends Plugin {
             //Same for injecting the client Applet and checking the size of that, then keep setting/switching the value till the Applet dimension = preferred dimension
 
             if (showChatMessage) {
-                //client.addChatMessage has to be called on clientThread. Doesn't cause any error if not called on client.getGameState() == GameState.LOGGED_IN
-                clientThread.invokeLater(() -> {
-                    client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Your RuneLite game size / client size was changed by the Client Resizer plugin. Check your config if you'd like to change this.", "");
-                });
+                sendGameChatMessage(ResizerMessageType.RESIZE);
             }
         }
+    }
+
+    //Send a chat message and if not logged in (i.e. resizing client upon opening the client), set a flag to send a message when the player logs in.
+    //type = the type of message (are we resizing, are we repositioning, are we containing in screen etc.)
+    private void sendGameChatMessage (ResizerMessageType type) {
+        switch (type) {
+            case RESIZE:
+                actuallySendMessage("Your RuneLite game size / client size was changed by the Client Resizer plugin. Check your config if you'd like to change this.");
+                break;
+            case REPOSITION:
+                actuallySendMessage("Your client was repositioned by the Client Resizer plugin. Check your config if you'd like to change this.");
+                break;
+            case CONTAIN_IN_SCREEN:
+                actuallySendMessage("Your client was contained in the screen by the Client Resizer plugin. Check your config if you'd like to change this.");
+                break;
+        }
+    }
+
+    //Used in the method above, which actually sends the message
+    private void actuallySendMessage(String message) {
+        //client.addChatMessage has to be called on clientThread. Doesn't cause any error if not called on client.getGameState() == GameState.LOGGED_IN
+        clientThread.invokeLater(() -> {
+            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", message, "");
+        });
     }
 
     private void setResizableScaling(int resizableScalingPercent) {
@@ -676,9 +697,7 @@ public class ClientResizerPlugin extends Plugin {
 
         //client.addChatMessage has to be called on clientThread. Doesn't cause any error if not called on client.getGameState() == GameState.LOGGED_IN
         if (showChatMessageReposition) {
-            clientThread.invokeLater(() -> {
-                client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "The position of your client was changed by the Client Resizer plugin. Check your config if you'd like to change this.", "");
-            });
+            sendGameChatMessage(ResizerMessageType.REPOSITION);
         }
         topFrameClient.setLocation(pointX, pointY);
     }
