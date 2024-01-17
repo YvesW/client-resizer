@@ -1232,7 +1232,7 @@ public interface ClientResizerConfig extends Config {
             keyName = "hotkey1PositionY",
             name = "Position 1 Y",
             description = "The client will move itself to this position (Y) when the specified hotkey is pressed.<br>"
-                    + "Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+                    + "Negative values are valid if e.g. (0,0) does not move your client to the top left enough.",
             position = 1,
             section = positionSettings
     )
@@ -1259,7 +1259,7 @@ public interface ClientResizerConfig extends Config {
             keyName = "hotkey2PositionX",
             name = "Position 2 X",
             description = "The client will move itself to this position (X) when the specified hotkey is pressed.<br>"
-                    + "Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+                    + "Negative values are valid if e.g. (0,0) does not move your client to the top left enough.",
             position = 3,
             section = positionSettings
     )
@@ -1274,7 +1274,7 @@ public interface ClientResizerConfig extends Config {
             keyName = "hotkey2PositionY",
             name = "Position 2 Y",
             description = "The client will move itself to this position (Y) when the specified hotkey is pressed.<br>"
-                    + "Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+                    + "Negative values are valid if e.g. (0,0) does not move your client to the top left enough.",
             position = 4,
             section = positionSettings
     )
@@ -1301,7 +1301,7 @@ public interface ClientResizerConfig extends Config {
             keyName = "hotkey3PositionX",
             name = "Position 3 X",
             description = "The client will move itself to this position (X) when the specified hotkey is pressed.<br>"
-                    + "Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+                    + "Negative values are valid if e.g. (0,0) does not move your client to the top left enough.",
             position = 6,
             section = positionSettings
     )
@@ -1316,7 +1316,7 @@ public interface ClientResizerConfig extends Config {
             keyName = "hotkey3PositionY",
             name = "Position 3 Y",
             description = "The client will move itself to this position (Y) when the specified hotkey is pressed.<br>"
-                    + "Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+                    + "Negative values are valid if e.g. (0,0) does not move your client to the top left enough.",
             position = 7,
             section = positionSettings
     )
@@ -1343,7 +1343,7 @@ public interface ClientResizerConfig extends Config {
             keyName = "hotkey4PositionX",
             name = "Position 4 X",
             description = "The client will move itself to this position (X) when the specified hotkey is pressed.<br>"
-                    + "Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+                    + "Negative values are valid if e.g. (0,0) does not move your client to the top left enough.",
             position = 9,
             section = positionSettings
     )
@@ -1358,7 +1358,7 @@ public interface ClientResizerConfig extends Config {
             keyName = "hotkey4PositionY",
             name = "Position 4 Y",
             description = "The client will move itself to this position (Y) when the specified hotkey is pressed.<br>"
-                    + "Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+                    + "Negative values are valid if e.g. (0,0) does not move your client to the top left enough.",
             position = 10,
             section = positionSettings
     )
@@ -1385,7 +1385,7 @@ public interface ClientResizerConfig extends Config {
             keyName = "hotkey5PositionX",
             name = "Position 5 X",
             description = "The client will move itself to this position (X) when the specified hotkey is pressed.<br>"
-                    + "Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+                    + "Negative values are valid if e.g. (0,0) does not move your client to the top left enough.",
             position = 12,
             section = positionSettings
     )
@@ -1400,7 +1400,7 @@ public interface ClientResizerConfig extends Config {
             keyName = "hotkey5PositionY",
             name = "Position 5 Y",
             description = "The client will move itself to this position (Y) when the specified hotkey is pressed.<br>"
-                    + "Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+                    + "Negative values are valid if e.g. (0,0) does not move your client to the top left enough.",
             position = 13,
             section = positionSettings
     )
@@ -1427,7 +1427,7 @@ public interface ClientResizerConfig extends Config {
             keyName = "hotkey6PositionX",
             name = "Position 6 X",
             description = "The client will move itself to this position (X) when the specified hotkey is pressed.<br>"
-                    + "Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+                    + "Negative values are valid if e.g. (0,0) does not move your client to the top left enough.",
             position = 15,
             section = positionSettings
     )
@@ -1442,7 +1442,7 @@ public interface ClientResizerConfig extends Config {
             keyName = "hotkey6PositionY",
             name = "Position 6 Y",
             description = "The client will move itself to this position (Y) when the specified hotkey is pressed.<br>"
-                    + "Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+                    + "Negative values are valid if e.g. (0,0) does not move your client to the top left enough.",
             position = 16,
             section = positionSettings
     )
@@ -1469,7 +1469,7 @@ public interface ClientResizerConfig extends Config {
             keyName = "hotkey7PositionX",
             name = "Position 7 X",
             description = "The client will move itself to this position (X) when the specified hotkey is pressed.<br>"
-                    + "Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+                    + "Negative values are valid if e.g. (0,0) does not move your client to the top left enough.",
             position = 18,
             section = positionSettings
     )
@@ -1484,7 +1484,7 @@ public interface ClientResizerConfig extends Config {
             keyName = "hotkey7PositionY",
             name = "Position 7 Y",
             description = "The client will move itself to this position (Y) when the specified hotkey is pressed.<br>"
-                    + "Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+                    + "Negative values are valid if e.g. (0,0) does not move your client to the top left enough.",
             position = 19,
             section = positionSettings
     )
@@ -1511,7 +1511,7 @@ public interface ClientResizerConfig extends Config {
             keyName = "hotkey8PositionX",
             name = "Position 8 X",
             description = "The client will move itself to this position (X) when the specified hotkey is pressed.<br>"
-                    + "Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+                    + "Negative values are valid if e.g. (0,0) does not move your client to the top left enough.",
             position = 21,
             section = positionSettings
     )
@@ -1526,7 +1526,7 @@ public interface ClientResizerConfig extends Config {
             keyName = "hotkey8PositionY",
             name = "Position 8 Y",
             description = "The client will move itself to this position (Y) when the specified hotkey is pressed.<br>"
-                    + "Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+                    + "Negative values are valid if e.g. (0,0) does not move your client to the top left enough.",
             position = 22,
             section = positionSettings
     )
@@ -1553,7 +1553,7 @@ public interface ClientResizerConfig extends Config {
             keyName = "hotkey9PositionX",
             name = "Position 9 X",
             description = "The client will move itself to this position (X) when the specified hotkey is pressed.<br>"
-                    + "Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+                    + "Negative values are valid if e.g. (0,0) does not move your client to the top left enough.",
             position = 24,
             section = positionSettings
     )
@@ -1568,7 +1568,7 @@ public interface ClientResizerConfig extends Config {
             keyName = "hotkey9PositionY",
             name = "Position 9 Y",
             description = "The client will move itself to this position (Y) when the specified hotkey is pressed.<br>"
-                    + "Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+                    + "Negative values are valid if e.g. (0,0) does not move your client to the top left enough.",
             position = 25,
             section = positionSettings
     )
@@ -1595,7 +1595,7 @@ public interface ClientResizerConfig extends Config {
             keyName = "hotkey10PositionX",
             name = "Position 10 X",
             description = "The client will move itself to this position (X) when the specified hotkey is pressed.<br>"
-                    + "Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+                    + "Negative values are valid if e.g. (0,0) does not move your client to the top left enough.",
             position = 27,
             section = positionSettings
     )
@@ -1610,7 +1610,7 @@ public interface ClientResizerConfig extends Config {
             keyName = "hotkey10PositionY",
             name = "Position 10 Y",
             description = "The client will move itself to this position (Y) when the specified hotkey is pressed.<br>"
-                    + "Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+                    + "Negative values are valid if e.g. (0,0) does not move your client to the top left enough.",
             position = 28,
             section = positionSettings
     )
