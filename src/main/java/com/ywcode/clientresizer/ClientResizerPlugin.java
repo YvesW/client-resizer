@@ -153,8 +153,18 @@ public class ClientResizerPlugin extends Plugin {
     private static int hotkey10PositionX;
     private static int hotkey10PositionY;
     private static Keybind hotkey10PositionKey;
+    private static boolean containInScreenTop;
+    private static boolean containInScreenRight;
+    private static boolean containInScreenBottom;
+    private static boolean containInScreenLeft;
+    private static int containInScreenTopOffset;
+    private static int containInScreenRightOffset;
+    private static int containInScreenBottomOffset;
+    private static int containInScreenLeftOffset;
+    private static int containInScreenSnapBackPx;
     private static boolean showChatMessage;
     private static boolean showChatMessageReposition;
+    private static boolean showChatMessageContain; //todo: use this boolean
     private static MonitorAttribute copyAttribute;
     private static boolean copyPosition;
     //------------- End of wall of config vars -------------
@@ -377,8 +387,18 @@ public class ClientResizerPlugin extends Plugin {
         hotkey10PositionX = config.hotkey10PositionX();
         hotkey10PositionY = config.hotkey10PositionY();
         hotkey10PositionKey = config.hotkey10PositionKey();
+        containInScreenTop = config.containInScreenTop();
+        containInScreenRight = config.containInScreenRight();
+        containInScreenBottom = config.containInScreenBottom();
+        containInScreenLeft = config.containInScreenLeft();
+        containInScreenTopOffset = config.containInScreenTopOffset();
+        containInScreenRightOffset = config.containInScreenRightOffset();
+        containInScreenBottomOffset = config.containInScreenBottomOffset();
+        containInScreenLeftOffset = config.containInScreenLeftOffset();
+        containInScreenSnapBackPx = config.containInScreenSnapBackPx();
         showChatMessage = config.showChatMessage();
         showChatMessageReposition = config.showChatMessageReposition();
+        showChatMessageContain = config.showChatMessageContain();
         copyAttribute = config.copyAttribute();
         copyPosition = config.copyPosition();
     }

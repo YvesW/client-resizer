@@ -27,7 +27,7 @@ public interface ClientResizerConfig extends Config {
 
     @ConfigSection(
             name = "Resizable Scaling",
-            description = "Resizable Scaling (stretched mode plugin)<br>"
+            description = "Resizable Scaling (stretched mode plugin).<br>"
                     + "Note: Requires the stretched mode plugin to be enabled.",
             position = 2,
             closedByDefault = true
@@ -43,9 +43,18 @@ public interface ClientResizerConfig extends Config {
     String positionSettings = "positionSettings";
 
     @ConfigSection(
+            name = "Contain in screen",
+            description = "Contain the client in the screen (sides, offset, hard/soft).<br>"
+                    + "Tip: you can always switch monitors by using hotkey repositioning (see above).",
+            position = 4,
+            closedByDefault = true
+    )
+    String containInScreenSettings = "containInScreenSettings";
+
+    @ConfigSection(
             name = "Advanced",
             description = "Advanced settings",
-            position = 4,
+            position = 5,
             closedByDefault = true
     )
     String advancedSettings = "advancedSettings";
@@ -53,8 +62,8 @@ public interface ClientResizerConfig extends Config {
     @ConfigSection(
             name = "Current Monitor Info",
             description = "Information about the current monitor",
-            position = 5,
-            closedByDefault = false
+            position = 6
+            //closedByDefault = false //Redundant default parameter value assignment; default is false already.
     )
     String currentMonitorInfoSettings = "currentMonitorInfoSettings";
 
@@ -1217,7 +1226,7 @@ public interface ClientResizerConfig extends Config {
             keyName = "hotkey1PositionX",
             name = "Position 1 X",
             description = "The client will move itself to this position (X) when the specified hotkey is pressed.<br>"
-                    + "Negative values are valid if e.g. 0 x 0 does not move your client to the top left enough.",
+                    + "Negative values are valid if e.g. (0,0) does not move your client to the top left enough.",
             position = 0,
             section = positionSettings
     )
@@ -1633,6 +1642,148 @@ public interface ClientResizerConfig extends Config {
         return Keybind.NOT_SET;
     }
 
+    //Alternatively use a Set here but meh. The set is harder to use for the user and I feel that 4 booleans are still ok.
+    @ConfigItem(
+            keyName = "containInScreenTop",
+            name = "Contain top side",
+            description = "Try to contain the top side of the client in the screen.<br>"
+                    + "It is recommended to enable 'Lock windows size' in the 'RuneLite' config. Otherwise Windows will potentially try to snap resize the client.<br>",
+            position = 0,
+            section = containInScreenSettings
+    )
+    default boolean containInScreenTop() {
+        return false;
+    }
+
+    @ConfigItem(
+            keyName = "containInScreenRight",
+            name = "Contain right side",
+            description = "Try to contain the right side of the client in the screen.<br>"
+                    + "It is recommended to enable 'Lock windows size' in the 'RuneLite' config. Otherwise Windows will potentially try to snap resize the client.<br>",
+            position = 1,
+            section = containInScreenSettings
+    )
+    default boolean containInScreenRight() {
+        return false;
+    }
+
+    @ConfigItem(
+            keyName = "containInScreenBottom",
+            name = "Contain bottom side",
+            description = "Try to contain the bottom side of the client in the screen.<br>"
+                    + "It is recommended to enable 'Lock windows size' in the 'RuneLite' config. Otherwise Windows will potentially try to snap resize the client.<br>",
+            position = 2,
+            section = containInScreenSettings
+    )
+    default boolean containInScreenBottom() {
+        return false;
+    }
+
+    @ConfigItem(
+            keyName = "containInScreenLeft",
+            name = "Contain left side",
+            description = "Try to contain the left side of the client in the screen.<br>"
+                    + "It is recommended to enable 'Lock windows size' in the 'RuneLite' config. Otherwise Windows will potentially try to snap resize the client.<br>",
+            position = 3,
+            section = containInScreenSettings
+    )
+    default boolean containInScreenLeft() {
+        return false;
+    }
+
+    @ConfigItem(
+            keyName = "containInScreenTopOffset",
+            name = "Top offset",
+            description = "Offset for the top side of the client.<br>"
+                    + "Increase/decrease if you want the client contained in screen more/less towards this side of the screen",
+            position = 4,
+            section = containInScreenSettings
+    )
+    @Range(
+            min = -2000
+    )
+    @Units(
+            Units.PIXELS
+    )
+    default int containInScreenTopOffset() {
+        return 0;
+    }
+
+    @ConfigItem(
+            keyName = "containInScreenRightOffset",
+            name = "Right offset",
+            description = "Offset for the right side of the client.<br>"
+                    + "Increase/decrease if you want the client contained in screen more/less towards this side of the screen",
+            position = 5,
+            section = containInScreenSettings
+    )
+    @Range(
+            min = -2000
+    )
+    @Units(
+            Units.PIXELS
+    )
+    default int containInScreenRightOffset() {
+        return 0;
+    }
+
+    @ConfigItem(
+            keyName = "containInScreenBottomOffset",
+            name = "Bottom offset",
+            description = "Offset for the bottom side of the client.<br>"
+                    + "Increase/decrease if you want the client contained in screen more/less towards this side of the screen",
+            position = 6,
+            section = containInScreenSettings
+    )
+    @Range(
+            min = -2000
+    )
+    @Units(
+            Units.PIXELS
+    )
+    default int containInScreenBottomOffset() {
+        return 0;
+    }
+
+    @ConfigItem(
+            keyName = "containInScreenLeftOffset",
+            name = "Left offset",
+            description = "Offset for the left side of the client.<br>"
+                    + "Increase/decrease if you want the client contained in screen more/less towards this side of the screen",
+            position = 7,
+            section = containInScreenSettings
+    )
+    @Range(
+            min = -2000
+    )
+    @Units(
+            Units.PIXELS
+    )
+    default int containInScreenLeftOffset() {
+        return 0;
+    }
+
+    @ConfigItem(
+            keyName = "containInScreenSnapBackPx",
+            name = "Snap back pixels",
+            description = "Amount of pixels the client can be moved past the screen edge (plus potential offset) in a tick while still snapping back to the screen.<br>"
+                    + "I.e. a high value will cause a 'hard' contain in screen (client will always snap back/be contained in screen when moving),<br>"
+                    + "a low value (e.g. 10px) will cause a 'soft' contain in screen. In that case the client would only be contained in screen<br>"
+                    + "if it was moved a maximum of e.g. 10 pixels over the edge of the screen (+ potential offset) in a single tick.<br>"
+                    + "Tip: you can always switch monitors by using hotkey repositioning (see above).",
+            position = 8,
+            section = containInScreenSettings
+    )
+    @Range(
+            min = 1
+    )
+    //Don't do Units.Pixels because then the default value does not fit inside the box
+    default int containInScreenSnapBackPx() {
+        return 100000 ;
+    }
+
+
+
     @ConfigItem(
             keyName = "showChatMessage",
             name = "Show resize chat message",
@@ -1656,6 +1807,19 @@ public interface ClientResizerConfig extends Config {
             section = advancedSettings
     )
     default boolean showChatMessageReposition() {
+        return true;
+    }
+
+    @ConfigItem(
+            keyName = "showChatMessageContain",
+            name = "Show contain chat message",
+            description = "Show the chat message when trying to contain the client in screen.<br>"
+                    + "This setting is enabled by default. If you disable it, then DO remember that you are using this plugin!<br>"
+                    + "Do NOT complain in the RuneLite Discord that your client randomly repositions/tries to contain itself in the screen.",
+            position = 2,
+            section = advancedSettings
+    )
+    default boolean showChatMessageContain() {
         return true;
     }
 
