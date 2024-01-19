@@ -172,6 +172,7 @@ public class ClientResizerPlugin extends Plugin {
     private static GraphicsConfiguration graphicsConfig;
     private static GraphicsDevice currentMonitor;
     private static GraphicsDevice previousMonitor;
+    private static GraphicsConfiguration previousGraphicsConfig;
     private static GameState currentGameState;
     private static boolean hasProfileChanged; //The default value for a boolean (primitive) is false.
     private static String previousIDstring;
@@ -480,11 +481,13 @@ public class ClientResizerPlugin extends Plugin {
         //Alternatively use client.getCanvas().getGraphicsConfiguration() if this breaks!
         graphicsConfig = clientUI.getGraphicsConfiguration();
         currentMonitor = graphicsConfig.getDevice(); // Actually relevant here to refresh the current monitor since I opted to use static variables instead of local variable that update per method.
+        containInScreen(); //Contain before refreshing monitors in hasMonitorChanged!
         if (hasMonitorChanged()) {
             copyAttributeToClipboard();
             resizeClient();
         }
         copyPositionToClipboard(); // Already checks if the boolean config var is enabled. Should not only run when the monitor has changed.
+        previousGraphicsConfig = graphicsConfig;
         //PS To get all monitors, you can do:
         //GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
         //GraphicsDevice[] allMonitors = graphicsEnvironment.getScreenDevices();
@@ -496,6 +499,75 @@ public class ClientResizerPlugin extends Plugin {
         // Add to updateConfig()
         // Refresh widget content + repaint if hasMonitorChanged()
         // Potentially add warning if custom chrome is off to widget
+    }
+
+    private void containInScreen() {
+        //Hacky way to somewhat emulate contain in screen.
+        if (containInScreenTop || containInScreenRight || containInScreenBottom || containInScreenLeft) {
+            //if contain in screen is enabled
+            if (previousGraphicsConfig != null && previousGraphicsConfig.getBounds() != null) { //previousGraphicsConfig doesn't exist in the beginning. getBounds != null is probs superfluous or probs not working the way I intend it, but maybe it'll help in case a display gets disconnected or something weird?
+                //Get the screen bounds. Since pixels should not contain decimals, just typecasting to int or using Double.intValue() is used instead of using Math.round and then typecasting that long to an int.
+                //Point is (x,y) with 0,0 being in the top left corner!
+                Rectangle previousScreenBounds = previousGraphicsConfig.getBounds();
+                int screenBoundsXLeft = (int) previousScreenBounds.getX();
+                int screenBoundsXRight = screenBoundsXLeft + (int) previousScreenBounds.getWidth();
+                int screenBoundsYTop = (int) previousScreenBounds.getY();
+                int screenBoundsYBottom = screenBoundsYTop + (int) previousScreenBounds.getHeight();
+                //Add the offsets as configured in the config
+                screenBoundsXLeft = screenBoundsXLeft - containInScreenLeftOffset;
+                screenBoundsXRight = screenBoundsXRight + containInScreenRightOffset;
+                screenBoundsYTop = screenBoundsYTop - containInScreenTopOffset;
+                screenBoundsYBottom = screenBoundsYBottom + containInScreenBottomOffset;
+
+                //Get the top JFrame to get the clientBounds
+                JFrame topFrameClient = (JFrame) SwingUtilities.getWindowAncestor(client.getCanvas());
+                int clientWidth = topFrameClient.getWidth();
+                int clientHeight = topFrameClient.getHeight();
+
+                //Get the client bounds
+                //Alternatively use e.g. int clientBoundsXLeft = (int) topFrameClient.getBounds().getX();
+                int clientBoundsXLeft = topFrameClient.getX();
+                int clientBoundsXRight = clientBoundsXLeft + clientWidth;
+                int clientBoundsYTop = topFrameClient.getY();
+                int clientBoundsYBottom = clientBoundsYTop + clientHeight;
+
+                boolean shouldReposition = false; //Should we reposition?
+                int coordsToRepositionToX = clientBoundsXLeft; //Coords to reposition to if we need to. Set current values in case the contain option is not enabled for this side.
+                int coordsToRepositionToY = clientBoundsYTop; //Coords to reposition to if we need to. Set current values in case the contain option is not enabled for this side.
+
+                //if contain is enabled and the client is outside the screenbounds (+ config offset) => set the coords to reposition to and set the boolean so we know we need to reposition
+                //If the client is too big to even fit on the screen... Let's align the top right side with the screen so you can still press the x and access the config if all 4 contain options are enabled (so the order below is based on that)
+                //Point is (x,y) with 0,0 being in the top left corner! 1920,1080 or smth like that is right bottom corner
+                if (containInScreenLeft && clientBoundsXLeft < screenBoundsXLeft) {
+                    coordsToRepositionToX = screenBoundsXLeft;
+                    shouldReposition = true;
+                }
+                if (containInScreenRight && clientBoundsXRight > screenBoundsXRight) {
+                    coordsToRepositionToX = screenBoundsXRight - clientWidth;
+                    shouldReposition = true;
+                }
+                if (containInScreenBottom && clientBoundsYBottom > screenBoundsYBottom) {
+                    coordsToRepositionToY = screenBoundsYBottom - clientHeight;
+                    shouldReposition = true;
+                }
+                if (containInScreenTop && clientBoundsYTop < screenBoundsYTop) {
+                    coordsToRepositionToY = screenBoundsYTop;
+                    shouldReposition = true;
+                }
+
+                //If we need to reposition, then reposition to the new coords
+                if (shouldReposition) {
+                    if (showChatMessageContain) {
+                        sendGameChatMessage(ResizerMessageType.CONTAIN_IN_SCREEN);
+                    }
+                    topFrameClient.setLocation(coordsToRepositionToX, coordsToRepositionToY);
+                }
+
+                System.out.println("screenbounds (x, xbottom, y, ybottom): "+screenBoundsXLeft+", "+screenBoundsXRight + ", "+screenBoundsYTop + ", "+screenBoundsYBottom);
+                System.out.println("clientbounds (x, xbottom, y, ybottom): "+clientBoundsXLeft+", "+clientBoundsXRight + ", "+clientBoundsYTop + ", "+clientBoundsYBottom);
+
+            }
+        }
     }
 
     private boolean hasMonitorChanged() {
@@ -708,14 +780,15 @@ public class ClientResizerPlugin extends Plugin {
         //Makes dragging the client a tad laggy if done in onBeforeRender, but this gets solved by simulating gameticks.
         if (copyPosition) {
             try {
+                //Get topJFrame and get position
                 JFrame topFrameClient = (JFrame) SwingUtilities.getWindowAncestor(client.getCanvas());
                 Point currentPosition = topFrameClient.getLocation();
+                //toString position, remove part of the string, set it to a string selection, set the clipboard content
                 String valueToCopy = currentPosition.toString();
                 valueToCopy = valueToCopy.replace("java.awt.Point[", "").replace("]", ""); //remove java.awt.Point[ and ] from string
                 StringSelection stringSelection = new StringSelection(valueToCopy);
                 Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
                 clipboard.setContents(stringSelection, null);
-                System.out.println(valueToCopy);
             } catch (IllegalStateException ignored) {
                 //Ignore java.lang.IllegalStateException: cannot open system clipboard
             }
