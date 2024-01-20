@@ -602,19 +602,20 @@ public class ClientResizerPlugin extends Plugin {
                 //if contain is enabled and the client is outside the screenbounds (+ config offset) => set the coords to reposition to and set the boolean so we know we need to reposition
                 //If the client is too big to even fit on the screen... Let's align the top right side with the screen so you can still press the x and access the config if all 4 contain options are enabled (so the order below is based on that)
                 //Point is (x,y) with 0,0 being in the top left corner! 1920,1080 or smth like that is right bottom corner
-                if (containInScreenLeft && clientBoundsXLeft < screenBoundsXLeft) {
+                //First check if contain boolean is enabled, then if the client is outside the bounds, then check if it is equal to or less than the snapback pixels (hard or soft snap)
+                if (containInScreenLeft && clientBoundsXLeft < screenBoundsXLeft && screenBoundsXLeft - clientBoundsXLeft <= containInScreenSnapBackPx) {
                     coordsToRepositionToX = screenBoundsXLeft;
                     shouldReposition = true;
                 }
-                if (containInScreenRight && clientBoundsXRight > screenBoundsXRight) {
+                if (containInScreenRight && clientBoundsXRight > screenBoundsXRight && clientBoundsXRight - screenBoundsXRight <= containInScreenSnapBackPx) {
                     coordsToRepositionToX = screenBoundsXRight - clientWidth;
                     shouldReposition = true;
                 }
-                if (containInScreenBottom && clientBoundsYBottom > screenBoundsYBottom) {
+                if (containInScreenBottom && clientBoundsYBottom > screenBoundsYBottom && clientBoundsYBottom - screenBoundsYBottom <= containInScreenSnapBackPx) {
                     coordsToRepositionToY = screenBoundsYBottom - clientHeight;
                     shouldReposition = true;
                 }
-                if (containInScreenTop && clientBoundsYTop < screenBoundsYTop) {
+                if (containInScreenTop && clientBoundsYTop < screenBoundsYTop && screenBoundsYTop - clientBoundsYTop  <= containInScreenSnapBackPx) {
                     coordsToRepositionToY = screenBoundsYTop;
                     shouldReposition = true;
                 }
