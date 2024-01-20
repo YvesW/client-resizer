@@ -1772,10 +1772,10 @@ public interface ClientResizerConfig extends Config {
     @ConfigItem(
             keyName = "containInScreenSnapBackPx",
             name = "Snap back pixels",
-            description = "Amount of pixels the client can be moved past the screen edge (plus potential offset) in a tick while still snapping back to the screen.<br>"
+            description = "Amount of pixels the client can be moved past the screen edge (plus potential offset) while still snapping back to the screen.<br>"
                     + "I.e. a high value will cause a 'hard' contain in screen (client will always snap back/be contained in screen when moving),<br>"
-                    + "a low value (e.g. 10px) will cause a 'soft' contain in screen. In that case the client would only be contained in screen<br>"
-                    + "if it was moved a maximum of e.g. 10 pixels over the edge of the screen (+ potential offset) in a single tick.<br>"
+                    + "a low value (e.g. 100px) will cause a 'soft' contain in screen. In that case the client would only be contained in screen<br>"
+                    + "if it was moved a maximum of e.g. 100 pixels over the edge of the screen (+ potential offset). This allows the user to move the client to another monitor if desired.<br>"
                     + "Tip: you can always switch monitors by using hotkey repositioning (see above).",
             position = 8,
             section = containInScreenSettings
