@@ -563,78 +563,82 @@ public class ClientResizerPlugin extends Plugin {
 
     private void containInScreen() {
         //Hacky way to somewhat emulate contain in screen.
-        if (containInScreenTop || containInScreenRight || containInScreenBottom || containInScreenLeft) {
-            //if contain in screen is enabled
-            if (previousGraphicsConfig != null && previousGraphicsConfig.getBounds() != null) { //previousGraphicsConfig doesn't exist in the beginning. getBounds != null is probs superfluous or probs not working the way I intend it, but maybe it'll help in case a display gets disconnected or something weird?
-                //Get the screen bounds. Since pixels should not contain decimals, just typecasting to int or using Double.intValue() is used instead of using Math.round and then typecasting that long to an int.
-                //Point is (x,y) with 0,0 being in the top left corner!
-                Rectangle previousScreenBounds = previousGraphicsConfig.getBounds();
-                int screenBoundsXLeft = (int) previousScreenBounds.getX();
-                int screenBoundsXRight = screenBoundsXLeft + (int) previousScreenBounds.getWidth();
-                int screenBoundsYTop = (int) previousScreenBounds.getY();
-                int screenBoundsYBottom = screenBoundsYTop + (int) previousScreenBounds.getHeight();
-                //Add the offsets as configured in the config
-                screenBoundsXLeft = screenBoundsXLeft - containInScreenLeftOffset;
-                screenBoundsXRight = screenBoundsXRight + containInScreenRightOffset;
-                screenBoundsYTop = screenBoundsYTop - containInScreenTopOffset;
-                screenBoundsYBottom = screenBoundsYBottom + containInScreenBottomOffset;
+        if (!mouseInMenuBar) { //Wait till we are done dragging the client! Might still be dragging is mouse in the menu bar.
+            //Here the mouse is not in the menuBar anymore. If it is in the menubar, it does not snap back to the proper location, but to the position where the user started dragging the client.
+            if (containInScreenTop || containInScreenRight || containInScreenBottom || containInScreenLeft) {
+                //if contain in screen is enabled
+                if (previousGraphicsConfig != null && previousGraphicsConfig.getBounds() != null) { //previousGraphicsConfig doesn't exist in the beginning. getBounds != null is probs superfluous or probs not working the way I intend it, but maybe it'll help in case a display gets disconnected or something weird?
+                    //Get the screen bounds. Since pixels should not contain decimals, just typecasting to int or using Double.intValue() is used instead of using Math.round and then typecasting that long to an int.
+                    //Point is (x,y) with 0,0 being in the top left corner!
+                    Rectangle previousScreenBounds = previousGraphicsConfig.getBounds();
+                    int screenBoundsXLeft = (int) previousScreenBounds.getX();
+                    int screenBoundsXRight = screenBoundsXLeft + (int) previousScreenBounds.getWidth();
+                    int screenBoundsYTop = (int) previousScreenBounds.getY();
+                    int screenBoundsYBottom = screenBoundsYTop + (int) previousScreenBounds.getHeight();
+                    //Add the offsets as configured in the config
+                    screenBoundsXLeft = screenBoundsXLeft - containInScreenLeftOffset;
+                    screenBoundsXRight = screenBoundsXRight + containInScreenRightOffset;
+                    screenBoundsYTop = screenBoundsYTop - containInScreenTopOffset;
+                    screenBoundsYBottom = screenBoundsYBottom + containInScreenBottomOffset;
 
-                //Get the top JFrame to get the clientBounds
-                JFrame topFrameClient = (JFrame) SwingUtilities.getWindowAncestor(client.getCanvas());
-                int clientWidth = topFrameClient.getWidth();
-                int clientHeight = topFrameClient.getHeight();
+                    //Get the top JFrame to get the clientBounds
+                    JFrame topFrameClient = (JFrame) SwingUtilities.getWindowAncestor(client.getCanvas());
+                    int clientWidth = topFrameClient.getWidth();
+                    int clientHeight = topFrameClient.getHeight();
 
-                //Get the client bounds
-                //Alternatively use e.g. int clientBoundsXLeft = (int) topFrameClient.getBounds().getX();
-                int clientBoundsXLeft = topFrameClient.getX();
-                int clientBoundsXRight = clientBoundsXLeft + clientWidth;
-                int clientBoundsYTop = topFrameClient.getY();
-                int clientBoundsYBottom = clientBoundsYTop + clientHeight;
+                    //Get the client bounds
+                    //Alternatively use e.g. int clientBoundsXLeft = (int) topFrameClient.getBounds().getX();
+                    int clientBoundsXLeft = topFrameClient.getX();
+                    int clientBoundsXRight = clientBoundsXLeft + clientWidth;
+                    int clientBoundsYTop = topFrameClient.getY();
+                    int clientBoundsYBottom = clientBoundsYTop + clientHeight;
 
-                boolean shouldReposition = false; //Should we reposition?
-                int coordsToRepositionToX = clientBoundsXLeft; //Coords to reposition to if we need to. Set current values in case the contain option is not enabled for this side.
-                int coordsToRepositionToY = clientBoundsYTop; //Coords to reposition to if we need to. Set current values in case the contain option is not enabled for this side.
+                    boolean shouldReposition = false; //Should we reposition?
+                    int coordsToRepositionToX = clientBoundsXLeft; //Coords to reposition to if we need to. Set current values in case the contain option is not enabled for this side.
+                    int coordsToRepositionToY = clientBoundsYTop; //Coords to reposition to if we need to. Set current values in case the contain option is not enabled for this side.
 
-                //if contain is enabled and the client is outside the screenbounds (+ config offset) => set the coords to reposition to and set the boolean so we know we need to reposition
-                //If the client is too big to even fit on the screen... Let's align the top right side with the screen so you can still press the x and access the config if all 4 contain options are enabled (so the order below is based on that)
-                //Point is (x,y) with 0,0 being in the top left corner! 1920,1080 or smth like that is right bottom corner
-                if (containInScreenLeft && clientBoundsXLeft < screenBoundsXLeft) {
-                    coordsToRepositionToX = screenBoundsXLeft;
-                    shouldReposition = true;
-                }
-                if (containInScreenRight && clientBoundsXRight > screenBoundsXRight) {
-                    coordsToRepositionToX = screenBoundsXRight - clientWidth;
-                    shouldReposition = true;
-                }
-                if (containInScreenBottom && clientBoundsYBottom > screenBoundsYBottom) {
-                    coordsToRepositionToY = screenBoundsYBottom - clientHeight;
-                    shouldReposition = true;
-                }
-                if (containInScreenTop && clientBoundsYTop < screenBoundsYTop) {
-                    coordsToRepositionToY = screenBoundsYTop;
-                    shouldReposition = true;
-                }
-
-                //If we need to reposition, then reposition to the new coords
-                if (shouldReposition) {
-                    if (showChatMessageContain) {
-                        //Send a chat message, but only do it every 30 seconds as to not spam the user
-                        long currentNanoTime = System.nanoTime();
-                        if (currentNanoTime - previousContainChatMessageNanoTime > THIRTY_SECONDS_IN_NANOSECONDS) { //It will fire immediately once when starting the plugin in the right gamestate (desired behavior IMO) and also immediately when logging out, but that is fine probs.
-                            sendGameChatMessage(ResizerMessageType.CONTAIN_IN_SCREEN);
-                            previousContainChatMessageNanoTime = currentNanoTime;
-                        }
+                    //if contain is enabled and the client is outside the screenbounds (+ config offset) => set the coords to reposition to and set the boolean so we know we need to reposition
+                    //If the client is too big to even fit on the screen... Let's align the top right side with the screen so you can still press the x and access the config if all 4 contain options are enabled (so the order below is based on that)
+                    //Point is (x,y) with 0,0 being in the top left corner! 1920,1080 or smth like that is right bottom corner
+                    if (containInScreenLeft && clientBoundsXLeft < screenBoundsXLeft) {
+                        coordsToRepositionToX = screenBoundsXLeft;
+                        shouldReposition = true;
                     }
-                    //Reposition the client to the new coords conform the config values of contain in screen
-                    setClientPosition(coordsToRepositionToX, coordsToRepositionToY);
-                }
+                    if (containInScreenRight && clientBoundsXRight > screenBoundsXRight) {
+                        coordsToRepositionToX = screenBoundsXRight - clientWidth;
+                        shouldReposition = true;
+                    }
+                    if (containInScreenBottom && clientBoundsYBottom > screenBoundsYBottom) {
+                        coordsToRepositionToY = screenBoundsYBottom - clientHeight;
+                        shouldReposition = true;
+                    }
+                    if (containInScreenTop && clientBoundsYTop < screenBoundsYTop) {
+                        coordsToRepositionToY = screenBoundsYTop;
+                        shouldReposition = true;
+                    }
 
-                //System.out.println("screenbounds (x, xbottom, y, ybottom): " + screenBoundsXLeft + ", " + screenBoundsXRight + ", " + screenBoundsYTop + ", " + screenBoundsYBottom);
-                //System.out.println("clientbounds (x, xbottom, y, ybottom): " + clientBoundsXLeft + ", " + clientBoundsXRight + ", " + clientBoundsYTop + ", " + clientBoundsYBottom);
+                    //If we need to reposition, then reposition to the new coords
+                    if (shouldReposition) {
+                        if (showChatMessageContain) {
+                            //Send a chat message, but only do it every 30 seconds as to not spam the user
+                            long currentNanoTime = System.nanoTime();
+                            if (currentNanoTime - previousContainChatMessageNanoTime > THIRTY_SECONDS_IN_NANOSECONDS) { //It will fire immediately once when starting the plugin in the right gamestate (desired behavior IMO) and also immediately when logging out, but that is fine probs.
+                                sendGameChatMessage(ResizerMessageType.CONTAIN_IN_SCREEN);
+                                previousContainChatMessageNanoTime = currentNanoTime;
+                            }
+                        }
+                        //Reposition the client to the new coords conform the config values of contain in screen
+                        setClientPosition(coordsToRepositionToX, coordsToRepositionToY);
+                    }
+
+                    //todo: remove printlns here
+                    //System.out.println("screenbounds (x, xbottom, y, ybottom): " + screenBoundsXLeft + ", " + screenBoundsXRight + ", " + screenBoundsYTop + ", " + screenBoundsYBottom);
+                    //System.out.println("clientbounds (x, xbottom, y, ybottom): " + clientBoundsXLeft + ", " + clientBoundsXRight + ", " + clientBoundsYTop + ", " + clientBoundsYBottom);
+                }
             }
+            //Save the graphicsConfig, so we can check next time if it moved
+            previousGraphicsConfig = client.getCanvas().getGraphicsConfiguration();
         }
-        //Save the graphicsConfig, so we can check next time if it moved
-        previousGraphicsConfig = client.getCanvas().getGraphicsConfiguration();
     }
 
     private void sendGameChatMessage(ResizerMessageType type) {
