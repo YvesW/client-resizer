@@ -75,7 +75,7 @@ If you experience any issues or have any concerns, please reach out to YvesW via
 ## Changelog
 01-2024:
 - Fixed automatic resizing after the flatlaf changes. Please note that it is still recommended to have custom chrome enabled! The client will resize when your cursor leaves the menubar (title bar), if it's on the menubar.
-- Added the option to change the position/location of the client using hotkeys. Thanks to Hooder for the tip!
+- Added the option to change the position/location of the client using hotkeys. Thanks to Hooder for the tips!
 - Added a (hacky) option to contain the client in screen: the client will snap back after moving it using shift + Windows + arrow key or after your cursor leaves the menubar (title bar). This can either be 'soft' or 'hard' contain in screen. Offsets can be added if the client is not in your preferred location. Please note that custom chrome needs to be enabled to properly snap the client back to the right position if you are moving the client by dragging the menubar (title bar).
 
 09-2023:

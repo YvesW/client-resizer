@@ -539,6 +539,10 @@ public class ClientResizerPlugin extends Plugin {
     }
 
     private void monitorCheck() {
+        //Specifically opted to not use an EventListener/ComponentListener for window positioning and running the code in there with custom chrome disabled =>
+        // Problem is that it might be jarring with custom chrome disabled (MouseListener to disable the code while the cursor is in the MenuBar does not work) and the 'soft' snap back would not work since it polls it too frequently instead of once a tick.
+        // With custom chrome enabled, this is not a problem because the code will not activate while dragging (not jarring, and it won't check too frequently)
+
         if (!mouseInMenuBar) { //Wait till we are done dragging the client! Might still be dragging if mouse in the menu bar (resulting in problems for both automatic resizing and containing in screen/snapping back)!
             containInScreen(); //Contain before getting the graphicsConfig (which does contain the current monitor!)
             //Alternatively use client.getCanvas().getGraphicsConfiguration() if this breaks!
@@ -692,14 +696,14 @@ public class ClientResizerPlugin extends Plugin {
         //topFrameClient.setLocationRelativeTo(topFrame.getOwner());
         topFrameClient.setLocation(pointX, pointY);
         //For some reason the graphicsConfiguration is incorrect directly after using setLocation...
-        //This might be just an incorrect implementation by me, or some JDK bug, or both.
-        //Setting the frame to .setVisible(false) and .setVisible(true) solves this problem, but this is obviously not a great solution (https://stackoverflow.com/questions/17916542/graphicsconfiguration-getdevice-returning-the-wrong-monitor-id)
-        //The impact on the user should not be too much though since the client is being repositioned in this case, so it's not like their gameplay is being interrupted
-        //If you know the solution to this problem, please contact me and tell me how to fix this.
-        topFrameClient.setVisible(false);
-        topFrameClient.setVisible(true);
-        previousGraphicsConfig = client.getCanvas().getGraphicsConfiguration();
-        System.out.println("reposition: " + client.getCanvas().getGraphicsConfiguration()); // todo: remove println
+        //This is probably because some stuff about window positioning is possibly an async operation (thx Hooder!) https://docs.oracle.com/javase/8/docs/api/java/awt/Window.html
+        //Setting the frame to .setVisible(false) and .setVisible(true) solves this problem, but this is obviously not a great solution (https://stackoverflow.com/questions/17916542/graphicsconfiguration-getdevice-returning-the-wrong-monitor-id). The impact on the user should not be too much though since the client is being repositioned in this case, so it's not like their gameplay is being interrupted.
+        //However, a better solution is using SwingUtilities.invokeLater
+        //Alternatively I could also use an event listener for window positioning and run the rest of the code in there => problem is that it might be jarring with custom chrome disabled (MouseListener to disable the code while the cursor is in the MenuBar does not work) and the 'soft' snap back would not work since it polls it too frequently instead of once a tick.
+        SwingUtilities.invokeLater(() -> {
+            previousGraphicsConfig = client.getCanvas().getGraphicsConfiguration();
+            System.out.println("reposition: " + client.getCanvas().getGraphicsConfiguration());
+        }); // todo: remove println
     }
 
     private boolean hasMonitorChanged() {
