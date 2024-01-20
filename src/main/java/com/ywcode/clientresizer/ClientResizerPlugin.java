@@ -25,7 +25,7 @@ import java.util.regex.*;
 @Slf4j
 @PluginDescriptor(
         name = "Client Resizer",
-        description = "Allows for automatic or hotkey-based resizing, or repositioning of the client.",
+        description = "Allows for automatic or hotkey-based resizing and repositioning, and for containing the client in screen/snapping back.",
         tags = {"client,resize,automatic,pixels,refresh rate,game size,size,screen size,monitor,display,screen,autoresize,hotkey,hot key,stretched mode,resizable scaling,scaling,position,reposition,location,menubar,title bar,contain,contain in screen,snap,snap back,edge,offset"}
 )
 

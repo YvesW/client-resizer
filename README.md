@@ -1,7 +1,7 @@
 # Client Resizer
 Also annoyed by having to change your client's size (game size), resizable scaling, or position every time you move RuneLite to a different monitor or when doing a different activity? Or are you a big fan of contain in screen?<br>
 
-**Client Resizer allows for automatic or hotkey-based resizing or repositioning of the client. It also allows for changing the resizable scaling, and containing your client in screen (snapping back).** It's especially useful for people that have multiple monitors of different sizes or resolutions, or for people that like to resize or (re)position their client in specific scenarios (e.g. per activity).<br>
+**Client Resizer allows for automatic or hotkey-based resizing and repositioning of the client. It also allows for changing the resizable scaling, and containing your client in screen (snapping back).** It's especially useful for people that have multiple monitors of different sizes or resolutions, or for people that like to resize or (re)position their client in specific scenarios (e.g. per activity).<br>
 
 **This plugin adds the following features:**
 - Automatically resize your client when it's moved to a different monitor. This can be configured per monitor attribute, e.g. per ID string (differs for every monitor), resolution (dimension) or refresh rate.
