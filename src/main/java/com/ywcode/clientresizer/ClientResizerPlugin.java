@@ -546,8 +546,10 @@ public class ClientResizerPlugin extends Plugin {
         if (!mouseInMenuBar) { //Wait till we are done dragging the client! Might still be dragging if mouse in the menu bar (resulting in problems for both automatic resizing and containing in screen/snapping back)!
             containInScreen(); //Contain before getting the graphicsConfig (which does contain the current monitor!)
             //Alternatively use client.getCanvas().getGraphicsConfiguration() if this breaks!
-            graphicsConfig = clientUI.getGraphicsConfiguration();
-            currentMonitor = graphicsConfig.getDevice(); // Actually relevant here to refresh the current monitor since I opted to use static variables instead of local variable that update per method.
+            SwingUtilities.invokeLater(() -> {
+                graphicsConfig = clientUI.getGraphicsConfiguration();
+                currentMonitor = graphicsConfig.getDevice(); // Actually relevant here to refresh the current monitor since I opted to use static variables instead of local variable that update per method.
+            });
             if (hasMonitorChanged()) {
                 copyAttributeToClipboard();
                 resizeClient();
@@ -644,7 +646,9 @@ public class ClientResizerPlugin extends Plugin {
             }
         }
         //Save the graphicsConfig, so we can check next time if it moved
-        previousGraphicsConfig = client.getCanvas().getGraphicsConfiguration();
+        SwingUtilities.invokeLater(() -> {
+            previousGraphicsConfig = client.getCanvas().getGraphicsConfiguration();
+        });
     }
 
     private void sendGameChatMessage(ResizerMessageType type) {
@@ -708,7 +712,7 @@ public class ClientResizerPlugin extends Plugin {
 
     private boolean hasMonitorChanged() {
         //PM If you ever want the resize on client to be turned into a config option, add a previousMonitor == null => return resizeOnStartup probably. Plus don't forget to potentially change stuff like hasAttributeChanged then!
-        if (!currentMonitor.equals(previousMonitor)) { //No previousMonitor == null check because unnecessary before equals() call
+        if (currentMonitor != null && !currentMonitor.equals(previousMonitor)) { //No previousMonitor == null check because unnecessary before equals() call
             previousMonitor = currentMonitor;
             return true;
         }
