@@ -319,8 +319,12 @@ public class ClientResizerPlugin extends Plugin {
     public void onConfigChanged(ConfigChanged configChanged) {
         if (configChanged.getGroup().equals("ClientResizer")) {
             updateConfig();
-            if (configChanged.getKey().equals("copyAttribute")) { //Only called when the user changes the config value and hasMonitorChanged
+            String configKey = configChanged.getKey();
+            if (configKey.equals("copyAttribute")) { //Only called when the user changes the config value and hasMonitorChanged
                 copyAttributeToClipboard();
+            }
+            if (configKey.equals("copyPosition") && configChanged.getNewValue().equals("true")) {
+                copyPositionToClipboard();
             }
         }
     }
