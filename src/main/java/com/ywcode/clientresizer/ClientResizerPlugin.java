@@ -161,10 +161,10 @@ public class ClientResizerPlugin extends Plugin {
     private static int containInScreenRightOffset;
     private static int containInScreenBottomOffset;
     private static int containInScreenLeftOffset;
-    private static int containInScreenSnapBackPx;
+    private static int containInScreenSnapBackPx;  //todo: use this int!
     private static boolean showChatMessage;
     private static boolean showChatMessageReposition;
-    private static boolean showChatMessageContain; //todo: use this boolean
+    private static boolean showChatMessageContain;
     private static MonitorAttribute copyAttribute;
     private static boolean copyPosition;
     //------------- End of wall of config vars -------------
@@ -183,7 +183,9 @@ public class ClientResizerPlugin extends Plugin {
     @Getter
     private static int defaultResizableScaling = 50; //Stretched mode plugin default
     private static long previousNanoTime; // Default value is 0
+    private static long previousContainChatMessageNanoTime; // Default value is 0
     private static final long TICK_IN_NANOSECONDS = 600000000;
+    private static final long THIRTY_SECONDS_IN_NANOSECONDS = 30000000000L;
     private static boolean resizeChatMessageFlag; //Default = false
     private static boolean scaleChatMessageFlag; //Default = false
     private static boolean repositionChatMessageFlag; //Default = false
@@ -479,16 +481,15 @@ public class ClientResizerPlugin extends Plugin {
     }
 
     private void monitorCheck() {
+        containInScreen(); //Contain before getting the graphicsConfig (which does contain the current monitor!)
         //Alternatively use client.getCanvas().getGraphicsConfiguration() if this breaks!
         graphicsConfig = clientUI.getGraphicsConfiguration();
         currentMonitor = graphicsConfig.getDevice(); // Actually relevant here to refresh the current monitor since I opted to use static variables instead of local variable that update per method.
-        containInScreen(); //Contain before refreshing monitors in hasMonitorChanged!
         if (hasMonitorChanged()) {
             copyAttributeToClipboard();
             resizeClient();
         }
         copyPositionToClipboard(); // Already checks if the boolean config var is enabled. Should not only run when the monitor has changed.
-        previousGraphicsConfig = graphicsConfig;
         //PS To get all monitors, you can do:
         //GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
         //GraphicsDevice[] allMonitors = graphicsEnvironment.getScreenDevices();
@@ -559,16 +560,82 @@ public class ClientResizerPlugin extends Plugin {
                 //If we need to reposition, then reposition to the new coords
                 if (shouldReposition) {
                     if (showChatMessageContain) {
-                        sendGameChatMessage(ResizerMessageType.CONTAIN_IN_SCREEN);
+                        //Send a chat message, but only do it every 30 seconds as to not spam the user
+                        long currentNanoTime = System.nanoTime();
+                        if (currentNanoTime - previousContainChatMessageNanoTime > THIRTY_SECONDS_IN_NANOSECONDS) { //It will fire immediately once when starting the plugin in the right gamestate (desired behavior IMO) and also immediately when logging out, but that is fine probs.
+                            sendGameChatMessage(ResizerMessageType.CONTAIN_IN_SCREEN);
+                            previousContainChatMessageNanoTime = currentNanoTime;
+                        }
                     }
-                    topFrameClient.setLocation(coordsToRepositionToX, coordsToRepositionToY);
+                    //Reposition the client to the new coords conform the config values of contain in screen
+                    setClientPosition(coordsToRepositionToX, coordsToRepositionToY);
                 }
 
-                System.out.println("screenbounds (x, xbottom, y, ybottom): "+screenBoundsXLeft+", "+screenBoundsXRight + ", "+screenBoundsYTop + ", "+screenBoundsYBottom);
-                System.out.println("clientbounds (x, xbottom, y, ybottom): "+clientBoundsXLeft+", "+clientBoundsXRight + ", "+clientBoundsYTop + ", "+clientBoundsYBottom);
-
+                //System.out.println("screenbounds (x, xbottom, y, ybottom): " + screenBoundsXLeft + ", " + screenBoundsXRight + ", " + screenBoundsYTop + ", " + screenBoundsYBottom);
+                //System.out.println("clientbounds (x, xbottom, y, ybottom): " + clientBoundsXLeft + ", " + clientBoundsXRight + ", " + clientBoundsYTop + ", " + clientBoundsYBottom);
             }
         }
+        //Save the graphicsConfig so we can check next time if it moved
+        previousGraphicsConfig = client.getCanvas().getGraphicsConfiguration();
+    }
+
+    private void sendGameChatMessage(ResizerMessageType type) {
+        //Send a chat message and if not logged in (i.e. resizing client upon opening the client), set a flag to send a message when the player logs in.
+        //type = the type of message (are we resizing, are we scaling (stretched mode), are we repositioning, are we containing in screen etc.)
+        switch (type) {
+            case RESIZE:
+                if (currentGameState == GameState.LOGGED_IN || currentGameState == GameState.LOADING) {
+                    actuallySendMessage("Your RuneLite game size / client size was changed by the Client Resizer plugin. Check your config if you'd like to change this.");
+                } else {
+                    resizeChatMessageFlag = true;
+                }
+                break;
+            case SCALE:
+                if (currentGameState == GameState.LOGGED_IN || currentGameState == GameState.LOADING) {
+                    actuallySendMessage("Your resizable scaling (stretched mode plugin) was changed by the Client Resizer plugin. Check your config if you'd like to change this.");
+                } else {
+                    scaleChatMessageFlag = true;
+                }
+                break;
+            case REPOSITION:
+                if (currentGameState == GameState.LOGGED_IN || currentGameState == GameState.LOADING) {
+                    actuallySendMessage("Your client was repositioned by the Client Resizer plugin. Check your config if you'd like to change this.");
+                } else {
+                    repositionChatMessageFlag = true;
+                }
+                break;
+            case CONTAIN_IN_SCREEN:
+                if (currentGameState == GameState.LOGGED_IN || currentGameState == GameState.LOADING) {
+                    actuallySendMessage("Your client was contained in the screen by the Client Resizer plugin. Check your config if you'd like to change this.");
+                } else {
+                    containInScreenChatMessageFlag = true;
+                }
+        }
+    }
+
+    private void actuallySendMessage(String message) {
+        //Used in the method above, which actually sends the message
+        //client.addChatMessage has to be called on clientThread. Doesn't cause any error if not called on client.getGameState() == GameState.LOGGED_IN
+        clientThread.invokeLater(() -> {
+            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", message, "");
+        });
+    }
+
+    private void setClientPosition(int pointX, int pointY) {
+        //Sets the client position
+        JFrame topFrameClient = (JFrame) SwingUtilities.getWindowAncestor(client.getCanvas());
+        //To reset to middle, use:
+        //topFrameClient.setLocationRelativeTo(topFrame.getOwner());
+        topFrameClient.setLocation(pointX, pointY);
+        //For some reason the graphicsConfiguration is incorrect directly after using setLocation...
+        //This might be just an incorrect implementation by me, or some JDK bug, or both.
+        //Setting the frame to .setVisible(false) and .setVisible(true) solves this problem, but this is obviously not a great solution (https://stackoverflow.com/questions/17916542/graphicsconfiguration-getdevice-returning-the-wrong-monitor-id)
+        //The impact on the user should not be too much though since the client is being repositioned in this case, so it's not like their gameplay is being interrupted
+        //If you know the solution to this problem, please contact me and tell me how to fix this.
+        topFrameClient.setVisible(false);
+        topFrameClient.setVisible(true);
+        previousGraphicsConfig = client.getCanvas().getGraphicsConfiguration();
+        System.out.println("reposition: " + client.getCanvas().getGraphicsConfiguration()); // todo: remove println
     }
 
     private boolean hasMonitorChanged() {
@@ -696,48 +763,6 @@ public class ClientResizerPlugin extends Plugin {
         }
     }
 
-    private void sendGameChatMessage(ResizerMessageType type) {
-        //Send a chat message and if not logged in (i.e. resizing client upon opening the client), set a flag to send a message when the player logs in.
-        //type = the type of message (are we resizing, are we scaling (stretched mode), are we repositioning, are we containing in screen etc.)
-        switch (type) {
-            case RESIZE:
-                if (currentGameState == GameState.LOGGED_IN || currentGameState == GameState.LOADING) {
-                    actuallySendMessage("Your RuneLite game size / client size was changed by the Client Resizer plugin. Check your config if you'd like to change this.");
-                } else {
-                    resizeChatMessageFlag = true;
-                }
-                break;
-            case SCALE:
-                if (currentGameState == GameState.LOGGED_IN || currentGameState == GameState.LOADING) {
-                    actuallySendMessage("Your resizable scaling (stretched mode plugin) was changed by the Client Resizer plugin. Check your config if you'd like to change this.");
-                } else {
-                    scaleChatMessageFlag = true;
-                }
-                break;
-            case REPOSITION:
-                if (currentGameState == GameState.LOGGED_IN || currentGameState == GameState.LOADING) {
-                    actuallySendMessage("Your client was repositioned by the Client Resizer plugin. Check your config if you'd like to change this.");
-                } else {
-                    repositionChatMessageFlag = true;
-                }
-                break;
-            case CONTAIN_IN_SCREEN:
-                if (currentGameState == GameState.LOGGED_IN || currentGameState == GameState.LOADING) {
-                    actuallySendMessage("Your client was contained in the screen by the Client Resizer plugin. Check your config if you'd like to change this.");
-                } else {
-                    containInScreenChatMessageFlag = true;
-                }
-        }
-    }
-
-    private void actuallySendMessage(String message) {
-        //Used in the method above, which actually sends the message
-        //client.addChatMessage has to be called on clientThread. Doesn't cause any error if not called on client.getGameState() == GameState.LOGGED_IN
-        clientThread.invokeLater(() -> {
-            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", message, "");
-        });
-    }
-
     private void setResizableScaling(int resizableScalingPercent) {
         int currentResizableScalingPercent = configManager.getConfiguration("stretchedmode", "scalingFactor", Integer.class);
         //Check if current resizable scaling percent in config does not equal the resizable scaling percent the config is going to get set to.
@@ -799,20 +824,16 @@ public class ClientResizerPlugin extends Plugin {
         }
     }
 
-    private void setClientPosition(int pointX, int pointY) {
-        //Sets the client position
-        JFrame topFrameClient = (JFrame) SwingUtilities.getWindowAncestor(client.getCanvas());
-        //To reset to middle, use:
-        //topFrameClient.setLocationRelativeTo(topFrame.getOwner());
+    private void setClientPositionHotkey(int pointX, int pointY) {
+        //Sets the client position when using hotkey
 
         //TODO: potentially add automatic repositioning of the client like automatic resizing, but this might automatically throw the client offscreen if configured very incorrectly.
         // Thus, for let's not add this for now. Can reconsider in the future.
         // If this is added, check how you check how you did resizeClient() (copy most of it probs), use processAtributeString, and check how you did setGameSize (copy most of it probs).
-
+        setClientPosition(pointX, pointY);
         if (showChatMessageReposition) {
             sendGameChatMessage(ResizerMessageType.REPOSITION);
         }
-        topFrameClient.setLocation(pointX, pointY);
     }
 
     private void checkChatMessageFlags() {
@@ -1082,7 +1103,7 @@ public class ClientResizerPlugin extends Plugin {
 
         @Override
         public void hotkeyPressed() {
-            setClientPosition(hotkey1PositionX, hotkey1PositionY);
+            setClientPositionHotkey(hotkey1PositionX, hotkey1PositionY);
         }
 
         @Override
@@ -1098,7 +1119,7 @@ public class ClientResizerPlugin extends Plugin {
 
         @Override
         public void hotkeyPressed() {
-            setClientPosition(hotkey2PositionX, hotkey2PositionY);
+            setClientPositionHotkey(hotkey2PositionX, hotkey2PositionY);
         }
 
         @Override
@@ -1114,7 +1135,7 @@ public class ClientResizerPlugin extends Plugin {
 
         @Override
         public void hotkeyPressed() {
-            setClientPosition(hotkey3PositionX, hotkey3PositionY);
+            setClientPositionHotkey(hotkey3PositionX, hotkey3PositionY);
         }
 
         @Override
@@ -1130,7 +1151,7 @@ public class ClientResizerPlugin extends Plugin {
 
         @Override
         public void hotkeyPressed() {
-            setClientPosition(hotkey4PositionX, hotkey4PositionY);
+            setClientPositionHotkey(hotkey4PositionX, hotkey4PositionY);
         }
 
         @Override
@@ -1146,7 +1167,7 @@ public class ClientResizerPlugin extends Plugin {
 
         @Override
         public void hotkeyPressed() {
-            setClientPosition(hotkey5PositionX, hotkey5PositionY);
+            setClientPositionHotkey(hotkey5PositionX, hotkey5PositionY);
         }
 
         @Override
@@ -1162,7 +1183,7 @@ public class ClientResizerPlugin extends Plugin {
 
         @Override
         public void hotkeyPressed() {
-            setClientPosition(hotkey6PositionX, hotkey6PositionY);
+            setClientPositionHotkey(hotkey6PositionX, hotkey6PositionY);
         }
 
         @Override
@@ -1178,7 +1199,7 @@ public class ClientResizerPlugin extends Plugin {
 
         @Override
         public void hotkeyPressed() {
-            setClientPosition(hotkey7PositionX, hotkey7PositionY);
+            setClientPositionHotkey(hotkey7PositionX, hotkey7PositionY);
         }
 
         @Override
@@ -1194,7 +1215,7 @@ public class ClientResizerPlugin extends Plugin {
 
         @Override
         public void hotkeyPressed() {
-            setClientPosition(hotkey8PositionX, hotkey8PositionY);
+            setClientPositionHotkey(hotkey8PositionX, hotkey8PositionY);
         }
 
         @Override
@@ -1210,7 +1231,7 @@ public class ClientResizerPlugin extends Plugin {
 
         @Override
         public void hotkeyPressed() {
-            setClientPosition(hotkey9PositionX, hotkey9PositionY);
+            setClientPositionHotkey(hotkey9PositionX, hotkey9PositionY);
         }
 
         @Override
@@ -1226,7 +1247,7 @@ public class ClientResizerPlugin extends Plugin {
 
         @Override
         public void hotkeyPressed() {
-            setClientPosition(hotkey10PositionX, hotkey10PositionY);
+            setClientPositionHotkey(hotkey10PositionX, hotkey10PositionY);
         }
 
         @Override
