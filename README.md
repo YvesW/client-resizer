@@ -67,6 +67,7 @@ Note: the client will resize when your cursor leaves the menubar (title bar).
 ### Contain in screen (snapping back)
 Note that it might be more snapping the client back to the edge of the screen than containing in the screen. This does allow for some cool options though like 'soft' containing in screen/snapping back, i.e. only snapping back when the user drags the client a bit over the screen edge. This allows the user to still drag the client to another screen if desired.<br>
 It is recommended to **enable** ``Enable custom window chrome`` in ``RuneLite`` > ``Window Settings`` to properly contain the client in screen/snap back when dragging it to a different monitor. Shift + Windows key + arrow or hotkey-based repositioning does still automatically resize the client with custom chrome disabled.<br>
+Furthermore, it is recommended to **lock the window size** in the ``RuneLite`` config, so you don't accidentally use Windows's snap resize function.<br>
 To set it up:
 - Open the config panel of Client Resizer (gear icon).
 - Open the ``Contain in screen`` category.

@@ -259,6 +259,7 @@ public class ClientResizerPlugin extends Plugin {
             @Override
             public void mouseMoved(MouseEvent mouseEvent) {
                 //This works while moving the mouse over the menu bar, but during dragging, the mouse is not moved. Thus, this is pretty useless.
+                //Could technically use this with a boolean to know when the mouse is not dragging (because the mouse is moving), but no proper way to set this boolean back to false, so does not really work.
                 //If you ever want to use mouseDragged and mouseMoved also add a MouseMotionListener by doing customChromeMenuBar.addMouseMotionListener(mouseInputListenerMenubar);
             }
             //---------------------------------------------------------------
