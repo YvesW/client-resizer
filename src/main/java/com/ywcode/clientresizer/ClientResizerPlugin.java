@@ -214,8 +214,6 @@ public class ClientResizerPlugin extends Plugin {
     @Inject
     private ClientThread clientThread;
 
-    //todo: if isCustomChromeEnabled: Add componentlistener for componentmoved topClientFrame and run monitorCheck in there probs. If customChromeEnabled => do not run monitorCheck in onGameTick and onBeforeRender. Test this out: does it still work great with contain in screen active and automatic resizing? Does it still fix my autistic one blue pixel over the corner when opening/closing sidepanel (use 7-8 px offset)? If so, edit the readme!
-
     //TODO: potentially test 2x and 0.5 scale in RL configure in the future. Can't really use client-args when using a dev build, maybe in e.g. a ShadowJar. Something maybe worth testing in the future for automatic resizing and contain in screen! How does this count the pixels? Are the bounds etc 2x as well or still 1x?
 
     @Override
