@@ -24,7 +24,7 @@ import java.util.regex.*;
 @PluginDescriptor(
         name = "Client Resizer",
         description = "Allows for automatic or hotkey-based resizing, or repositioning of the client.",
-        tags = {"client,resize,automatic,pixels,refresh rate,game size,size,screen size,monitor,display,screen,autoresize,hotkey,hot key,stretched mode,resizable scaling,scaling,position,reposition,location"}
+        tags = {"client,resize,automatic,pixels,refresh rate,game size,size,screen size,monitor,display,screen,autoresize,hotkey,hot key,stretched mode,resizable scaling,scaling,position,reposition,location,menubar,title bar"}
 )
 
 public class ClientResizerPlugin extends Plugin {
@@ -575,7 +575,7 @@ public class ClientResizerPlugin extends Plugin {
                 //System.out.println("clientbounds (x, xbottom, y, ybottom): " + clientBoundsXLeft + ", " + clientBoundsXRight + ", " + clientBoundsYTop + ", " + clientBoundsYBottom);
             }
         }
-        //Save the graphicsConfig so we can check next time if it moved
+        //Save the graphicsConfig, so we can check next time if it moved
         previousGraphicsConfig = client.getCanvas().getGraphicsConfiguration();
     }
 
