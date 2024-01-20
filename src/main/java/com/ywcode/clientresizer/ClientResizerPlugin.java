@@ -187,7 +187,7 @@ public class ClientResizerPlugin extends Plugin {
     private static long previousNanoTime; // Default value is 0
     private static long previousContainChatMessageNanoTime; // Default value is 0
     private static final long TICK_IN_NANOSECONDS = 600000000;
-    private static final long THIRTY_SECONDS_IN_NANOSECONDS = 30000000000L;
+    private static final long SIXTY_SECONDS_IN_NANOSECONDS = 60000000000L;
     private static boolean resizeChatMessageFlag; //Default = false
     private static boolean scaleChatMessageFlag; //Default = false
     private static boolean repositionChatMessageFlag; //Default = false
@@ -588,6 +588,7 @@ public class ClientResizerPlugin extends Plugin {
                 screenBoundsXRight = screenBoundsXRight + containInScreenRightOffset;
                 screenBoundsYTop = screenBoundsYTop - containInScreenTopOffset;
                 screenBoundsYBottom = screenBoundsYBottom + containInScreenBottomOffset;
+                //TODO: potentially add screen specific offset overrides at some point, in case people want e.g. different offsets for their 4k screen than for their 1080p screen.
 
                 //Get the top JFrame to get the clientBounds
                 JFrame topFrameClient = (JFrame) SwingUtilities.getWindowAncestor(client.getCanvas());
@@ -631,7 +632,7 @@ public class ClientResizerPlugin extends Plugin {
                     if (showChatMessageContain) {
                         //Send a chat message, but only do it every 30 seconds as to not spam the user
                         long currentNanoTime = System.nanoTime();
-                        if (currentNanoTime - previousContainChatMessageNanoTime > THIRTY_SECONDS_IN_NANOSECONDS) { //It will fire immediately once when starting the plugin in the right gamestate (desired behavior IMO) and also immediately when logging out, but that is fine probs.
+                        if (currentNanoTime - previousContainChatMessageNanoTime > SIXTY_SECONDS_IN_NANOSECONDS) { //It will fire immediately once when starting the plugin in the right gamestate (desired behavior IMO) and also immediately when logging out, but that is fine probs.
                             sendGameChatMessage(ResizerMessageType.CONTAIN_IN_SCREEN);
                             previousContainChatMessageNanoTime = currentNanoTime;
                         }
