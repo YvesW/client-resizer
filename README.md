@@ -71,11 +71,11 @@ To set it up:
 - Open the config panel of Client Resizer (gear icon).
 - Open the ``Contain in screen`` category.
 - Tick the boxes for the sides you want to enable contain in screen/snap back for.<br>
-  ![Contain in screen](docs/img/contain-in-screen-booleans.png)<br>
+  ![Contain in screen](docs/img/contain-in-screen-booleans.PNG)<br>
 - The client will now be contained in screen/snapped back once your cursor leaves the menubar (title bar).<br>
   *Tip: even with a 'hard' contain in screen/snap back, you can use hotkey-based resizing to move your client to another monitor if desired.*
 - *Optional:* if your client is not in the desired location after snapping back or snaps back too soon/too late, increase or decrease the offset.<br>
-  ![Contain in screen offsets](docs/img/contain-in-screen-offsets.png)<br>
+  ![Contain in screen offsets](docs/img/contain-in-screen-offsets.PNG)<br>
 - *Optional:* if you would like to use a 'soft' contain/snap back, which allows you to drag your client to another monitor but snaps your client back to the screen's edge if you put it barely over the edge, then lower the amount of ``Snap back pixels`` to e.g. 100. This way you can still snap your client to the edge of the screen, but also move your client to another screen if desired.<br>
   If you like your client to always be contained in screen/snapped back, keep this at a very high value (e.g. 100000).
 
