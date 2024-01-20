@@ -15,9 +15,11 @@ import net.runelite.client.ui.*;
 import net.runelite.client.util.*;
 
 import javax.swing.*;
+import javax.swing.event.*;
 import java.awt.*;
 import java.awt.Point;
 import java.awt.datatransfer.*;
+import java.awt.event.*;
 import java.util.regex.*;
 
 @Slf4j
@@ -190,6 +192,8 @@ public class ClientResizerPlugin extends Plugin {
     private static boolean scaleChatMessageFlag; //Default = false
     private static boolean repositionChatMessageFlag; //Default = false
     private static boolean containInScreenChatMessageFlag; //Default = false
+    private static MouseInputListener mouseInputListenerMenubar;
+    private static boolean mouseInMenuBar; //Default = false. Might be dragging the client while this is active.
 
     @Inject
     private Client client;
@@ -251,11 +255,65 @@ public class ClientResizerPlugin extends Plugin {
         updateConfig();
         setDefaultDimensions();
         registerHotkeyListeners();
+
+        mouseInputListenerMenubar = new MouseInputListener() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                mouseInMenuBar = true;
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                mouseInMenuBar = false;
+            }
+
+            //These methods are unused but required to be present in a MouseInputListener implementation
+            //---------------------------------------------------------------
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                //This is never procced.
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent mouseEvent) {
+                //This is never procced.
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent) {
+            }
+
+            @Override
+            public void mouseDragged(MouseEvent mouseEvent) {
+                //This is never procced.
+                //If you ever want to use mouseDragged and mouseMoved also add a MouseMotionListener by doing customChromeMenuBar.addMouseMotionListener(mouseInputListenerMenubar);
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent mouseEvent) {
+                //This works while moving the mouse over the menu bar, but during dragging, the mouse is not moved. Thus, this is pretty useless.
+                //If you ever want to use mouseDragged and mouseMoved also add a MouseMotionListener by doing customChromeMenuBar.addMouseMotionListener(mouseInputListenerMenubar);
+            }
+            //---------------------------------------------------------------
+        };
+
+        //Get topFrameClient to get the menubar to add the mouseInputListener to it.
+        JFrame topFrameClient = (JFrame) SwingUtilities.getWindowAncestor(client.getCanvas());
+        JMenuBar customChromeMenuBar = topFrameClient.getJMenuBar();
+        if (customChromeMenuBar != null) { //Prevent NPE in case custom chrome is disabled
+            customChromeMenuBar.addMouseListener(mouseInputListenerMenubar);
+        }
     }
 
     @Override
     public void shutDown() throws Exception {
+        //Unregister all listeners
         unregisterHotkeyListeners();
+        JFrame topFrameClient = (JFrame) SwingUtilities.getWindowAncestor(client.getCanvas());
+        JMenuBar customChromeMenuBar = topFrameClient.getJMenuBar();
+        if (customChromeMenuBar != null) { //Prevent NPE in case custom chrome is disabled
+            customChromeMenuBar.removeMouseListener(mouseInputListenerMenubar);
+        }
     }
 
     @Subscribe
