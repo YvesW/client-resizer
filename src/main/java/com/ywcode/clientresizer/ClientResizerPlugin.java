@@ -185,6 +185,7 @@ public class ClientResizerPlugin extends Plugin {
     private static long previousNanoTime; // Default value is 0
     private static final long TICK_IN_NANOSECONDS = 600000000;
     private static boolean resizeChatMessageFlag; //Default = false
+    private static boolean scaleChatMessageFlag; //Default = false
     private static boolean repositionChatMessageFlag; //Default = false
     private static boolean containInScreenChatMessageFlag; //Default = false
 
@@ -697,13 +698,20 @@ public class ClientResizerPlugin extends Plugin {
 
     private void sendGameChatMessage(ResizerMessageType type) {
         //Send a chat message and if not logged in (i.e. resizing client upon opening the client), set a flag to send a message when the player logs in.
-        //type = the type of message (are we resizing, are we repositioning, are we containing in screen etc.)
+        //type = the type of message (are we resizing, are we scaling (stretched mode), are we repositioning, are we containing in screen etc.)
         switch (type) {
             case RESIZE:
                 if (currentGameState == GameState.LOGGED_IN || currentGameState == GameState.LOADING) {
                     actuallySendMessage("Your RuneLite game size / client size was changed by the Client Resizer plugin. Check your config if you'd like to change this.");
                 } else {
                     resizeChatMessageFlag = true;
+                }
+                break;
+            case SCALE:
+                if (currentGameState == GameState.LOGGED_IN || currentGameState == GameState.LOADING) {
+                    actuallySendMessage("Your resizable scaling (stretched mode plugin) was changed by the Client Resizer plugin. Check your config if you'd like to change this.");
+                } else {
+                    scaleChatMessageFlag = true;
                 }
                 break;
             case REPOSITION:
@@ -719,7 +727,6 @@ public class ClientResizerPlugin extends Plugin {
                 } else {
                     containInScreenChatMessageFlag = true;
                 }
-                break;
         }
     }
 
@@ -739,10 +746,7 @@ public class ClientResizerPlugin extends Plugin {
             configManager.setConfiguration("stretchedmode", "scalingFactor", resizableScalingPercent);
 
             if (showChatMessage) {
-                //client.addChatMessage has to be called on clientThread. Doesn't cause any error if not called on client.getGameState() == GameState.LOGGED_IN
-                clientThread.invokeLater(() -> {
-                    client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Your resizable scaling (stretched mode plugin) was changed by the Client Resizer plugin. Check your config if you'd like to change this.", "");
-                });
+                sendGameChatMessage(ResizerMessageType.SCALE);
             }
         }
     }
@@ -805,7 +809,6 @@ public class ClientResizerPlugin extends Plugin {
         // Thus, for let's not add this for now. Can reconsider in the future.
         // If this is added, check how you check how you did resizeClient() (copy most of it probs), use processAtributeString, and check how you did setGameSize (copy most of it probs).
 
-        //client.addChatMessage has to be called on clientThread. Doesn't cause any error if not called on client.getGameState() == GameState.LOGGED_IN
         if (showChatMessageReposition) {
             sendGameChatMessage(ResizerMessageType.REPOSITION);
         }
@@ -817,6 +820,10 @@ public class ClientResizerPlugin extends Plugin {
         if (resizeChatMessageFlag) {
             resizeChatMessageFlag = false;
             sendGameChatMessage(ResizerMessageType.RESIZE);
+        }
+        if (scaleChatMessageFlag) {
+            scaleChatMessageFlag = false;
+            sendGameChatMessage(ResizerMessageType.SCALE);
         }
         if (repositionChatMessageFlag) {
             repositionChatMessageFlag = false;
