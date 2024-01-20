@@ -10,7 +10,8 @@ public interface ClientResizerConfig extends Config {
     @ConfigSection(
             name = "Automatic Resizing",
             description = "Automatic window resizing based on the current monitor.<br>"
-                    + "Note: It's recommended to enable 'Enable custom window chrome' in 'RuneLite' > 'Window Settings'",
+                    + "Note: It's recommended to enable 'Enable custom window chrome' in 'RuneLite' > 'Window Settings'.<br>"
+                    + "The client will resize when your cursor leaves the menubar (title bar).",
             position = 0,
             closedByDefault = true
     )

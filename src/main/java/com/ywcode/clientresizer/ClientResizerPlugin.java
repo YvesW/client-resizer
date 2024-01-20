@@ -26,7 +26,7 @@ import java.util.regex.*;
 @PluginDescriptor(
         name = "Client Resizer",
         description = "Allows for automatic or hotkey-based resizing, or repositioning of the client.",
-        tags = {"client,resize,automatic,pixels,refresh rate,game size,size,screen size,monitor,display,screen,autoresize,hotkey,hot key,stretched mode,resizable scaling,scaling,position,reposition,location,menubar,title bar"}
+        tags = {"client,resize,automatic,pixels,refresh rate,game size,size,screen size,monitor,display,screen,autoresize,hotkey,hot key,stretched mode,resizable scaling,scaling,position,reposition,location,menubar,title bar,contain,contain in screen,snap,snap back,edge,offset"}
 )
 
 public class ClientResizerPlugin extends Plugin {
@@ -163,7 +163,7 @@ public class ClientResizerPlugin extends Plugin {
     private static int containInScreenRightOffset;
     private static int containInScreenBottomOffset;
     private static int containInScreenLeftOffset;
-    private static int containInScreenSnapBackPx;  //todo: use this int!
+    private static int containInScreenSnapBackPx;
     private static boolean showChatMessage;
     private static boolean showChatMessageReposition;
     private static boolean showChatMessageContain;
@@ -213,41 +213,9 @@ public class ClientResizerPlugin extends Plugin {
     @Inject
     private ClientThread clientThread;
 
-    /* todo: check if you can do a fake contain in screen
-        3) check if you should use componentlistener oncomponent moved (potentially an ongametick flag to make less visually jarring via config setting)or ongametick for contain in screen
-        3a) If u do the ongametick contain, it should do this before the hasmonitorchanged check and use the previousmonitor set in there to get bounds etc.
-        3b)  Also think about when this is still null etc. Maybe also when getbounds is null but idk.
-    * Make offset 4 integer boxes probs and add to those:
-    @Units(
-                Units.PIXELS
-        )
-    * Override current always in screen probs via reposition hoykey option (add this to readme as well, maybe to config category as well or always keep in shizzel).
-    * Potentially add int config value (default 100000 of zo) to make it hard contain in screen or soft contain in screen. Add to it probs:
-        @Units(
-                Units.PIXELS
-        )
-    * add chat message but only send the contain in screen chatmessage every 30 seconds or so
-    * En fix je eigen autismo 1 pixel thing left monitor (mss al fixed met een soft contain in screen van bijv 10 px?)
-    * check how it interacts with dragging, with hotkeys, with hotkeybased repositioning
-    * check how it interacts with restarting the client (remember client position; does it reset it to default or no)
-    * add to tags 2x
-    * add to readme changelog, options, text above, instructions
+    //todo: if isCustomChromeEnabled: Add componentlistener for componentmoved topClientFrame and run monitorCheck in there probs. If customChromeEnabled => do not run monitorCheck in onGameTick and onBeforeRender. Test this out: does it still work great with contain in screen active and automatic resizing? Does it still fix my autistic one blue pixel over the corner when opening/closing sidepanel (use 7-8 px offset)? If so, edit the readme!
 
-        //System.out.println("size: "+topFrame.getSize());
-        //System.out.println("bounds: "+topFrame.getBounds());
-        //System.out.println("width: "+topFrame.getBounds().width);
-        //System.out.println("bounds: "+topFrame.getBounds().height);
-
-    todo: check mouselistener mousedragged, check componentlistener componentmoved etc and then set the size +1 -1 1 gametick afterwards probs?
-    potentially check the real client size as well for this (e.g. can you always add something to game size, or even get the game size directly? by e.g. doing getChild?)
-    todo: test 2x and 0.5 scale in rl configure! zowel voor automatic resizing als contain in screen! how does this respond the pixels? are the bounds etc 2x as well or still 1x?
-    todo: edit readme screenshots probs
-
-    todo: change description in case also contain in screen/monitor/edge/snap/snap back/offeset/whatever name is added
-    todo: maybe try to add some very hacky antidrag using component or mouselisteners but mehhh
-    todo: if you used mouselistener ondrag, check if it works with custom chrome off or not (add this to readme!) and check if it doesn't if u drag ingame or the sidebar
-    todo: set boolean in startup if customChrome is enabled or not based on the null. if custom chrome active: Add componentlistener for componentmoved topClientFrame and run monitorCheck in there probs. If customChromeEnabled => do not run monitorCheck in onGameTick and onBeforeRender. This this out. If so, edit the readme! Check of dit met een right offset van 8 dan nog steeds je autistische blauwe rand shit fixt
-     */
+    //TODO: potentially test 2x and 0.5 scale in RL configure in the future. Can't really use client-args when using a dev build, maybe in e.g. a ShadowJar. Something maybe worth testing in the future for automatic resizing and contain in screen! How does this count the pixels? Are the bounds etc 2x as well or still 1x?
 
     @Override
     public void startUp() throws Exception {
@@ -640,10 +608,6 @@ public class ClientResizerPlugin extends Plugin {
                     //Reposition the client to the new coords conform the config values of contain in screen
                     setClientPosition(coordsToRepositionToX, coordsToRepositionToY);
                 }
-
-                //todo: remove printlns here
-                //System.out.println("screenbounds (x, xbottom, y, ybottom): " + screenBoundsXLeft + ", " + screenBoundsXRight + ", " + screenBoundsYTop + ", " + screenBoundsYBottom);
-                //System.out.println("clientbounds (x, xbottom, y, ybottom): " + clientBoundsXLeft + ", " + clientBoundsXRight + ", " + clientBoundsYTop + ", " + clientBoundsYBottom);
             }
         }
         //Save the graphicsConfig, so we can check next time if it moved
@@ -707,8 +671,7 @@ public class ClientResizerPlugin extends Plugin {
         //Alternatively I could also use an event listener for window positioning and run the rest of the code in there => problem is that it might be jarring with custom chrome disabled (MouseListener to disable the code while the cursor is in the MenuBar does not work) and the 'soft' snap back would not work since it polls it too frequently instead of once a tick.
         SwingUtilities.invokeLater(() -> {
             previousGraphicsConfig = client.getCanvas().getGraphicsConfiguration();
-            System.out.println("reposition: " + client.getCanvas().getGraphicsConfiguration());
-        }); // todo: remove println
+        });
     }
 
     private boolean hasMonitorChanged() {
