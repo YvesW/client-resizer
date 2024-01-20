@@ -193,7 +193,6 @@ public class ClientResizerPlugin extends Plugin {
     private static boolean repositionChatMessageFlag; //Default = false
     private static boolean containInScreenChatMessageFlag; //Default = false
     private static MouseInputListener mouseInputListenerMenubar;
-    private static ComponentListener componentListenerTopJFrame;
     private static boolean mouseInMenuBar; //Default = false. Might be dragging the client while this is active.
     private static boolean isCustomChromeEnabled = true; //Assume true, otherwise set to false in StartUp
 
@@ -276,31 +275,6 @@ public class ClientResizerPlugin extends Plugin {
             //Custom chrome is disabled
             isCustomChromeEnabled = false;
         }
-
-        componentListenerTopJFrame = new ComponentListener() {
-            @Override
-            public void componentMoved(ComponentEvent componentEvent) {
-                monitorCheck(); //Only runs here when custom chrome is enabled since the componentListener is not added otherwise
-                System.out.println("component moved!"); //todo: remove println here
-            }
-
-            //These methods are unused but required to be present in a ComponentListener implementation
-            @Override
-            public void componentResized(ComponentEvent componentEvent) {
-            }
-
-            @Override
-            public void componentShown(ComponentEvent componentEvent) {
-            }
-
-            @Override
-            public void componentHidden(ComponentEvent componentEvent) {
-            }
-        };
-
-        if (isCustomChromeEnabled) {
-            topFrameClient.addComponentListener(componentListenerTopJFrame);
-        }
     }
 
     @Override
@@ -311,7 +285,6 @@ public class ClientResizerPlugin extends Plugin {
         JMenuBar customChromeMenuBar = topFrameClient.getJMenuBar();
         if (isCustomChromeEnabled) { //Prevent NPE in case custom chrome is disabled
             customChromeMenuBar.removeMouseListener(mouseInputListenerMenubar);
-            topFrameClient.removeComponentListener(componentListenerTopJFrame);
         }
     }
 
@@ -475,15 +448,13 @@ public class ClientResizerPlugin extends Plugin {
 
     @Subscribe
     public void onBeforeRender(BeforeRender beforeRender) {
-        if (!isCustomChromeEnabled) { //Do not run with custom chrome enabled because then the componentListener does this!
-            //onGameTick only fires while logged in! Use onBeforeRender or onPostClientTick if not logged in!
-            if (currentGameState != GameState.LOGGED_IN && currentGameState != GameState.UNKNOWN && currentGameState != GameState.STARTING) {
-                //Simulate gametick behavior to make BeforeRender and GameTick feel more similar.
-                long currentNanoTime = System.nanoTime();
-                if (currentNanoTime - previousNanoTime > TICK_IN_NANOSECONDS) { //It will fire immediately once when starting the plugin in the right gamestate (desired behavior IMO) and also immediately when logging out, but that is fine probs.
-                    monitorCheck();
-                    previousNanoTime = currentNanoTime;
-                }
+        //onGameTick only fires while logged in! Use onBeforeRender or onPostClientTick if not logged in!
+        if (currentGameState != GameState.LOGGED_IN && currentGameState != GameState.UNKNOWN && currentGameState != GameState.STARTING) {
+            //Simulate gametick behavior to make BeforeRender and GameTick feel more similar.
+            long currentNanoTime = System.nanoTime();
+            if (currentNanoTime - previousNanoTime > TICK_IN_NANOSECONDS) { //It will fire immediately once when starting the plugin in the right gamestate (desired behavior IMO) and also immediately when logging out, but that is fine probs.
+                monitorCheck();
+                previousNanoTime = currentNanoTime;
             }
         }
     }
@@ -492,9 +463,7 @@ public class ClientResizerPlugin extends Plugin {
     public void onGameTick(GameTick gameTick) {
         //onGameTick only fires while logged in!
         checkChatMessageFlags();
-        if (!isCustomChromeEnabled) { //Do not run with custom chrome enabled because then the componentListener does this!
-            monitorCheck();
-        }
+        monitorCheck();
     }
 
     @Subscribe
@@ -548,7 +517,8 @@ public class ClientResizerPlugin extends Plugin {
     private void monitorCheck() {
         //Specifically opted to not use an EventListener/ComponentListener for window positioning and running the code in there with custom chrome disabled =>
         // Problem is that it might be jarring with custom chrome disabled (MouseListener to disable the code while the cursor is in the MenuBar does not work) and the 'soft' snap back would not work since it polls it too frequently instead of once a tick.
-        // With custom chrome enabled, this is not a problem because the code will not activate while dragging (not jarring, and it won't check too frequently)
+        // With custom chrome enabled, this would technically not be a problem because the code will not activate while dragging (not jarring, and it won't check too frequently)
+        // However, it does not seem to like working. Maybe it reports too frequently so SwingUtilities.invokelater isn't done yet or something like that? Also makes moving the client very laggy when copyPosition is enabled due to the reporting frequency. Might revisit at some point with a fresh look when I'm not this tired and/or got more ideas.
 
         if (!mouseInMenuBar) { //Wait till we are done dragging the client! Might still be dragging if mouse in the menu bar (resulting in problems for both automatic resizing and containing in screen/snapping back)!
             containInScreen(); //Contain before getting the graphicsConfig (which does contain the current monitor!)
