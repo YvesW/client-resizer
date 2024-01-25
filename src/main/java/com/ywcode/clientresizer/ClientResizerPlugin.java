@@ -185,13 +185,18 @@ public class ClientResizerPlugin extends Plugin {
     @Getter
     private static int defaultResizableScaling = 50; //Stretched mode plugin default
     private static long previousNanoTime; // Default value is 0
+    private static long previousCustomChromeChatMessageNanoTime; // Default value is 0
+    private static long previousLockSizeChatMessageNanoTime; // Default value is 0
     private static long previousContainChatMessageNanoTime; // Default value is 0
     private static final long TICK_IN_NANOSECONDS = 600000000;
+    private static final long TWENTY_SECONDS_IN_NANOSECONDS = 20000000000L;
     private static final long SIXTY_SECONDS_IN_NANOSECONDS = 60000000000L;
     private static boolean resizeChatMessageFlag; //Default = false
     private static boolean scaleChatMessageFlag; //Default = false
     private static boolean repositionChatMessageFlag; //Default = false
     private static boolean containInScreenChatMessageFlag; //Default = false
+    private static boolean customChromeChatMessageFlag; //Default = false
+    private static boolean lockWindowSizeChatMessageFlag; //Default = false
     private static MouseInputListener mouseInputListenerMenubar;
     private static boolean mouseInMenuBar; //Default = false. Might be dragging the client while this is active.
     private static boolean isCustomChromeEnabled = true; //Assume true, otherwise set to false in StartUp
@@ -289,14 +294,56 @@ public class ClientResizerPlugin extends Plugin {
 
     @Subscribe
     public void onConfigChanged(ConfigChanged configChanged) {
-        if (configChanged.getGroup().equals("ClientResizer")) {
+        String configGroupChanged = configChanged.getGroup();
+        if (configGroupChanged.equals("ClientResizer")) {
             updateConfig();
             String configKey = configChanged.getKey();
-            if (configKey.equals("copyAttribute")) { //Only called when the user changes the config value and hasMonitorChanged
-                copyAttributeToClipboard();
+            String newConfigValue = configChanged.getNewValue();
+            switch (configKey) {
+                case "copyAttribute": //Only called when the user changes the config value and hasMonitorChanged
+                    copyAttributeToClipboard();
+                    break;
+                case "copyPosition":
+                    if (newConfigValue.equals("true")) {
+                        copyPositionToClipboard();
+                    }
+                    break;
+                //Send messages when automatic resizing is changed
+                case "autoSize1Attribute":
+                case "autoSize2Attribute":
+                case "autoSize3Attribute":
+                case "autoSize4Attribute":
+                case "autoSize5Attribute":
+                case "autoSize6Attribute":
+                case "autoSize7Attribute":
+                case "autoSize8Attribute":
+                case "autoSize9Attribute":
+                case "autoSize10Attribute":
+                    if (!newConfigValue.equals("Disabled")) {
+                        checkChromeLockSettings();
+                    }
+                    break;
+                //Send messages when contain in screen is changed
+                case "containInScreenTop":
+                case "containInScreenRight":
+                case "containInScreenBottom":
+                case "containInScreenLeft":
+                    if (newConfigValue.equals("true")) {
+                        checkChromeLockSettings();
+                    }
+                    break;
             }
-            if (configKey.equals("copyPosition") && configChanged.getNewValue().equals("true")) {
-                copyPositionToClipboard();
+        }
+        if (configGroupChanged.equals("runelite")) {
+            String configKey = configChanged.getKey();
+            String newConfigValue = configChanged.getNewValue();
+            switch (configKey) {
+                case "uiEnableCustomChrome":
+                case "lockWindowSize":
+                    if (newConfigValue.equals("false")) {
+                        checkAutomaticResizeContainSettings(configKey);
+                    }
+                    break;
             }
         }
     }
@@ -513,6 +560,79 @@ public class ClientResizerPlugin extends Plugin {
         }
     }
 
+    private void copyPositionToClipboard() {
+        //Copies the position of the client to the clipboard.
+        //Makes dragging the client a tad laggy if done in onBeforeRender, but this gets solved by simulating gameticks.
+        if (copyPosition) {
+            try {
+                //Get topJFrame and get position
+                JFrame topFrameClient = (JFrame) SwingUtilities.getWindowAncestor(client.getCanvas());
+                Point currentPosition = topFrameClient.getLocation();
+                //toString position, remove part of the string, set it to a string selection, set the clipboard content
+                String valueToCopy = currentPosition.toString();
+                valueToCopy = valueToCopy.replace("java.awt.Point[", "").replace("]", ""); //remove java.awt.Point[ and ] from string
+                StringSelection stringSelection = new StringSelection(valueToCopy);
+                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                clipboard.setContents(stringSelection, null);
+            } catch (IllegalStateException ignored) {
+                //Ignore java.lang.IllegalStateException: cannot open system clipboard
+            }
+        }
+    }
+
+    private void checkChromeLockSettings() {
+        //Check if custom chrome is disabled and/or lock window size is disabled => check if enough time has passed, so we don't spam the user => send message
+        if (configManager.getConfiguration("runelite", "uiEnableCustomChrome", Boolean.class).equals(false)) {
+            sendCustomChromeWarning();
+        }
+        if (configManager.getConfiguration("runelite", "lockWindowSize", Boolean.class).equals(false)) {
+            sendLockWindowWarning();
+        }
+    }
+
+    private void sendCustomChromeWarning() {
+        long currentNanoTime = System.nanoTime();
+        if (currentNanoTime - previousCustomChromeChatMessageNanoTime > TWENTY_SECONDS_IN_NANOSECONDS) {
+            sendGameChatMessage(ResizerMessageType.CUSTOM_CHROME);
+            previousCustomChromeChatMessageNanoTime = currentNanoTime;
+        }
+    }
+
+    private void sendLockWindowWarning() {
+        long currentNanoTime = System.nanoTime();
+        if (currentNanoTime - previousLockSizeChatMessageNanoTime > TWENTY_SECONDS_IN_NANOSECONDS) {
+            sendGameChatMessage(ResizerMessageType.LOCK_WINDOW_SIZE);
+            previousLockSizeChatMessageNanoTime = currentNanoTime;
+        }
+    }
+
+    private void checkAutomaticResizeContainSettings(String configKey) {
+        //Check if automatic resizing / contain in screen is enabled => if so, check if enough time has passed as to not spam the user => send message
+        long currentNanoTime = System.nanoTime();
+        //Update arrays to most recent values
+        MonitorAttribute[] AttributesArray = new MonitorAttribute[]{autoSize1Attribute, autoSize2Attribute, autoSize3Attribute, autoSize4Attribute, autoSize5Attribute, autoSize6Attribute, autoSize7Attribute, autoSize8Attribute, autoSize9Attribute, autoSize10Attribute};
+        boolean shouldSendMessage = false;
+        for (MonitorAttribute monitorAttribute : AttributesArray) {
+            if (monitorAttribute != MonitorAttribute.Disabled) {
+                shouldSendMessage = true;
+                break;
+            }
+        }
+        if (containInScreenTop || containInScreenRight || containInScreenBottom || containInScreenLeft) {
+            shouldSendMessage = true;
+        }
+        if (shouldSendMessage) {
+            switch (configKey) {
+                case "uiEnableCustomChrome":
+                    sendCustomChromeWarning();
+                    break;
+                case "lockWindowSize":
+                    sendLockWindowWarning();
+                    break;
+            }
+        }
+    }
+
     private void monitorCheck() {
         //Specifically opted to not use an EventListener/ComponentListener for window positioning and running the code in there with custom chrome disabled =>
         // Problem is that it might be jarring with custom chrome disabled (MouseListener to disable the code while the cursor is in the MenuBar does not work) and the 'soft' snap back would not work since it polls it too frequently instead of once a tick.
@@ -655,6 +775,21 @@ public class ClientResizerPlugin extends Plugin {
                 } else {
                     containInScreenChatMessageFlag = true;
                 }
+                break;
+            case CUSTOM_CHROME:
+                if (currentGameState == GameState.LOGGED_IN || currentGameState == GameState.LOADING) {
+                    actuallySendMessage("<col=FF0000>Client Resizer plugin: It is recommended to enable custom chrome when using automatic resizing or snap back/contain in screen. You can enable this in the 'RuneLite' config > 'Windows Settings' > 'Enable custom window chrome'");
+                } else {
+                    customChromeChatMessageFlag = true;
+                }
+                break;
+            case LOCK_WINDOW_SIZE:
+                if (currentGameState == GameState.LOGGED_IN || currentGameState == GameState.LOADING) {
+                    actuallySendMessage("Client Resizer plugin: It is recommended to lock the window size when using automatic resizing or snap back/contain in screen, so your client does not snap-resize when dragging. You can change this in the 'RuneLite' config. The plugin is compatible with an unlocked window size though.");
+                } else {
+                    lockWindowSizeChatMessageFlag = true;
+                }
+                break;
         }
     }
 
@@ -848,26 +983,6 @@ public class ClientResizerPlugin extends Plugin {
         previousRefreshRate = (int) currentMonitorValueForAttribute(MonitorAttribute.RefreshRate);
     }
 
-    private void copyPositionToClipboard() {
-        //Copies the position of the client to the clipboard.
-        //Makes dragging the client a tad laggy if done in onBeforeRender, but this gets solved by simulating gameticks.
-        if (copyPosition) {
-            try {
-                //Get topJFrame and get position
-                JFrame topFrameClient = (JFrame) SwingUtilities.getWindowAncestor(client.getCanvas());
-                Point currentPosition = topFrameClient.getLocation();
-                //toString position, remove part of the string, set it to a string selection, set the clipboard content
-                String valueToCopy = currentPosition.toString();
-                valueToCopy = valueToCopy.replace("java.awt.Point[", "").replace("]", ""); //remove java.awt.Point[ and ] from string
-                StringSelection stringSelection = new StringSelection(valueToCopy);
-                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                clipboard.setContents(stringSelection, null);
-            } catch (IllegalStateException ignored) {
-                //Ignore java.lang.IllegalStateException: cannot open system clipboard
-            }
-        }
-    }
-
     private void setClientPositionHotkey(int pointX, int pointY) {
         //Sets the client position when using hotkey
 
@@ -897,6 +1012,14 @@ public class ClientResizerPlugin extends Plugin {
         if (containInScreenChatMessageFlag) {
             containInScreenChatMessageFlag = false;
             sendGameChatMessage(ResizerMessageType.CONTAIN_IN_SCREEN);
+        }
+        if (customChromeChatMessageFlag) {
+            customChromeChatMessageFlag = false;
+            sendGameChatMessage(ResizerMessageType.CUSTOM_CHROME);
+        }
+        if (lockWindowSizeChatMessageFlag) {
+            lockWindowSizeChatMessageFlag = false;
+            sendGameChatMessage(ResizerMessageType.LOCK_WINDOW_SIZE);
         }
     }
 
