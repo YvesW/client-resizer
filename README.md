@@ -1,7 +1,7 @@
 # Client Resizer
-Also annoyed by having to change your client's size (game size), resizable scaling, or position every time you move RuneLite to a different monitor or when doing a different activity? Or are you a big fan of contain in screen?<br>
+Also annoyed by having to change your client's size (game size), resizable scaling, or position every time you move RuneLite to a different monitor or when doing a different activity? Or are you a big fan of snap back/contain in screen?<br>
 
-**Client Resizer allows for automatic or hotkey-based resizing and repositioning of the client. It also allows for changing the resizable scaling, and containing your client in screen (snapping back).** It's especially useful for people that have multiple monitors of different sizes or resolutions, or for people that like to resize or (re)position their client in specific scenarios (e.g. per activity).<br>
+**Client Resizer allows for automatic or hotkey-based resizing and repositioning of the client. It also allows for changing the resizable scaling, and for containing your client in screen (snapping back).** It's especially useful for people that have multiple monitors of different sizes or resolutions, or for people that like to resize or (re)position their client in specific scenarios (e.g. per activity).<br>
 
 **This plugin adds the following features:**
 - Automatically resize your client when it's moved to a different monitor. This can be configured per monitor attribute, e.g. per ID string (differs for every monitor), resolution (dimension) or refresh rate.
@@ -9,11 +9,11 @@ Also annoyed by having to change your client's size (game size), resizable scali
 - Resize your client when switching RL config profiles if this isn't done by the config profiles themselves yet. Set up automatic resizing for your monitors with different game sizes per RL config profile. Then enable ``Resize when switching RuneLite config profile``.
 - Change your resizable scaling (stretched mode plugin), either automatically or hotkey-based.
 - (Re)position your client using hotkeys. This allows you to e.g. get RL flush with your screen or position it in a specific position per activity. Furthermore, this allows you to position the client in ways the normal Windows window manager does not allow, e.g. in a way that the title bar is offscreen at the top of the screen.
-- Contain the client in screen: the client will snap back **after your cursor leaves the menubar (title bar)** or after moving it using shift + Windows + arrow key. This can either be 'soft' or 'hard' contain in screen. Offsets can be added if the client is not in your preferred location after snapping back.
+- Snap back/Contain the client in screen: the client will snap back **after your cursor leaves the menubar (title bar)** or after moving it using shift + Windows + arrow key. This can either be 'soft' or 'hard' snap back/contain in screen. Offsets can be added if the client is not in your preferred location after snapping back.
 
 The plugin still respects all the other settings in the ``RuneLite`` > ``Window Settings`` config. For that reason, I personally suggest using the following RuneLite Window Settings:<br>
 ![RuneLite window settings](docs/img/runelite-window-settings.png)<br>
-*It is recommended to **enable** ``Enable custom window chrome`` in ``RuneLite`` > ``Window Settings`` if you'd like to automatically resize the client or contain the client in screen when dragging it to a different monitor. Shift + Windows key + arrow or hotkey-based repositioning does still automatically resize the client with custom chrome disabled. However, moving the client to a different monitor by dragging the title bar will not work with custom chrome disabled when trying to automatically resize the client or properly contain the client in the screen (snap back).<br>
+*It is recommended to **enable** ``Enable custom window chrome`` in ``RuneLite`` > ``Window Settings`` if you'd like to automatically resize the client or snap it back (contain the client in screen) when dragging it to a different monitor. Shift + Windows key + arrow or hotkey-based repositioning does still automatically resize the client with custom chrome disabled. However, moving the client to a different monitor by dragging the title bar will not work with custom chrome disabled when trying to automatically resize the client or properly snap the client back (contain in screen).<br>
 I generally also recommend **locking the window size**, so you don't accidentally use Windows's snap resize function.*
 
 ## User Instructions / How to set up
@@ -62,23 +62,24 @@ Note: the client will resize when your cursor leaves the menubar (title bar).
 - Set the corresponding hotkey. Combinations such as Ctrl + L are allowed.<br>
 ![Fully configured position hotkey](docs/img/fully-configured-position-hotkey.png)<br>
 *Tip: you can enable the ``Copy client position`` button to copy the current client position and post it to e.g. notepad.*<br>
-*Tip 2: this will override contain in screen/snap back, thus allowing you to move your client to another monitor if desired.*
+*Tip 2: this will override snap back/contain in screen, thus allowing you to move your client to another monitor if desired.*
 
-### Contain in screen (snapping back)
-Note that it might be more snapping the client back to the edge of the screen than containing in the screen. This does allow for some cool options though like 'soft' containing in screen/snapping back, i.e. only snapping back when the user drags the client a bit over the screen edge. This allows the user to still drag the client to another screen if desired.<br>
-It is recommended to **enable** ``Enable custom window chrome`` in ``RuneLite`` > ``Window Settings`` to properly contain the client in screen/snap back when dragging it to a different monitor. Shift + Windows key + arrow or hotkey-based repositioning does still automatically resize the client with custom chrome disabled.<br>
+### Snapping back (contain in screen)
+Note that it is more snapping the client back to the edge of the screen than containing in the screen. This does allow for some cool options though like 'soft' snapping back/containing in screen, i.e. only snapping back when the user drags the client a bit over the screen edge. This allows the user to still drag the client to another screen if desired.<br>
+It is recommended to **enable** ``Enable custom window chrome`` in ``RuneLite`` > ``Window Settings`` to properly snap the client back/contain it in screen when dragging it to a different monitor. Shift + Windows key + arrow or hotkey-based repositioning does still automatically resize the client with custom chrome disabled.<br>
 Furthermore, it is recommended to **lock the window size** in the ``RuneLite`` config, so you don't accidentally use Windows's snap resize function.<br>
 To set it up:
 - Open the config panel of Client Resizer (gear icon).
-- Open the ``Contain in screen`` category.
-- Tick the boxes for the sides you want to enable contain in screen/snap back for.<br>
-  ![Contain in screen](docs/img/contain-in-screen-booleans.PNG)<br>
-- The client will now be contained in screen/snapped back once your cursor leaves the menubar (title bar).<br>
-  *Tip: even with a 'hard' contain in screen/snap back, you can use hotkey-based resizing to move your client to another monitor if desired.*
+- Open the ``Snap back/contain in screen`` category.
+- Tick the boxes for the sides you want to enable snap back/contain in screen for.<br>
+  ![Snap back](docs/img/contain-in-screen-booleans.PNG)<br>
+- The client will now be snapped back/contained in screen once your cursor leaves the menubar (title bar).<br>
+  *Tip: even with a 'hard' snap back/contain in screen, you can use hotkey-based resizing to move your client to another monitor if desired.*
 - *Optional:* if your client is not in the desired location after snapping back or snaps back too soon/too late, increase or decrease the offset.<br>
-  ![Contain in screen offsets](docs/img/contain-in-screen-offsets.PNG)<br>
-- *Optional:* if you would like to use a 'soft' contain/snap back, which allows you to drag your client to another monitor but snaps your client back to the screen's edge if you put it barely over the edge, then lower the amount of ``Snap back pixels`` to e.g. 100. This way you can still snap your client to the edge of the screen, but also move your client to another screen if desired.<br>
-  If you like your client to always be contained in screen/snapped back, keep this at a very high value (e.g. 100000).
+  ![Snap back offsets](docs/img/contain-in-screen-offsets.PNG)<br>
+- *Optional:* if you would like to use a 'soft' snap back/contain, which allows you to drag your client to another monitor but snaps your client back to the screen's edge if you put it barely over the edge, then lower the amount of ``Snap back pixels`` to e.g. 100. This way you can still snap your client to the edge of the screen, but also move your client to another screen if desired.<br>
+  If you like your client to always be snapped back/contained in screen, keep this at a very high value (e.g. 100000).
+  ![Snap back demo](docs/img/snap-back-demo-hard-soft.webp)<br>
 
 ## Additional info
 Not tested on macOS or Linux; results may vary.
@@ -89,7 +90,7 @@ If you experience any issues or have any concerns, please reach out to YvesW via
 01-2024:
 - Fixed automatic resizing after the flatlaf changes. Please note that it is still recommended to have custom chrome enabled! The client will resize when your cursor leaves the menubar (title bar).
 - Added the option to change the position/location of the client using hotkeys. Thanks to Hooder for the tips!
-- Added a (hacky) option to contain the client in screen: the client will snap back after moving it using shift + Windows + arrow key or after your cursor leaves the menubar (title bar). This can either be 'soft' or 'hard' contain in screen. Offsets can be added if the client is not in your preferred location. Please note that custom chrome needs to be enabled to properly snap the client back to the right position if you are moving the client by dragging the menubar (title bar).
+- Added an option to snap the client back: the client will snap back after moving it using shift + Windows + arrow key or after your cursor leaves the menubar (title bar). This can either be 'soft' or 'hard' snap back/contain in screen. Offsets can be added if the client is not in your preferred location. Please note that custom chrome needs to be enabled to properly snap the client back to the right position if you are moving the client by dragging the menubar (title bar).
 
 09-2023:
 - Added the option to also change ``Resizable Scaling`` from the stretched mode plugin when using automatic or hotkey-based resizing.

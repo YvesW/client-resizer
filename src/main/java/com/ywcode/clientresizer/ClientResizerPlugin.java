@@ -25,7 +25,7 @@ import java.util.regex.*;
 @Slf4j
 @PluginDescriptor(
         name = "Client Resizer",
-        description = "Allows for automatic or hotkey-based resizing and repositioning, and for containing the client in screen/snapping back.",
+        description = "Allows for automatic or hotkey-based resizing and repositioning, and for snapping the client back/containing it in screen.",
         tags = {"client,resize,automatic,pixels,refresh rate,game size,size,screen size,monitor,display,screen,autoresize,hotkey,hot key,stretched mode,resizable scaling,scaling,position,reposition,location,menubar,title bar,contain,contain in screen,snap,snap back,edge,offset"}
 )
 
@@ -537,6 +537,7 @@ public class ClientResizerPlugin extends Plugin {
     }
 
     private void setDefaultDimension(Dimension dimension, String dimensionName) {
+        //Actually set the default dimension
         Dimension defaultDimension = new Dimension(0, 0);
         if (dimension.equals(defaultDimension)) {
             Dimension currentSize = configManager.getConfiguration("runelite", "gameSize", Dimension.class);
@@ -544,7 +545,7 @@ public class ClientResizerPlugin extends Plugin {
         }
     }
 
-    private void copyAttributeToClipboard() { //Copy value of specified attribute to clipboard so it can be pasted in the String input boxes
+    private void copyAttributeToClipboard() { //Copy value of specified attribute to clipboard, so it can be pasted in the String input boxes
         if (copyAttribute != MonitorAttribute.Disabled && currentMonitorValueForAttribute(copyAttribute) != null) {
             String valueToCopy = currentMonitorValueForAttribute(copyAttribute).toString(); //Hush IntelliJ, already checked if currentMonitorValueForAttribute(copyAttribute) != null so .toString() cannot produce a NPE AFAIK...
             if (copyAttribute == MonitorAttribute.Bounds) {
@@ -591,6 +592,7 @@ public class ClientResizerPlugin extends Plugin {
     }
 
     private void sendCustomChromeWarning() {
+        //Check if enough time has passed as to not spam the user => send custom chrome message
         long currentNanoTime = System.nanoTime();
         if (currentNanoTime - previousCustomChromeChatMessageNanoTime > TWENTY_SECONDS_IN_NANOSECONDS) {
             sendGameChatMessage(ResizerMessageType.CUSTOM_CHROME);
@@ -599,6 +601,7 @@ public class ClientResizerPlugin extends Plugin {
     }
 
     private void sendLockWindowWarning() {
+        //Check if enough time has passed as to not spam the user => send lock window size message
         long currentNanoTime = System.nanoTime();
         if (currentNanoTime - previousLockSizeChatMessageNanoTime > TWENTY_SECONDS_IN_NANOSECONDS) {
             sendGameChatMessage(ResizerMessageType.LOCK_WINDOW_SIZE);
@@ -607,21 +610,20 @@ public class ClientResizerPlugin extends Plugin {
     }
 
     private void checkAutomaticResizeContainSettings(String configKey) {
-        //Check if automatic resizing / contain in screen is enabled => if so, check if enough time has passed as to not spam the user => send message
-        long currentNanoTime = System.nanoTime();
+        //Check if automatic resizing / contain in screen is enabled => if so, check if enough time has passed as to not spam the user (performed my the method that gets called) => send message
         //Update arrays to most recent values
         MonitorAttribute[] AttributesArray = new MonitorAttribute[]{autoSize1Attribute, autoSize2Attribute, autoSize3Attribute, autoSize4Attribute, autoSize5Attribute, autoSize6Attribute, autoSize7Attribute, autoSize8Attribute, autoSize9Attribute, autoSize10Attribute};
         boolean shouldSendMessage = false;
         for (MonitorAttribute monitorAttribute : AttributesArray) {
             if (monitorAttribute != MonitorAttribute.Disabled) {
                 shouldSendMessage = true;
-                break;
+                break; //Boolean already set to true so can exit the for loop
             }
         }
         if (containInScreenTop || containInScreenRight || containInScreenBottom || containInScreenLeft) {
             shouldSendMessage = true;
         }
-        if (shouldSendMessage) {
+        if (shouldSendMessage) { //Send msg if code above determined that it should be send.
             switch (configKey) {
                 case "uiEnableCustomChrome":
                     sendCustomChromeWarning();
@@ -684,7 +686,7 @@ public class ClientResizerPlugin extends Plugin {
                 screenBoundsXRight = screenBoundsXRight + containInScreenRightOffset;
                 screenBoundsYTop = screenBoundsYTop - containInScreenTopOffset;
                 screenBoundsYBottom = screenBoundsYBottom + containInScreenBottomOffset;
-                //TODO: potentially add screen specific offset overrides at some point, in case people want e.g. different offsets for their 4k screen than for their 1080p screen.
+                //TODO: potentially add monitor specific offset overrides (new config category then) at some point, in case people want e.g. different offsets for their 4k monitor than for their 1080p monitor.
 
                 //Get the top JFrame to get the clientBounds
                 JFrame topFrameClient = (JFrame) SwingUtilities.getWindowAncestor(client.getCanvas());
@@ -702,8 +704,8 @@ public class ClientResizerPlugin extends Plugin {
                 int coordsToRepositionToX = clientBoundsXLeft; //Coords to reposition to if we need to. Set current values in case the contain option is not enabled for this side.
                 int coordsToRepositionToY = clientBoundsYTop; //Coords to reposition to if we need to. Set current values in case the contain option is not enabled for this side.
 
-                //if contain is enabled and the client is outside the screenbounds (+ config offset) => set the coords to reposition to and set the boolean so we know we need to reposition
-                //If the client is too big to even fit on the screen... Let's align the top right side with the screen so you can still press the x and access the config if all 4 contain options are enabled (so the order below is based on that)
+                //if contain is enabled and the client is outside the screenbounds (+ config offset) => set the coords to reposition to and set the boolean, so we know we need to reposition
+                //If the client is too big to even fit on the screen... Let's align the top right side with the screen, so you can still press the x and access the config if all 4 contain options are enabled (so the order below is based on that)
                 //Point is (x,y) with 0,0 being in the top left corner! 1920,1080 or smth like that is right bottom corner
                 //First check if contain boolean is enabled, then if the client is outside the bounds, then check if it is equal to or less than the snapback pixels (hard or soft snap)
                 if (containInScreenLeft && clientBoundsXLeft < screenBoundsXLeft && screenBoundsXLeft - clientBoundsXLeft <= containInScreenSnapBackPx) {
@@ -794,7 +796,7 @@ public class ClientResizerPlugin extends Plugin {
     }
 
     private void actuallySendMessage(String message) {
-        //Used in the method above, which actually sends the message
+        //Used in the method above. This method actually sends the message.
         //client.addChatMessage has to be called on clientThread. Doesn't cause any error if not called on client.getGameState() == GameState.LOGGED_IN
         clientThread.invokeLater(() -> {
             client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", message, "");

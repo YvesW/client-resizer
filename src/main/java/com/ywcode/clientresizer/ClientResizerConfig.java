@@ -20,7 +20,7 @@ public interface ClientResizerConfig extends Config {
     @ConfigSection(
             name = "Hotkey Resizing",
             description = "Hotkey based resizing.<br>"
-                    + "Tip: This allows the user to override contain in screen.",
+                    + "Tip: This allows the user to override snap back/contain in screen.",
             position = 1,
             closedByDefault = true
     )
@@ -44,8 +44,8 @@ public interface ClientResizerConfig extends Config {
     String positionSettings = "positionSettings";
 
     @ConfigSection(
-            name = "Contain in screen",
-            description = "Contain the client in the screen (sides, offset, hard/soft). Will snap back once your cursor leaves the menubar (title bar).<br>"
+            name = "Snap back/contain in screen",
+            description = "Snap the client back into/contain in screen (sides, offset, hard/soft). Will snap back once your cursor leaves the menubar (title bar).<br>"
                     + "Note: It's recommended to enable 'Enable custom window chrome' in 'RuneLite' > 'Window Settings'<br>"
                     + "Tip: you can always switch monitors by using hotkey repositioning (see above).",
             position = 4,
@@ -1647,8 +1647,8 @@ public interface ClientResizerConfig extends Config {
     //Alternatively use a Set here but meh. The set is harder to use for the user and I feel that 4 booleans are still ok.
     @ConfigItem(
             keyName = "containInScreenTop",
-            name = "Contain top side",
-            description = "Try to contain the top side of the client in the screen.<br>"
+            name = "Snap back/contain top side",
+            description = "Try to snap back/contain the top side of the client in the screen.<br>"
                     + "Note: It's recommended to enable 'Enable custom window chrome' in 'RuneLite' > 'Window Settings'<br>"
                     + "It is recommended to enable 'Lock windows size' in the 'RuneLite' config. Otherwise Windows will potentially try to snap resize the client.<br>",
             position = 0,
@@ -1660,8 +1660,8 @@ public interface ClientResizerConfig extends Config {
 
     @ConfigItem(
             keyName = "containInScreenRight",
-            name = "Contain right side",
-            description = "Try to contain the right side of the client in the screen.<br>"
+            name = "Snap back/contain right side",
+            description = "Try to snap back/contain the right side of the client in the screen.<br>"
                     + "Note: It's recommended to enable 'Enable custom window chrome' in 'RuneLite' > 'Window Settings'<br>"
                     + "It is recommended to enable 'Lock windows size' in the 'RuneLite' config. Otherwise Windows will potentially try to snap resize the client.<br>",
             position = 1,
@@ -1673,8 +1673,8 @@ public interface ClientResizerConfig extends Config {
 
     @ConfigItem(
             keyName = "containInScreenBottom",
-            name = "Contain bottom side",
-            description = "Try to contain the bottom side of the client in the screen.<br>"
+            name = "Snap back/contain bottom side",
+            description = "Try to snap back/contain the bottom side of the client in the screen.<br>"
                     + "Note: It's recommended to enable 'Enable custom window chrome' in 'RuneLite' > 'Window Settings'<br>"
                     + "It is recommended to enable 'Lock windows size' in the 'RuneLite' config. Otherwise Windows will potentially try to snap resize the client.<br>",
             position = 2,
@@ -1686,8 +1686,8 @@ public interface ClientResizerConfig extends Config {
 
     @ConfigItem(
             keyName = "containInScreenLeft",
-            name = "Contain left side",
-            description = "Try to contain the left side of the client in the screen.<br>"
+            name = "Snap back/contain left side",
+            description = "Try to snap back/contain the left side of the client in the screen.<br>"
                     + "Note: It's recommended to enable 'Enable custom window chrome' in 'RuneLite' > 'Window Settings'<br>"
                     + "It is recommended to enable 'Lock windows size' in the 'RuneLite' config. Otherwise Windows will potentially try to snap resize the client.<br>",
             position = 3,
@@ -1701,7 +1701,7 @@ public interface ClientResizerConfig extends Config {
             keyName = "containInScreenTopOffset",
             name = "Top offset",
             description = "Offset for the top side of the client.<br>"
-                    + "Increase/decrease if you want the client contained in screen more/less towards this side of the screen",
+                    + "Increase/decrease if you want the client snapped back/contained in screen more/less towards this side of the screen",
             position = 4,
             section = containInScreenSettings
     )
@@ -1719,7 +1719,7 @@ public interface ClientResizerConfig extends Config {
             keyName = "containInScreenRightOffset",
             name = "Right offset",
             description = "Offset for the right side of the client.<br>"
-                    + "Increase/decrease if you want the client contained in screen more/less towards this side of the screen",
+                    + "Increase/decrease if you want the client snapped back/contained in screen more/less towards this side of the screen",
             position = 5,
             section = containInScreenSettings
     )
@@ -1737,7 +1737,7 @@ public interface ClientResizerConfig extends Config {
             keyName = "containInScreenBottomOffset",
             name = "Bottom offset",
             description = "Offset for the bottom side of the client.<br>"
-                    + "Increase/decrease if you want the client contained in screen more/less towards this side of the screen",
+                    + "Increase/decrease if you want the client snapped back/contained in screen more/less towards this side of the screen",
             position = 6,
             section = containInScreenSettings
     )
@@ -1755,7 +1755,7 @@ public interface ClientResizerConfig extends Config {
             keyName = "containInScreenLeftOffset",
             name = "Left offset",
             description = "Offset for the left side of the client.<br>"
-                    + "Increase/decrease if you want the client contained in screen more/less towards this side of the screen",
+                    + "Increase/decrease if you want the client snapped back/contained in screen more/less towards this side of the screen",
             position = 7,
             section = containInScreenSettings
     )
@@ -1773,8 +1773,8 @@ public interface ClientResizerConfig extends Config {
             keyName = "containInScreenSnapBackPx",
             name = "Snap back pixels",
             description = "Amount of pixels the client can be moved past the screen edge (plus potential offset) while still snapping back to the screen.<br>"
-                    + "I.e. a high value will cause a 'hard' contain in screen (client will always snap back/be contained in screen when moving),<br>"
-                    + "a low value (e.g. 100px) will cause a 'soft' contain in screen. In that case the client would only be contained in screen<br>"
+                    + "I.e. a high value will cause a 'hard' snap back/contain in screen (client will always snap back/be contained in screen when moving),<br>"
+                    + "a low value (e.g. 100px) will cause a 'soft' snap back/contain in screen. In that case the client would only be snapped back/contained in screen<br>"
                     + "if it was moved a maximum of e.g. 100 pixels over the edge of the screen (+ potential offset). This allows the user to move the client to another monitor if desired.<br>"
                     + "Tip: you can always switch monitors by using hotkey repositioning (see above).",
             position = 8,
@@ -1816,10 +1816,10 @@ public interface ClientResizerConfig extends Config {
 
     @ConfigItem(
             keyName = "showChatMessageContain",
-            name = "Show contain chat message",
-            description = "Show the chat message when trying to contain the client in screen.<br>"
+            name = "Show snap back/contain chat message",
+            description = "Show the chat message when trying to snap the client back/contain the it in screen.<br>"
                     + "This setting is enabled by default. If you disable it, then DO remember that you are using this plugin!<br>"
-                    + "Do NOT complain in the RuneLite Discord that your client randomly repositions/tries to contain itself in the screen.",
+                    + "Do NOT complain in the RuneLite Discord that your client randomly repositions/tries to snap itself back/contain itself in the screen.",
             position = 2,
             section = advancedSettings
     )
