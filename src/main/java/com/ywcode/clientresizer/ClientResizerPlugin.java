@@ -219,7 +219,7 @@ public class ClientResizerPlugin extends Plugin {
     @Inject
     private ClientThread clientThread;
 
-    //TODO: potentially test 2x and 0.5 scale in RL configure in the future. Can't really use client-args when using a dev build, maybe in e.g. a ShadowJar. Something maybe worth testing in the future for automatic resizing and contain in screen! How does this count the pixels? Are the bounds etc 2x as well or still 1x?
+    //TODO: potentially test 2x and 0.5 scale in RL configure in the future. To do this, add -Dsun.java2d.uiScale.enabled=true -Dsun.java2d.uiScale=2.0 as VM args (source: RL launcher -> LauncherSettings.java). Something maybe worth testing in the future for automatic resizing and contain in screen! How does this count the pixels? Are the bounds etc 2x as well or still 1x?
 
     @Override
     public void startUp() throws Exception {
