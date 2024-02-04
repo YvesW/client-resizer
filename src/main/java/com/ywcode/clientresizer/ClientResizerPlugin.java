@@ -201,6 +201,12 @@ public class ClientResizerPlugin extends Plugin {
     private static MouseInputListener mouseInputListenerMenubar;
     private static boolean mouseInMenuBar; //Default = false. Might be dragging the client while this is active.
     private static boolean isCustomChromeEnabled = true; //Assume true, otherwise set to false in StartUp
+    private static MonitorAttribute[] attributesArray;
+    private static String[] valuesStringArray;
+    private static Dimension[] dimensionsArray;
+    private static Boolean[] resizableScalingBoolArray;
+    private static Integer[] resizableScalingPercentArray;
+
 
     @Inject
     private Client client;
@@ -488,6 +494,13 @@ public class ClientResizerPlugin extends Plugin {
         showChatMessageContain = config.showChatMessageContain();
         copyAttribute = config.copyAttribute();
         copyPosition = config.copyPosition();
+
+        //Update arrays to most recent values
+        attributesArray = new MonitorAttribute[]{autoSize1Attribute, autoSize2Attribute, autoSize3Attribute, autoSize4Attribute, autoSize5Attribute, autoSize6Attribute, autoSize7Attribute, autoSize8Attribute, autoSize9Attribute, autoSize10Attribute};
+        valuesStringArray = new String[]{autoSize1Value, autoSize2Value, autoSize3Value, autoSize4Value, autoSize5Value, autoSize6Value, autoSize7Value, autoSize8Value, autoSize9Value, autoSize10Value};
+        dimensionsArray = new Dimension[]{autoSize1Dimension, autoSize2Dimension, autoSize3Dimension, autoSize4Dimension, autoSize5Dimension, autoSize6Dimension, autoSize7Dimension, autoSize8Dimension, autoSize9Dimension, autoSize10Dimension};
+        resizableScalingBoolArray = new Boolean[]{resizableScalingAutomatic1, resizableScalingAutomatic2, resizableScalingAutomatic3, resizableScalingAutomatic4, resizableScalingAutomatic5, resizableScalingAutomatic6, resizableScalingAutomatic7, resizableScalingAutomatic8, resizableScalingAutomatic9, resizableScalingAutomatic10};
+        resizableScalingPercentArray = new Integer[]{resizableScalingAutomatic1Percent, resizableScalingAutomatic2Percent, resizableScalingAutomatic3Percent, resizableScalingAutomatic4Percent, resizableScalingAutomatic5Percent, resizableScalingAutomatic6Percent, resizableScalingAutomatic7Percent, resizableScalingAutomatic8Percent, resizableScalingAutomatic9Percent, resizableScalingAutomatic10Percent};
     }
 
     @Subscribe
@@ -847,26 +860,19 @@ public class ClientResizerPlugin extends Plugin {
     }
 
     private void resizeClient() {
-        //Update arrays to most recent values
-        MonitorAttribute[] AttributesArray = new MonitorAttribute[]{autoSize1Attribute, autoSize2Attribute, autoSize3Attribute, autoSize4Attribute, autoSize5Attribute, autoSize6Attribute, autoSize7Attribute, autoSize8Attribute, autoSize9Attribute, autoSize10Attribute};
-        String[] ValuesStringArray = new String[]{autoSize1Value, autoSize2Value, autoSize3Value, autoSize4Value, autoSize5Value, autoSize6Value, autoSize7Value, autoSize8Value, autoSize9Value, autoSize10Value};
-        Dimension[] DimensionsArray = new Dimension[]{autoSize1Dimension, autoSize2Dimension, autoSize3Dimension, autoSize4Dimension, autoSize5Dimension, autoSize6Dimension, autoSize7Dimension, autoSize8Dimension, autoSize9Dimension, autoSize10Dimension};
-        Boolean[] resizableScalingBoolArray = new Boolean[]{resizableScalingAutomatic1, resizableScalingAutomatic2, resizableScalingAutomatic3, resizableScalingAutomatic4, resizableScalingAutomatic5, resizableScalingAutomatic6, resizableScalingAutomatic7, resizableScalingAutomatic8, resizableScalingAutomatic9, resizableScalingAutomatic10};
-        Integer[] resizableScalingPercentArray = new Integer[]{resizableScalingAutomatic1Percent, resizableScalingAutomatic2Percent, resizableScalingAutomatic3Percent, resizableScalingAutomatic4Percent, resizableScalingAutomatic5Percent, resizableScalingAutomatic6Percent, resizableScalingAutomatic7Percent, resizableScalingAutomatic8Percent, resizableScalingAutomatic9Percent, resizableScalingAutomatic10Percent};
-
-        for (int i = 0; i < AttributesArray.length; i++) {
+        for (int i = 0; i < attributesArray.length; i++) {
             //if MonitorAttribute != disabled, the Value/String input by the user is properly processed (+ has proper format) and if processed Value/String matches value of current monitor, then setGameSize to the inputted Dimension
-            if (AttributesArray[i] != MonitorAttribute.Disabled &&
-                    processAttributeString(AttributesArray[i], ValuesStringArray[i]) != null &&
-                    processAttributeString(AttributesArray[i], ValuesStringArray[i]).equals(currentMonitorValueForAttribute(AttributesArray[i]))) {
+            if (attributesArray[i] != MonitorAttribute.Disabled &&
+                    processAttributeString(attributesArray[i], valuesStringArray[i]) != null &&
+                    processAttributeString(attributesArray[i], valuesStringArray[i]).equals(currentMonitorValueForAttribute(attributesArray[i]))) {
                 if (resizeAttributeUnchanged) {
-                    setGameSize(DimensionsArray[i]);
+                    setGameSize(dimensionsArray[i]);
                     if (resizableScalingBoolArray[i]) {
                         setResizableScaling(resizableScalingPercentArray[i]);
                     }
                 }
-                if (!resizeAttributeUnchanged && (hasAttributeChanged(AttributesArray[i]) || hasProfileChanged)) { //If the user disables the option to resize when the current monitor has changed but the value of the specified attribute (Dimensions or Refresh Rate) is the same
-                    setGameSize(DimensionsArray[i]);
+                if (!resizeAttributeUnchanged && (hasAttributeChanged(attributesArray[i]) || hasProfileChanged)) { //If the user disables the option to resize when the current monitor has changed but the value of the specified attribute (Dimensions or Refresh Rate) is the same
+                    setGameSize(dimensionsArray[i]);
                     if (resizableScalingBoolArray[i]) {
                         setResizableScaling(resizableScalingPercentArray[i]);
                     }
