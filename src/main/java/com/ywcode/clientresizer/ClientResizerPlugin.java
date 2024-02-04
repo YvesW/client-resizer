@@ -206,7 +206,13 @@ public class ClientResizerPlugin extends Plugin {
     private static Dimension[] dimensionsArray;
     private static Boolean[] resizableScalingBoolArray;
     private static Integer[] resizableScalingPercentArray;
-
+    private static Keybind[] resizeKeybindArray;
+    private static Dimension[] hotkeyDimensionArray;
+    private static Boolean[] resizableScalingHotkeyBooleanArray;
+    private static Integer[] resizableScalingHotkeyPercentageArray;
+    private static Keybind[] repositionKeybindArray;
+    private static Integer[] hotkeyPositionXArray;
+    private static Integer[] hotkeyPositionYArray;
 
     @Inject
     private Client client;
@@ -233,7 +239,6 @@ public class ClientResizerPlugin extends Plugin {
         defaultResizableScaling = configManager.getConfiguration("stretchedmode", "scalingFactor", Integer.class); //Default might be set to 50 initially, but will set to its current value on reset at least. PM Can't do this on value initialization because then configManager hasn't been injected yet.
         updateConfig();
         setDefaultDimensions();
-        registerHotkeyListeners();
         keyManager.registerKeyListener(keyListener);
 
         mouseInputListenerMenubar = new MouseInputListener() {
@@ -292,7 +297,6 @@ public class ClientResizerPlugin extends Plugin {
     @Override
     public void shutDown() throws Exception {
         //Unregister all listeners
-        unregisterHotkeyListeners();
         keyManager.unregisterKeyListener(keyListener);
         JFrame topFrameClient = (JFrame) SwingUtilities.getWindowAncestor(client.getCanvas());
         JMenuBar customChromeMenuBar = topFrameClient.getJMenuBar();
@@ -501,6 +505,13 @@ public class ClientResizerPlugin extends Plugin {
         dimensionsArray = new Dimension[]{autoSize1Dimension, autoSize2Dimension, autoSize3Dimension, autoSize4Dimension, autoSize5Dimension, autoSize6Dimension, autoSize7Dimension, autoSize8Dimension, autoSize9Dimension, autoSize10Dimension};
         resizableScalingBoolArray = new Boolean[]{resizableScalingAutomatic1, resizableScalingAutomatic2, resizableScalingAutomatic3, resizableScalingAutomatic4, resizableScalingAutomatic5, resizableScalingAutomatic6, resizableScalingAutomatic7, resizableScalingAutomatic8, resizableScalingAutomatic9, resizableScalingAutomatic10};
         resizableScalingPercentArray = new Integer[]{resizableScalingAutomatic1Percent, resizableScalingAutomatic2Percent, resizableScalingAutomatic3Percent, resizableScalingAutomatic4Percent, resizableScalingAutomatic5Percent, resizableScalingAutomatic6Percent, resizableScalingAutomatic7Percent, resizableScalingAutomatic8Percent, resizableScalingAutomatic9Percent, resizableScalingAutomatic10Percent};
+        resizeKeybindArray = new Keybind[]{hotkey1Key, hotkey2Key, hotkey3Key, hotkey4Key, hotkey5Key, hotkey6Key, hotkey7Key, hotkey8Key, hotkey9Key, hotkey10Key};
+        hotkeyDimensionArray = new Dimension[]{hotkey1Dimension, hotkey2Dimension, hotkey3Dimension, hotkey4Dimension, hotkey5Dimension, hotkey6Dimension, hotkey7Dimension, hotkey8Dimension, hotkey9Dimension, hotkey10Dimension};
+        resizableScalingHotkeyBooleanArray = new Boolean[]{resizableScalingHotkey1, resizableScalingHotkey2, resizableScalingHotkey3, resizableScalingHotkey4, resizableScalingHotkey5, resizableScalingHotkey6, resizableScalingHotkey7, resizableScalingHotkey8, resizableScalingHotkey9, resizableScalingHotkey10};
+        resizableScalingHotkeyPercentageArray = new Integer[]{resizableScalingHotkey1Percent, resizableScalingHotkey2Percent, resizableScalingHotkey3Percent, resizableScalingHotkey4Percent, resizableScalingHotkey5Percent, resizableScalingHotkey6Percent, resizableScalingHotkey7Percent, resizableScalingHotkey8Percent, resizableScalingHotkey9Percent, resizableScalingHotkey10Percent};
+        repositionKeybindArray = new Keybind[]{hotkey1PositionKey, hotkey2PositionKey, hotkey3PositionKey, hotkey4PositionKey, hotkey5PositionKey, hotkey6PositionKey, hotkey7PositionKey, hotkey8PositionKey, hotkey9PositionKey, hotkey10PositionKey};
+        hotkeyPositionXArray = new Integer[]{hotkey1PositionX, hotkey2PositionX, hotkey3PositionX, hotkey4PositionX, hotkey5PositionX, hotkey6PositionX, hotkey7PositionX, hotkey8PositionX, hotkey9PositionX, hotkey10PositionX};
+        hotkeyPositionYArray = new Integer[]{hotkey1PositionY, hotkey2PositionY, hotkey3PositionY, hotkey4PositionY, hotkey5PositionY, hotkey6PositionY, hotkey7PositionY, hotkey8PositionY, hotkey9PositionY, hotkey10PositionY};
     }
 
     @Subscribe
@@ -1034,54 +1045,6 @@ public class ClientResizerPlugin extends Plugin {
         }
     }
 
-    private void registerHotkeyListeners() {
-        //Called in StartUo to register the keylistener.
-        keyManager.registerKeyListener(hotkeyListener1);
-        keyManager.registerKeyListener(hotkeyListener2);
-        keyManager.registerKeyListener(hotkeyListener3);
-        keyManager.registerKeyListener(hotkeyListener4);
-        keyManager.registerKeyListener(hotkeyListener5);
-        keyManager.registerKeyListener(hotkeyListener6);
-        keyManager.registerKeyListener(hotkeyListener7);
-        keyManager.registerKeyListener(hotkeyListener8);
-        keyManager.registerKeyListener(hotkeyListener9);
-        keyManager.registerKeyListener(hotkeyListener10);
-        keyManager.registerKeyListener(hotkeyListenerPosition1);
-        keyManager.registerKeyListener(hotkeyListenerPosition2);
-        //keyManager.registerKeyListener(hotkeyListenerPosition3);
-        keyManager.registerKeyListener(hotkeyListenerPosition4);
-        keyManager.registerKeyListener(hotkeyListenerPosition5);
-        keyManager.registerKeyListener(hotkeyListenerPosition6);
-        keyManager.registerKeyListener(hotkeyListenerPosition7);
-        keyManager.registerKeyListener(hotkeyListenerPosition8);
-        keyManager.registerKeyListener(hotkeyListenerPosition9);
-        keyManager.registerKeyListener(hotkeyListenerPosition10);
-    }
-
-    private void unregisterHotkeyListeners() {
-        //Called in ShutDown to unregister all keylistener.
-        keyManager.unregisterKeyListener(hotkeyListener1);
-        keyManager.unregisterKeyListener(hotkeyListener2);
-        keyManager.unregisterKeyListener(hotkeyListener3);
-        keyManager.unregisterKeyListener(hotkeyListener4);
-        keyManager.unregisterKeyListener(hotkeyListener5);
-        keyManager.unregisterKeyListener(hotkeyListener6);
-        keyManager.unregisterKeyListener(hotkeyListener7);
-        keyManager.unregisterKeyListener(hotkeyListener8);
-        keyManager.unregisterKeyListener(hotkeyListener9);
-        keyManager.unregisterKeyListener(hotkeyListener10);
-        keyManager.unregisterKeyListener(hotkeyListenerPosition1);
-        keyManager.unregisterKeyListener(hotkeyListenerPosition2);
-        keyManager.unregisterKeyListener(hotkeyListenerPosition3);
-        keyManager.unregisterKeyListener(hotkeyListenerPosition4);
-        keyManager.unregisterKeyListener(hotkeyListenerPosition5);
-        keyManager.unregisterKeyListener(hotkeyListenerPosition6);
-        keyManager.unregisterKeyListener(hotkeyListenerPosition7);
-        keyManager.unregisterKeyListener(hotkeyListenerPosition8);
-        keyManager.unregisterKeyListener(hotkeyListenerPosition9);
-        keyManager.unregisterKeyListener(hotkeyListenerPosition10);
-    }
-
     // ------------- Wall of the KeyListener -------------
     private final KeyListener keyListener = new KeyListener() {
 
@@ -1097,25 +1060,19 @@ public class ClientResizerPlugin extends Plugin {
 
         @Override
         public void keyPressed(KeyEvent keyEvent) {
-            //Refresh arrays
-            Keybind[] resizeKeybinds = {hotkey1Key, hotkey2Key, hotkey3Key, hotkey4Key, hotkey5Key, hotkey6Key, hotkey7Key, hotkey8Key, hotkey9Key, hotkey10Key};
-            Dimension[] hotkeyDimensions = {hotkey1Dimension, hotkey2Dimension, hotkey3Dimension, hotkey4Dimension, hotkey5Dimension, hotkey6Dimension, hotkey7Dimension, hotkey8Dimension, hotkey9Dimension, hotkey10Dimension};
-            boolean[] resizableScalingHotkeyBooleans = {resizableScalingHotkey1, resizableScalingHotkey2, resizableScalingHotkey3, resizableScalingHotkey4, resizableScalingHotkey5, resizableScalingHotkey6, resizableScalingHotkey7, resizableScalingHotkey8, resizableScalingHotkey9, resizableScalingHotkey10};
-            int[] resizableScalingHotkeyPercentages = {resizableScalingHotkey1Percent, resizableScalingHotkey2Percent, resizableScalingHotkey3Percent, resizableScalingHotkey4Percent, resizableScalingHotkey5Percent, resizableScalingHotkey6Percent, resizableScalingHotkey7Percent, resizableScalingHotkey8Percent, resizableScalingHotkey9Percent, resizableScalingHotkey10Percent};
-            Keybind[] repositionKeybinds = {hotkey1PositionKey, hotkey2PositionKey, hotkey3PositionKey, hotkey4PositionKey, hotkey5PositionKey, hotkey6PositionKey, hotkey7PositionKey, hotkey8PositionKey, hotkey9PositionKey, hotkey10PositionKey};
             boolean matchFound = false;
-            for (int i = 0; i < resizeKeybinds.length; i++) {
-                if (resizeKeybinds[i].matches(keyEvent)) {
-                    setGameSize(hotkeyDimensions[i]);
-                    if (resizableScalingHotkeyBooleans[i]) {
-                        setResizableScaling(resizableScalingHotkeyPercentages[i]);
+            for (int i = 0; i < resizeKeybindArray.length; i++) {
+                if (resizeKeybindArray[i].matches(keyEvent)) {
+                    setGameSize(hotkeyDimensionArray[i]);
+                    if (resizableScalingHotkeyBooleanArray[i]) {
+                        setResizableScaling(resizableScalingHotkeyPercentageArray[i]);
                     }
                     matchFound = true;
                 }
             }
-            for (int i = 0; i < repositionKeybinds.length; i++) {
-                if (repositionKeybinds[i].matches(keyEvent)) {
-                    setClientPositionHotkey(hotkey1PositionX, hotkey1PositionY);
+            for (int i = 0; i < repositionKeybindArray.length; i++) {
+                if (repositionKeybindArray[i].matches(keyEvent)) {
+                    setClientPositionHotkey(hotkeyPositionXArray[i], hotkeyPositionYArray[i]);
                     matchFound = true;
                 }
             }
@@ -1130,357 +1087,7 @@ public class ClientResizerPlugin extends Plugin {
         }
     };
 
-
-    private final HotkeyListener hotkeyListener1 = new HotkeyListener(() -> hotkey1Key) {
-        @Override
-        public boolean isEnabledOnLoginScreen() {
-            return true;
-        }
-
-        @Override
-        public void hotkeyPressed() {
-            setGameSize(hotkey1Dimension);
-            if (resizableScalingHotkey1) {
-                setResizableScaling(resizableScalingHotkey1Percent);
-            }
-        }
-
-        @Override
-        public void hotkeyReleased() {
-        }
-    };
-
-    private final HotkeyListener hotkeyListener2 = new HotkeyListener(() -> hotkey2Key) {
-        @Override
-        public boolean isEnabledOnLoginScreen() {
-            return true;
-        }
-
-        @Override
-        public void hotkeyPressed() {
-            setGameSize(hotkey2Dimension);
-            if (resizableScalingHotkey2) {
-                setResizableScaling(resizableScalingHotkey2Percent);
-            }
-        }
-
-        @Override
-        public void hotkeyReleased() {
-        }
-    };
-
-    private final HotkeyListener hotkeyListener3 = new HotkeyListener(() -> hotkey3Key) {
-        @Override
-        public boolean isEnabledOnLoginScreen() {
-            return true;
-        }
-
-        @Override
-        public void hotkeyPressed() {
-            setGameSize(hotkey3Dimension);
-            if (resizableScalingHotkey3) {
-                setResizableScaling(resizableScalingHotkey3Percent);
-            }
-        }
-
-        @Override
-        public void hotkeyReleased() {
-        }
-    };
-
-    private final HotkeyListener hotkeyListener4 = new HotkeyListener(() -> hotkey4Key) {
-        @Override
-        public boolean isEnabledOnLoginScreen() {
-            return true;
-        }
-
-        @Override
-        public void hotkeyPressed() {
-            setGameSize(hotkey4Dimension);
-            if (resizableScalingHotkey4) {
-                setResizableScaling(resizableScalingHotkey4Percent);
-            }
-        }
-
-        @Override
-        public void hotkeyReleased() {
-        }
-    };
-
-    private final HotkeyListener hotkeyListener5 = new HotkeyListener(() -> hotkey5Key) {
-        @Override
-        public boolean isEnabledOnLoginScreen() {
-            return true;
-        }
-
-        @Override
-        public void hotkeyPressed() {
-            setGameSize(hotkey5Dimension);
-            if (resizableScalingHotkey5) {
-                setResizableScaling(resizableScalingHotkey5Percent);
-            }
-        }
-
-        @Override
-        public void hotkeyReleased() {
-        }
-    };
-
-    private final HotkeyListener hotkeyListener6 = new HotkeyListener(() -> hotkey6Key) {
-        @Override
-        public boolean isEnabledOnLoginScreen() {
-            return true;
-        }
-
-        @Override
-        public void hotkeyPressed() {
-            setGameSize(hotkey6Dimension);
-            if (resizableScalingHotkey6) {
-                setResizableScaling(resizableScalingHotkey6Percent);
-            }
-        }
-
-        @Override
-        public void hotkeyReleased() {
-        }
-    };
-
-    private final HotkeyListener hotkeyListener7 = new HotkeyListener(() -> hotkey7Key) {
-        @Override
-        public boolean isEnabledOnLoginScreen() {
-            return true;
-        }
-
-        @Override
-        public void hotkeyPressed() {
-            setGameSize(hotkey7Dimension);
-            if (resizableScalingHotkey7) {
-                setResizableScaling(resizableScalingHotkey7Percent);
-            }
-        }
-
-        @Override
-        public void hotkeyReleased() {
-        }
-    };
-
-    private final HotkeyListener hotkeyListener8 = new HotkeyListener(() -> hotkey8Key) {
-        @Override
-        public boolean isEnabledOnLoginScreen() {
-            return true;
-        }
-
-        @Override
-        public void hotkeyPressed() {
-            setGameSize(hotkey8Dimension);
-            if (resizableScalingHotkey8) {
-                setResizableScaling(resizableScalingHotkey8Percent);
-            }
-        }
-
-        @Override
-        public void hotkeyReleased() {
-        }
-    };
-
-    private final HotkeyListener hotkeyListener9 = new HotkeyListener(() -> hotkey9Key) {
-        @Override
-        public boolean isEnabledOnLoginScreen() {
-            return true;
-        }
-
-        @Override
-        public void hotkeyPressed() {
-            setGameSize(hotkey9Dimension);
-            if (resizableScalingHotkey9) {
-                setResizableScaling(resizableScalingHotkey9Percent);
-            }
-        }
-
-        @Override
-        public void hotkeyReleased() {
-        }
-    };
-
-    private final HotkeyListener hotkeyListener10 = new HotkeyListener(() -> hotkey10Key) {
-        @Override
-        public boolean isEnabledOnLoginScreen() {
-            return true;
-        }
-
-        @Override
-        public void hotkeyPressed() {
-            setGameSize(hotkey10Dimension);
-            if (resizableScalingHotkey10) {
-                setResizableScaling(resizableScalingHotkey10Percent);
-            }
-        }
-
-        @Override
-        public void hotkeyReleased() {
-        }
-    };
-
-    private final HotkeyListener hotkeyListenerPosition1 = new HotkeyListener(() -> hotkey1PositionKey) {
-        @Override
-        public boolean isEnabledOnLoginScreen() {
-            return true;
-        }
-
-        @Override
-        public void hotkeyPressed() {
-            setClientPositionHotkey(hotkey1PositionX, hotkey1PositionY);
-        }
-
-        @Override
-        public void hotkeyReleased() {
-        }
-    };
-
-    private final HotkeyListener hotkeyListenerPosition2 = new HotkeyListener(() -> hotkey2PositionKey) {
-        @Override
-        public boolean isEnabledOnLoginScreen() {
-            return true;
-        }
-
-        @Override
-        public void hotkeyPressed() {
-            setClientPositionHotkey(hotkey2PositionX, hotkey2PositionY);
-        }
-
-        @Override
-        public void hotkeyReleased() {
-        }
-    };
-
-    private final HotkeyListener hotkeyListenerPosition3 = new HotkeyListener(() -> hotkey3PositionKey) {
-        @Override
-        public boolean isEnabledOnLoginScreen() {
-            return true;
-        }
-
-        @Override
-        public void hotkeyPressed() {
-            setClientPositionHotkey(hotkey3PositionX, hotkey3PositionY);
-        }
-
-        @Override
-        public void hotkeyReleased() {
-        }
-    };
-
-    private final HotkeyListener hotkeyListenerPosition4 = new HotkeyListener(() -> hotkey4PositionKey) {
-        @Override
-        public boolean isEnabledOnLoginScreen() {
-            return true;
-        }
-
-        @Override
-        public void hotkeyPressed() {
-            setClientPositionHotkey(hotkey4PositionX, hotkey4PositionY);
-        }
-
-        @Override
-        public void hotkeyReleased() {
-        }
-    };
-
-    private final HotkeyListener hotkeyListenerPosition5 = new HotkeyListener(() -> hotkey5PositionKey) {
-        @Override
-        public boolean isEnabledOnLoginScreen() {
-            return true;
-        }
-
-        @Override
-        public void hotkeyPressed() {
-            setClientPositionHotkey(hotkey5PositionX, hotkey5PositionY);
-        }
-
-        @Override
-        public void hotkeyReleased() {
-        }
-    };
-
-    private final HotkeyListener hotkeyListenerPosition6 = new HotkeyListener(() -> hotkey6PositionKey) {
-        @Override
-        public boolean isEnabledOnLoginScreen() {
-            return true;
-        }
-
-        @Override
-        public void hotkeyPressed() {
-            setClientPositionHotkey(hotkey6PositionX, hotkey6PositionY);
-        }
-
-        @Override
-        public void hotkeyReleased() {
-        }
-    };
-
-    private final HotkeyListener hotkeyListenerPosition7 = new HotkeyListener(() -> hotkey7PositionKey) {
-        @Override
-        public boolean isEnabledOnLoginScreen() {
-            return true;
-        }
-
-        @Override
-        public void hotkeyPressed() {
-            setClientPositionHotkey(hotkey7PositionX, hotkey7PositionY);
-        }
-
-        @Override
-        public void hotkeyReleased() {
-        }
-    };
-
-    private final HotkeyListener hotkeyListenerPosition8 = new HotkeyListener(() -> hotkey8PositionKey) {
-        @Override
-        public boolean isEnabledOnLoginScreen() {
-            return true;
-        }
-
-        @Override
-        public void hotkeyPressed() {
-            setClientPositionHotkey(hotkey8PositionX, hotkey8PositionY);
-        }
-
-        @Override
-        public void hotkeyReleased() {
-        }
-    };
-
-    private final HotkeyListener hotkeyListenerPosition9 = new HotkeyListener(() -> hotkey9PositionKey) {
-        @Override
-        public boolean isEnabledOnLoginScreen() {
-            return true;
-        }
-
-        @Override
-        public void hotkeyPressed() {
-            setClientPositionHotkey(hotkey9PositionX, hotkey9PositionY);
-        }
-
-        @Override
-        public void hotkeyReleased() {
-        }
-    };
-
-    private final HotkeyListener hotkeyListenerPosition10 = new HotkeyListener(() -> hotkey10PositionKey) {
-        @Override
-        public boolean isEnabledOnLoginScreen() {
-            return true;
-        }
-
-        @Override
-        public void hotkeyPressed() {
-            setClientPositionHotkey(hotkey10PositionX, hotkey10PositionY);
-        }
-
-        @Override
-        public void hotkeyReleased() {
-        }
-    };
-    // ------------- End of wall of HotkeyListeners -------------
+    // ------------- End of wall of the KeyListener -------------
 
     @Provides
     ClientResizerConfig provideConfig(ConfigManager configManager) {
