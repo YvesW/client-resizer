@@ -10,6 +10,7 @@ import net.runelite.client.config.*;
 import net.runelite.client.eventbus.*;
 import net.runelite.client.events.*;
 import net.runelite.client.input.*;
+import net.runelite.client.input.KeyListener;
 import net.runelite.client.plugins.*;
 import net.runelite.client.ui.*;
 import net.runelite.client.util.*;
@@ -227,6 +228,7 @@ public class ClientResizerPlugin extends Plugin {
         updateConfig();
         setDefaultDimensions();
         registerHotkeyListeners();
+        keyManager.registerKeyListener(keyListener);
 
         mouseInputListenerMenubar = new MouseInputListener() {
             @Override
@@ -285,6 +287,7 @@ public class ClientResizerPlugin extends Plugin {
     public void shutDown() throws Exception {
         //Unregister all listeners
         unregisterHotkeyListeners();
+        keyManager.unregisterKeyListener(keyListener);
         JFrame topFrameClient = (JFrame) SwingUtilities.getWindowAncestor(client.getCanvas());
         JMenuBar customChromeMenuBar = topFrameClient.getJMenuBar();
         if (isCustomChromeEnabled) { //Prevent NPE in case custom chrome is disabled
@@ -522,11 +525,11 @@ public class ClientResizerPlugin extends Plugin {
     }
 
     private void setDefaultDimensions() {
-        Dimension[] DimensionsArray = new Dimension[]{autoSize1Dimension, autoSize2Dimension, autoSize3Dimension, autoSize4Dimension, autoSize5Dimension, autoSize6Dimension, autoSize7Dimension, autoSize8Dimension, autoSize9Dimension, autoSize10Dimension, hotkey1Dimension, hotkey2Dimension, hotkey3Dimension, hotkey4Dimension, hotkey5Dimension, hotkey6Dimension, hotkey7Dimension, hotkey8Dimension, hotkey9Dimension, hotkey10Dimension};
-        String[] DimensionsStringArray = new String[]{"autoSize1Dimension", "autoSize2Dimension", "autoSize3Dimension", "autoSize4Dimension", "autoSize5Dimension", "autoSize6Dimension", "autoSize7Dimension", "autoSize8Dimension", "autoSize9Dimension", "autoSize10Dimension", "hotkey1Dimension","hotkey2Dimension","hotkey3Dimension","hotkey4Dimension", "hotkey5Dimension","hotkey6Dimension","hotkey7Dimension","hotkey8Dimension","hotkey9Dimension", "hotkey10Dimension"};
+        Dimension[] dimensionsArray = new Dimension[]{autoSize1Dimension, autoSize2Dimension, autoSize3Dimension, autoSize4Dimension, autoSize5Dimension, autoSize6Dimension, autoSize7Dimension, autoSize8Dimension, autoSize9Dimension, autoSize10Dimension, hotkey1Dimension, hotkey2Dimension, hotkey3Dimension, hotkey4Dimension, hotkey5Dimension, hotkey6Dimension, hotkey7Dimension, hotkey8Dimension, hotkey9Dimension, hotkey10Dimension};
+        String[] dimensionsStringArray = new String[]{"autoSize1Dimension", "autoSize2Dimension", "autoSize3Dimension", "autoSize4Dimension", "autoSize5Dimension", "autoSize6Dimension", "autoSize7Dimension", "autoSize8Dimension", "autoSize9Dimension", "autoSize10Dimension", "hotkey1Dimension","hotkey2Dimension","hotkey3Dimension","hotkey4Dimension", "hotkey5Dimension","hotkey6Dimension","hotkey7Dimension","hotkey8Dimension","hotkey9Dimension", "hotkey10Dimension"};
         //Set default dimensions to current game size so someone doesn't accidentally set their game size to Dimension(Constants.GAME_FIXED_WIDTH, Constants.GAME_FIXED_HEIGHT)
-        for (int i = 0; i < DimensionsArray.length; i++) {
-            setDefaultDimension(DimensionsArray[i], DimensionsStringArray[i]);
+        for (int i = 0; i < dimensionsArray.length; i++) {
+            setDefaultDimension(dimensionsArray[i], dimensionsStringArray[i]);
         }
         //Alternatively, you can move setConfiguration(copyAttribute) and updateConfig to onStartup and probably change the Config to just return:
         //return configManager.getConfiguration("runelite", "gameSize", Dimension.class);
@@ -1026,7 +1029,7 @@ public class ClientResizerPlugin extends Plugin {
     }
 
     private void registerHotkeyListeners() {
-        //Called in onStartuo to register the hotkeylisteners.
+        //Called in StartUo to register the keylistener.
         keyManager.registerKeyListener(hotkeyListener1);
         keyManager.registerKeyListener(hotkeyListener2);
         keyManager.registerKeyListener(hotkeyListener3);
@@ -1039,7 +1042,7 @@ public class ClientResizerPlugin extends Plugin {
         keyManager.registerKeyListener(hotkeyListener10);
         keyManager.registerKeyListener(hotkeyListenerPosition1);
         keyManager.registerKeyListener(hotkeyListenerPosition2);
-        keyManager.registerKeyListener(hotkeyListenerPosition3);
+        //keyManager.registerKeyListener(hotkeyListenerPosition3);
         keyManager.registerKeyListener(hotkeyListenerPosition4);
         keyManager.registerKeyListener(hotkeyListenerPosition5);
         keyManager.registerKeyListener(hotkeyListenerPosition6);
@@ -1050,7 +1053,7 @@ public class ClientResizerPlugin extends Plugin {
     }
 
     private void unregisterHotkeyListeners() {
-        //Called in onShutDown to unregister all hotkeylisteners.
+        //Called in ShutDown to unregister all keylistener.
         keyManager.unregisterKeyListener(hotkeyListener1);
         keyManager.unregisterKeyListener(hotkeyListener2);
         keyManager.unregisterKeyListener(hotkeyListener3);
@@ -1073,7 +1076,55 @@ public class ClientResizerPlugin extends Plugin {
         keyManager.unregisterKeyListener(hotkeyListenerPosition10);
     }
 
-    // ------------- Wall of HotkeyListeners -------------
+    // ------------- Wall of the KeyListener -------------
+    private final KeyListener keyListener = new KeyListener() {
+
+        @Override
+        public boolean isEnabledOnLoginScreen() {
+            return true;
+        }
+
+        @Override
+        public void keyTyped(KeyEvent keyEvent) {
+            //Must be implemented
+        }
+
+        @Override
+        public void keyPressed(KeyEvent keyEvent) {
+            //Refresh arrays
+            Keybind[] resizeKeybinds = {hotkey1Key, hotkey2Key, hotkey3Key, hotkey4Key, hotkey5Key, hotkey6Key, hotkey7Key, hotkey8Key, hotkey9Key, hotkey10Key};
+            Dimension[] hotkeyDimensions = {hotkey1Dimension, hotkey2Dimension, hotkey3Dimension, hotkey4Dimension, hotkey5Dimension, hotkey6Dimension, hotkey7Dimension, hotkey8Dimension, hotkey9Dimension, hotkey10Dimension};
+            boolean[] resizableScalingHotkeyBooleans = {resizableScalingHotkey1, resizableScalingHotkey2, resizableScalingHotkey3, resizableScalingHotkey4, resizableScalingHotkey5, resizableScalingHotkey6, resizableScalingHotkey7, resizableScalingHotkey8, resizableScalingHotkey9, resizableScalingHotkey10};
+            int[] resizableScalingHotkeyPercentages = {resizableScalingHotkey1Percent, resizableScalingHotkey2Percent, resizableScalingHotkey3Percent, resizableScalingHotkey4Percent, resizableScalingHotkey5Percent, resizableScalingHotkey6Percent, resizableScalingHotkey7Percent, resizableScalingHotkey8Percent, resizableScalingHotkey9Percent, resizableScalingHotkey10Percent};
+            Keybind[] repositionKeybinds = {hotkey1PositionKey, hotkey2PositionKey, hotkey3PositionKey, hotkey4PositionKey, hotkey5PositionKey, hotkey6PositionKey, hotkey7PositionKey, hotkey8PositionKey, hotkey9PositionKey, hotkey10PositionKey};
+            boolean matchFound = false;
+            for (int i = 0; i < resizeKeybinds.length; i++) {
+                if (resizeKeybinds[i].matches(keyEvent)) {
+                    setGameSize(hotkeyDimensions[i]);
+                    if (resizableScalingHotkeyBooleans[i]) {
+                        setResizableScaling(resizableScalingHotkeyPercentages[i]);
+                    }
+                    matchFound = true;
+                }
+            }
+            for (int i = 0; i < repositionKeybinds.length; i++) {
+                if (repositionKeybinds[i].matches(keyEvent)) {
+                    setClientPositionHotkey(hotkey1PositionX, hotkey1PositionY);
+                    matchFound = true;
+                }
+            }
+            if (matchFound) {
+                keyEvent.consume();
+            }
+        }
+
+        @Override
+        public void keyReleased(KeyEvent keyEvent) {
+            //Must be implemented
+        }
+    };
+
+
     private final HotkeyListener hotkeyListener1 = new HotkeyListener(() -> hotkey1Key) {
         @Override
         public boolean isEnabledOnLoginScreen() {
