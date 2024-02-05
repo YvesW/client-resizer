@@ -37,6 +37,18 @@ public class ClientResizerPlugin extends Plugin {
     //Vars are quite heavily cached so could probably just config.configKey(). However, the best practice behavior in plugins is to have a bunch of variables to store the results of the config methods, and check it in startUp/onConfigChanged. It feels redundant, but it's better than hitting the reflective calls every frame. --LlemonDuck
     private static boolean resizeAttributeUnchanged;
     private static boolean resizeWhenConfigProfileChanged;
+    private static MonitorAttribute[] attributesArray;
+    private static String[] valuesStringArray;
+    private static Dimension[] dimensionsArray;
+    private static Boolean[] resizableScalingBoolArray;
+    private static Integer[] resizableScalingPercentArray;
+    private static Keybind[] resizeKeybindArray;
+    private static Dimension[] hotkeyDimensionArray;
+    private static Boolean[] resizableScalingHotkeyBooleanArray;
+    private static Integer[] resizableScalingHotkeyPercentageArray;
+    private static Keybind[] repositionKeybindArray;
+    private static Integer[] hotkeyPositionXArray;
+    private static Integer[] hotkeyPositionYArray;
     private static boolean containInScreenTop;
     private static boolean containInScreenRight;
     private static boolean containInScreenBottom;
@@ -83,20 +95,8 @@ public class ClientResizerPlugin extends Plugin {
     private static MouseInputListener mouseInputListenerMenubar;
     private static boolean mouseInMenuBar; //Default = false. Might be dragging the client while this is active.
     private static boolean isCustomChromeEnabled = true; //Assume true, otherwise set to false in StartUp
-    private static MonitorAttribute[] attributesArray;
-    private static String[] valuesStringArray;
-    private static Dimension[] dimensionsArray;
-    private static Boolean[] resizableScalingBoolArray;
-    private static Integer[] resizableScalingPercentArray;
-    private static Keybind[] resizeKeybindArray;
-    private static Dimension[] hotkeyDimensionArray;
-    private static Boolean[] resizableScalingHotkeyBooleanArray;
-    private static Integer[] resizableScalingHotkeyPercentageArray;
-    private static Keybind[] repositionKeybindArray;
-    private static Integer[] hotkeyPositionXArray;
-    private static Integer[] hotkeyPositionYArray;
-    private static final String[] dimensionsStringArray = new String[]{"autoSize1Dimension", "autoSize2Dimension", "autoSize3Dimension", "autoSize4Dimension", "autoSize5Dimension", "autoSize6Dimension", "autoSize7Dimension", "autoSize8Dimension", "autoSize9Dimension", "autoSize10Dimension", "hotkey1Dimension","hotkey2Dimension","hotkey3Dimension","hotkey4Dimension", "hotkey5Dimension","hotkey6Dimension","hotkey7Dimension","hotkey8Dimension","hotkey9Dimension", "hotkey10Dimension"};
-    private static final HashSet<Integer> numericalKeyCodes = new HashSet<>(Arrays.asList(KeyEvent.VK_0, KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9, KeyEvent.VK_NUMPAD0, KeyEvent.VK_NUMPAD1, KeyEvent.VK_NUMPAD2, KeyEvent.VK_NUMPAD3, KeyEvent.VK_NUMPAD4, KeyEvent.VK_NUMPAD5, KeyEvent.VK_NUMPAD6, KeyEvent.VK_NUMPAD7, KeyEvent.VK_NUMPAD8, KeyEvent.VK_NUMPAD9));
+    private static final String[] dimensionsStringArray = new String[]{"autoSize1Dimension", "autoSize2Dimension", "autoSize3Dimension", "autoSize4Dimension", "autoSize5Dimension", "autoSize6Dimension", "autoSize7Dimension", "autoSize8Dimension", "autoSize9Dimension", "autoSize10Dimension", "hotkey1Dimension","hotkey2Dimension","hotkey3Dimension","hotkey4Dimension", "hotkey5Dimension","hotkey6Dimension","hotkey7Dimension","hotkey8Dimension","hotkey9Dimension", "hotkey10Dimension"}; //Used to set the default dimenion
+    private static final HashSet<Integer> numericalKeyCodes = new HashSet<>(Arrays.asList(KeyEvent.VK_0, KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9, KeyEvent.VK_NUMPAD0, KeyEvent.VK_NUMPAD1, KeyEvent.VK_NUMPAD2, KeyEvent.VK_NUMPAD3, KeyEvent.VK_NUMPAD4, KeyEvent.VK_NUMPAD5, KeyEvent.VK_NUMPAD6, KeyEvent.VK_NUMPAD7, KeyEvent.VK_NUMPAD8, KeyEvent.VK_NUMPAD9)); //Used to disable numerical hotkeys while the bank pin container is open
 
     @Inject
     private Client client;
