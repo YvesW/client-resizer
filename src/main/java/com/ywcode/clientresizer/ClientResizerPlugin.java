@@ -215,6 +215,7 @@ public class ClientResizerPlugin extends Plugin {
     private static Keybind[] repositionKeybindArray;
     private static Integer[] hotkeyPositionXArray;
     private static Integer[] hotkeyPositionYArray;
+    private static final String[] dimensionsStringArray = new String[]{"autoSize1Dimension", "autoSize2Dimension", "autoSize3Dimension", "autoSize4Dimension", "autoSize5Dimension", "autoSize6Dimension", "autoSize7Dimension", "autoSize8Dimension", "autoSize9Dimension", "autoSize10Dimension", "hotkey1Dimension","hotkey2Dimension","hotkey3Dimension","hotkey4Dimension", "hotkey5Dimension","hotkey6Dimension","hotkey7Dimension","hotkey8Dimension","hotkey9Dimension", "hotkey10Dimension"};
     private static final HashSet<Integer> numericalKeyCodes = new HashSet<>(Arrays.asList(KeyEvent.VK_0, KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9, KeyEvent.VK_NUMPAD0, KeyEvent.VK_NUMPAD1, KeyEvent.VK_NUMPAD2, KeyEvent.VK_NUMPAD3, KeyEvent.VK_NUMPAD4, KeyEvent.VK_NUMPAD5, KeyEvent.VK_NUMPAD6, KeyEvent.VK_NUMPAD7, KeyEvent.VK_NUMPAD8, KeyEvent.VK_NUMPAD9));
 
     @Inject
@@ -553,8 +554,6 @@ public class ClientResizerPlugin extends Plugin {
     }
 
     private void setDefaultDimensions() {
-        Dimension[] dimensionsArray = new Dimension[]{autoSize1Dimension, autoSize2Dimension, autoSize3Dimension, autoSize4Dimension, autoSize5Dimension, autoSize6Dimension, autoSize7Dimension, autoSize8Dimension, autoSize9Dimension, autoSize10Dimension, hotkey1Dimension, hotkey2Dimension, hotkey3Dimension, hotkey4Dimension, hotkey5Dimension, hotkey6Dimension, hotkey7Dimension, hotkey8Dimension, hotkey9Dimension, hotkey10Dimension};
-        String[] dimensionsStringArray = new String[]{"autoSize1Dimension", "autoSize2Dimension", "autoSize3Dimension", "autoSize4Dimension", "autoSize5Dimension", "autoSize6Dimension", "autoSize7Dimension", "autoSize8Dimension", "autoSize9Dimension", "autoSize10Dimension", "hotkey1Dimension","hotkey2Dimension","hotkey3Dimension","hotkey4Dimension", "hotkey5Dimension","hotkey6Dimension","hotkey7Dimension","hotkey8Dimension","hotkey9Dimension", "hotkey10Dimension"};
         //Set default dimensions to current game size so someone doesn't accidentally set their game size to Dimension(Constants.GAME_FIXED_WIDTH, Constants.GAME_FIXED_HEIGHT)
         for (int i = 0; i < dimensionsArray.length; i++) {
             setDefaultDimension(dimensionsArray[i], dimensionsStringArray[i]);
@@ -642,10 +641,8 @@ public class ClientResizerPlugin extends Plugin {
 
     private void checkAutomaticResizeContainSettings(String configKey) {
         //Check if automatic resizing / contain in screen is enabled => if so, check if enough time has passed as to not spam the user (performed my the method that gets called) => send message
-        //Update arrays to most recent values
-        MonitorAttribute[] AttributesArray = new MonitorAttribute[]{autoSize1Attribute, autoSize2Attribute, autoSize3Attribute, autoSize4Attribute, autoSize5Attribute, autoSize6Attribute, autoSize7Attribute, autoSize8Attribute, autoSize9Attribute, autoSize10Attribute};
         boolean shouldSendMessage = false;
-        for (MonitorAttribute monitorAttribute : AttributesArray) {
+        for (MonitorAttribute monitorAttribute : attributesArray) {
             if (monitorAttribute != MonitorAttribute.Disabled) {
                 shouldSendMessage = true;
                 break; //Boolean already set to true so can exit the for loop
