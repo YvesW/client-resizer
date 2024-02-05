@@ -81,6 +81,11 @@ To set it up:
   If you like your client to always be snapped back/contained in screen, keep this at a very high value (e.g. 100000).
   ![Snap back demo](docs/img/snap-back-demo-hard-soft.webp)<br>
 
+### Importing and exporting settings
+You can export and import your config to/from the clipboard to easily transfer your config settings to e.g. a different profile without having to duplicate the profile. Please keep in mind that **importing will overwrite your config settings**! 
+- Type the ``::ClientResizerExport`` command ingame to copy the config to your clipboard.
+- Type the ``::ClientResizerImportOverwrite`` command ingame to import the config from your clipboard. Keep in mind that **importing will overwrite your config values**.
+
 ## Additional info
 Not tested on macOS or Linux; results may vary.
 

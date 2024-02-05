@@ -1,5 +1,7 @@
 package com.ywcode.clientresizer;
 
+import com.google.gson.*;
+import com.google.gson.reflect.*;
 import com.google.inject.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
@@ -14,6 +16,7 @@ import net.runelite.client.input.*;
 import net.runelite.client.input.KeyListener;
 import net.runelite.client.plugins.*;
 import net.runelite.client.ui.*;
+import net.runelite.client.util.*;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -21,7 +24,9 @@ import java.awt.*;
 import java.awt.Point;
 import java.awt.datatransfer.*;
 import java.awt.event.*;
+import java.io.*;
 import java.util.*;
+import java.util.List;
 import java.util.regex.*;
 
 @Slf4j
@@ -66,6 +71,7 @@ public class ClientResizerPlugin extends Plugin {
     private static boolean copyPosition;
     //------------- End of wall of config vars -------------
 
+    private static final String CONFIG_GROUP_NAME = "ClientResizer";
     private static GraphicsConfiguration graphicsConfig;
     private static GraphicsDevice currentMonitor;
     private static GraphicsDevice previousMonitor;
@@ -97,6 +103,8 @@ public class ClientResizerPlugin extends Plugin {
     private static boolean isCustomChromeEnabled = true; //Assume true, otherwise set to false in StartUp
     private static final String[] dimensionsStringArray = new String[]{"autoSize1Dimension", "autoSize2Dimension", "autoSize3Dimension", "autoSize4Dimension", "autoSize5Dimension", "autoSize6Dimension", "autoSize7Dimension", "autoSize8Dimension", "autoSize9Dimension", "autoSize10Dimension", "hotkey1Dimension","hotkey2Dimension","hotkey3Dimension","hotkey4Dimension", "hotkey5Dimension","hotkey6Dimension","hotkey7Dimension","hotkey8Dimension","hotkey9Dimension", "hotkey10Dimension"}; //Used to set the default dimenion
     private static final HashSet<Integer> numericalKeyCodes = new HashSet<>(Arrays.asList(KeyEvent.VK_0, KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9, KeyEvent.VK_NUMPAD0, KeyEvent.VK_NUMPAD1, KeyEvent.VK_NUMPAD2, KeyEvent.VK_NUMPAD3, KeyEvent.VK_NUMPAD4, KeyEvent.VK_NUMPAD5, KeyEvent.VK_NUMPAD6, KeyEvent.VK_NUMPAD7, KeyEvent.VK_NUMPAD8, KeyEvent.VK_NUMPAD9)); //Used to disable numerical hotkeys while the bank pin container is open
+    private static final Map.Entry<String, String> EXPORT_PREFIX = new AbstractMap.SimpleImmutableEntry<>("Client Resizer Prefix", "Client Resizer Export");
+    private static final Map.Entry<String, String> EXPORT_SUFFIX = new AbstractMap.SimpleImmutableEntry<>("Client Resizer Suffix", "Client Resizer Export");
 
     @Inject
     private Client client;
@@ -115,6 +123,9 @@ public class ClientResizerPlugin extends Plugin {
 
     @Inject
     private ClientThread clientThread;
+
+    @Inject
+    private Gson gson;
 
     //TODO: potentially test 2x and 0.5 scale in RL configure in the future. To do this, add -Dsun.java2d.uiScale.enabled=true -Dsun.java2d.uiScale=2.0 as VM args (source: RL launcher -> LauncherSettings.java). Something maybe worth testing in the future for automatic resizing and contain in screen! How does this count the pixels? Are the bounds etc 2x as well or still 1x?
 
@@ -192,7 +203,7 @@ public class ClientResizerPlugin extends Plugin {
     @Subscribe
     public void onConfigChanged(ConfigChanged configChanged) {
         String configGroupChanged = configChanged.getGroup();
-        if (configGroupChanged.equals("ClientResizer")) {
+        if (configGroupChanged.equals(CONFIG_GROUP_NAME)) {
             updateConfig();
             String configKey = configChanged.getKey();
             String newConfigValue = configChanged.getNewValue();
@@ -313,6 +324,20 @@ public class ClientResizerPlugin extends Plugin {
         }
     }
 
+    @Subscribe
+    public void onCommandExecuted(CommandExecuted commandExecuted) {
+        String command = Text.standardize(commandExecuted.getCommand());
+        switch (command) {
+            case "clientresizerexport":
+                exportConfigToClipboard();
+                break;
+            case "clientresizerimportoverwrite":
+                importConfigFromClipboard();
+                break;
+        }
+    }
+    //todo: write explanation for new commands in readme! (- Add ``::ClientResizerExport`` and ``::ClientResizerImportOverwrite`` commands to export and import your config to/from your clipboard. Keep in mind that importing will overwrite your config values. )
+
     private void setDefaultDimensions() {
         //Set default dimensions to current game size so someone doesn't accidentally set their game size to Dimension(Constants.GAME_FIXED_WIDTH, Constants.GAME_FIXED_HEIGHT)
         for (int i = 0; i < dimensionsArray.length; i++) {
@@ -321,8 +346,8 @@ public class ClientResizerPlugin extends Plugin {
         //Alternatively, you can move setConfiguration(copyAttribute) and updateConfig to onStartup and probably change the Config to just return:
         //return configManager.getConfiguration("runelite", "gameSize", Dimension.class);
         //Only potential advantage of current application is probably that the user can reset it to 0,0 but then on next restart it gets changed anyway so meh.
-        configManager.setConfiguration("ClientResizer", "copyAttribute", MonitorAttribute.Disabled); //reset copyAttribute setting back to disabled on plugin start
-        configManager.setConfiguration("ClientResizer", "copyPosition", "False"); //reset copyPosition setting back to disabled on plugin start
+        configManager.setConfiguration(CONFIG_GROUP_NAME, "copyAttribute", MonitorAttribute.Disabled); //reset copyAttribute setting back to disabled on plugin start
+        configManager.setConfiguration(CONFIG_GROUP_NAME, "copyPosition", "False"); //reset copyPosition setting back to disabled on plugin start
         updateConfig(); //configManager.setConfiguration doesn't seem to trigger onConfigChanged?
     }
 
@@ -331,7 +356,7 @@ public class ClientResizerPlugin extends Plugin {
         Dimension defaultDimension = new Dimension(0, 0);
         if (dimension.equals(defaultDimension)) {
             Dimension currentSize = configManager.getConfiguration("runelite", "gameSize", Dimension.class);
-            configManager.setConfiguration("ClientResizer", dimensionName, currentSize);
+            configManager.setConfiguration(CONFIG_GROUP_NAME, dimensionName, currentSize);
         }
     }
 
@@ -802,6 +827,65 @@ public class ClientResizerPlugin extends Plugin {
         if (lockWindowSizeChatMessageFlag) {
             lockWindowSizeChatMessageFlag = false;
             sendGameChatMessage(ResizerMessageType.LOCK_WINDOW_SIZE);
+        }
+    }
+
+    private void exportConfigToClipboard() {
+        //Used to export the config in a json Map<String, String> format to the clipboard
+        //Get list of all config keys
+        List<String> configKeys = configManager.getConfigurationKeys(CONFIG_GROUP_NAME);
+        Map<String, String> exportedValues = new LinkedHashMap<>(); //Use LinkeHashMap so insertion order is maintained for prefix and suffix, and add prefix
+        exportedValues.put(EXPORT_PREFIX.getKey(), EXPORT_PREFIX.getValue()); //Add prefix, so we can check later on that it's the correct file
+        //Loop over config keys and add the key & value to the map
+        for (String configKey : configKeys) {
+            String processedConfigKey = configKey.replace("ClientResizer.", ""); //Remove config key prefix
+            String configValue = configManager.getConfiguration(CONFIG_GROUP_NAME, processedConfigKey); //Get config values
+            exportedValues.put(processedConfigKey, configValue); //Add config key & value to LinkedHashMap
+        }
+        exportedValues.put(EXPORT_SUFFIX.getKey(), EXPORT_SUFFIX.getValue()); //Add suffix
+        String jsonArray = gson.toJson(exportedValues); //Use Gson because otherwise bad things happen, like trying to separate height=1,width=2 into two separate entries.
+        //Copy to clipboard
+        StringSelection stringSelection = new StringSelection(jsonArray);
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        clipboard.setContents(stringSelection, null);
+        actuallySendMessage("The Client Resizer config has been copied to clipboard. Keep in mind that importing will override your Client Resizer config settings.");
+    }
+
+    private void importConfigFromClipboard() {
+        try {
+            String clipboardDataString = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor); //Get data from clipboard and interpret it as a string
+            Map<String, String> clipboardData = gson.fromJson(clipboardDataString, new TypeToken<Map<String, String>>() {}.getType()); //Convert Gson string to non-Gson Map<String, String>
+
+            //Check if the data contains the EXPORT_PREFIX and EXPORT_SUFFIX as the first and last entry. If it does not, the user did something wrong with copying.
+            Map.Entry<String, String> firstEntry = clipboardData.entrySet().iterator().next(); //Get first entry
+            Map.Entry<String, String> lastEntry = clipboardData.entrySet().stream().skip(clipboardData.size() - 1).findFirst().orElse(new AbstractMap.SimpleEntry<>("entry", "not found")); //Get the final entry by skipping the other entries, and if it can't find it, return the ("entry", "not found") entry.
+            if (!firstEntry.equals(EXPORT_PREFIX) || !lastEntry.equals(EXPORT_SUFFIX)) {
+                actuallySendMessage("<col=FF0000>Error importing Client Resizer config from clipboard. Make sure it's the right format and properly copied to clipboard. Malformed format.");
+            } else {
+                //Should be the right format now because it contains the prefix and suffix. They can now be removed
+                clipboardData.remove(EXPORT_PREFIX.getKey());
+                clipboardData.remove(EXPORT_SUFFIX.getKey());
+                //Get existing config keys, so we can later check if the imported config key is an actually existing config key
+                List<String> configKeys = configManager.getConfigurationKeys(CONFIG_GROUP_NAME);
+                Map<String, String> skippedKeyValues = new LinkedHashMap<>();
+                for (String configKey : clipboardData.keySet()) { //Prefix and suffix have already been removed
+                    String configValue = clipboardData.get(configKey);
+                    String preprocessedConfigKey = "ClientResizer." + configKey; //Add the config prefix again, so you can use the value to check if it's an existing config key.
+                    if (configKeys.contains(preprocessedConfigKey)) { //Check if the config actually exists, otherwise don't import it and send a message at the end that this key/value has not been imported.
+                        configManager.setConfiguration(CONFIG_GROUP_NAME, configKey, configValue); //Set the configvalue. Tested for Strings, ints, booleans, dimensions, and MonitorAttributes and they all work.
+                    } else {
+                        //If a key does not exist in the current config keys, do not import it and add it to a Map to later be outputted.
+                        skippedKeyValues.put(configKey, configValue);
+                    }
+                }
+                actuallySendMessage("The Client Resizer config importing process has been completed. The config values have been replaced. Please close and reopen the Client Resizer config to review the changes in case it was open during importing.");
+                if (!skippedKeyValues.isEmpty()) { //If a key was skipped, output a message
+                    actuallySendMessage("<col=FF0000>Some config keys were not imported because they do not exist in the current config. This is not a problem if the config key was created by an older version of the plugin. Alternatively, the clipboard contents were incorrectly formatted.");
+                    actuallySendMessage("<col=FF0000>Config keys/values that were skipped: " + skippedKeyValues);
+                }
+            }
+        } catch (IOException | UnsupportedFlavorException error) {
+            actuallySendMessage("<col=FF0000>Error importing Client Resizer config from clipboard. Make sure it's the right format and properly copied to clipboard. Incorrect clipboard content.");
         }
     }
 
