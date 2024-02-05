@@ -1830,7 +1830,7 @@ public interface ClientResizerConfig extends Config {
     @ConfigItem(
             keyName = "enableHotkeysDuringBankPin",
             name = "Enable numerical hotkeys during bank pin",
-            description = "Let client resizer accept numerical hotkeys (1-9, no modifiers) while entering your bank pin.",
+            description = "Let client resizer accept numerical hotkeys (0-9, no modifiers) while entering your bank pin.",
             position = 3,
             section = advancedSettings
     )
