@@ -1828,6 +1828,17 @@ public interface ClientResizerConfig extends Config {
     }
 
     @ConfigItem(
+            keyName = "enableHotkeysDuringBankPin",
+            name = "Enable numerical hotkeys during bank pin",
+            description = "Let client resizer accept numerical hotkeys (1-9, no modifiers) while entering your bank pin.",
+            position = 3,
+            section = advancedSettings
+    )
+    default boolean enableHotkeysDuringBankPin() {
+        return false;
+    }
+
+    @ConfigItem(
             keyName = "copyAttribute",
             name = "Copy attribute of current monitor",
             description = "Copy this attribute of the current monitor to the clipboard<br>"

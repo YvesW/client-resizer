@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.extern.slf4j.*;
 import net.runelite.api.*;
 import net.runelite.api.events.*;
+import net.runelite.api.widgets.*;
 import net.runelite.client.callback.*;
 import net.runelite.client.config.*;
 import net.runelite.client.eventbus.*;
@@ -13,7 +14,6 @@ import net.runelite.client.input.*;
 import net.runelite.client.input.KeyListener;
 import net.runelite.client.plugins.*;
 import net.runelite.client.ui.*;
-import net.runelite.client.util.*;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -21,6 +21,7 @@ import java.awt.*;
 import java.awt.Point;
 import java.awt.datatransfer.*;
 import java.awt.event.*;
+import java.util.*;
 import java.util.regex.*;
 
 @Slf4j
@@ -168,6 +169,7 @@ public class ClientResizerPlugin extends Plugin {
     private static boolean showChatMessage;
     private static boolean showChatMessageReposition;
     private static boolean showChatMessageContain;
+    private static boolean enableHotkeysDuringBankPin;
     private static MonitorAttribute copyAttribute;
     private static boolean copyPosition;
     //------------- End of wall of config vars -------------
@@ -213,6 +215,7 @@ public class ClientResizerPlugin extends Plugin {
     private static Keybind[] repositionKeybindArray;
     private static Integer[] hotkeyPositionXArray;
     private static Integer[] hotkeyPositionYArray;
+    private static final HashSet<Integer> numericalKeyCodes = new HashSet<>(Arrays.asList(KeyEvent.VK_0, KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9, KeyEvent.VK_NUMPAD0, KeyEvent.VK_NUMPAD1, KeyEvent.VK_NUMPAD2, KeyEvent.VK_NUMPAD3, KeyEvent.VK_NUMPAD4, KeyEvent.VK_NUMPAD5, KeyEvent.VK_NUMPAD6, KeyEvent.VK_NUMPAD7, KeyEvent.VK_NUMPAD8, KeyEvent.VK_NUMPAD9));
 
     @Inject
     private Client client;
@@ -496,6 +499,7 @@ public class ClientResizerPlugin extends Plugin {
         showChatMessage = config.showChatMessage();
         showChatMessageReposition = config.showChatMessageReposition();
         showChatMessageContain = config.showChatMessageContain();
+        enableHotkeysDuringBankPin = config.enableHotkeysDuringBankPin();
         copyAttribute = config.copyAttribute();
         copyPosition = config.copyPosition();
 
@@ -650,7 +654,7 @@ public class ClientResizerPlugin extends Plugin {
         if (containInScreenTop || containInScreenRight || containInScreenBottom || containInScreenLeft) {
             shouldSendMessage = true;
         }
-        if (shouldSendMessage) { //Send msg if code above determined that it should be send.
+        if (shouldSendMessage) { //Send msg if code above determined that it should be sent.
             switch (configKey) {
                 case "uiEnableCustomChrome":
                     sendCustomChromeWarning();
@@ -1007,10 +1011,9 @@ public class ClientResizerPlugin extends Plugin {
 
     private void setClientPositionHotkey(int pointX, int pointY) {
         //Sets the client position when using hotkey
-
         //TODO: potentially add automatic repositioning of the client like automatic resizing, but this might automatically throw the client offscreen if configured very incorrectly.
         // Thus, for let's not add this for now. Can reconsider in the future.
-        // If this is added, check how you check how you did resizeClient() (copy most of it probs), use processAtributeString, and check how you did setGameSize (copy most of it probs).
+        // If this is added, check how you check how you did resizeClient() (copy most of it probs), use processAttributeString, and check how you did setGameSize (copy most of it probs).
         setClientPosition(pointX, pointY);
         if (showChatMessageReposition) {
             sendGameChatMessage(ResizerMessageType.REPOSITION);
@@ -1045,11 +1048,31 @@ public class ClientResizerPlugin extends Plugin {
         }
     }
 
+    private boolean shouldHotkeyBeAcceptedBankPin(KeyEvent keyEvent) {
+        //Should the hotkey be accepted because the advanced option is enabled, the bank pin window is not on the screen and/or the hotkey is not purely numerical?
+        if (enableHotkeysDuringBankPin) {
+            //Hotkeys are enabled during bank pin, so don't ignore the hotkeys
+            return true;
+        }
+
+        Widget bankPinContainer = client.getWidget(ComponentID.BANK_PIN_CONTAINER);
+        if (bankPinContainer == null || bankPinContainer.isSelfHidden()) {
+            //Maybe using WidgetLoaded/Closed is more efficient, but even then, this method only runs when the user presses the keybind for one of their client resizer hotkeys. That does not happen frequently.
+            //bankPinContainer is null or hidden, so don't ignore the hotkeys
+            return true;
+        }
+
+        //getModifiersEx() == 0 => ctrl/alt/shift/whatever is not being pressed
+        //numericalKeyCodes should contain all the 0-9 and numpad 0-9 keycodes that can be used to enter the bank pin
+        return keyEvent.getModifiersEx() != 0 || !numericalKeyCodes.contains(keyEvent.getKeyCode());
+    }
+
     // ------------- Wall of the KeyListener -------------
     private final KeyListener keyListener = new KeyListener() {
 
         @Override
         public boolean isEnabledOnLoginScreen() {
+            //Enable on login screen so user can resize/reposition their client(s) before logging in.
             return true;
         }
 
@@ -1060,9 +1083,10 @@ public class ClientResizerPlugin extends Plugin {
 
         @Override
         public void keyPressed(KeyEvent keyEvent) {
-            boolean matchFound = false;
+            boolean matchFound = false; //Used to determine if the keyEvent should be consumed
+            //Loop over the resize hotkeys, and if it matches and the key should not be ignored during the bank pin, set the game size and potentially the resizable scaling based on the other arrays.
             for (int i = 0; i < resizeKeybindArray.length; i++) {
-                if (resizeKeybindArray[i].matches(keyEvent)) {
+                if (resizeKeybindArray[i].matches(keyEvent) && shouldHotkeyBeAcceptedBankPin(keyEvent)) {
                     setGameSize(hotkeyDimensionArray[i]);
                     if (resizableScalingHotkeyBooleanArray[i]) {
                         setResizableScaling(resizableScalingHotkeyPercentageArray[i]);
@@ -1070,13 +1094,15 @@ public class ClientResizerPlugin extends Plugin {
                     matchFound = true;
                 }
             }
+            //Loop over the reposition hotkeys, and if it matches and the key should not be ignored during the bank pin, reposition the client based on the other arrays.
             for (int i = 0; i < repositionKeybindArray.length; i++) {
-                if (repositionKeybindArray[i].matches(keyEvent)) {
+                if (repositionKeybindArray[i].matches(keyEvent) && shouldHotkeyBeAcceptedBankPin(keyEvent)) {
                     setClientPositionHotkey(hotkeyPositionXArray[i], hotkeyPositionYArray[i]);
                     matchFound = true;
                 }
             }
             if (matchFound) {
+                //We found a match so consume the keyEvent
                 keyEvent.consume();
             }
         }
@@ -1086,7 +1112,6 @@ public class ClientResizerPlugin extends Plugin {
             //Must be implemented
         }
     };
-
     // ------------- End of wall of the KeyListener -------------
 
     @Provides
