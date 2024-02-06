@@ -336,7 +336,6 @@ public class ClientResizerPlugin extends Plugin {
                 break;
         }
     }
-    //todo: write explanation for new commands in readme! (- Add ``::ClientResizerExport`` and ``::ClientResizerImportOverwrite`` commands to export and import your config to/from your clipboard. Keep in mind that importing will overwrite your config values. )
 
     private void setDefaultDimensions() {
         //Set default dimensions to current game size so someone doesn't accidentally set their game size to Dimension(Constants.GAME_FIXED_WIDTH, Constants.GAME_FIXED_HEIGHT)
