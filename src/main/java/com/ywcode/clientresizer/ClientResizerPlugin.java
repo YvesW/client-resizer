@@ -104,7 +104,6 @@ public class ClientResizerPlugin extends Plugin {
     private static final String[] dimensionsStringArray = new String[]{"autoSize1Dimension", "autoSize2Dimension", "autoSize3Dimension", "autoSize4Dimension", "autoSize5Dimension", "autoSize6Dimension", "autoSize7Dimension", "autoSize8Dimension", "autoSize9Dimension", "autoSize10Dimension", "hotkey1Dimension","hotkey2Dimension","hotkey3Dimension","hotkey4Dimension", "hotkey5Dimension","hotkey6Dimension","hotkey7Dimension","hotkey8Dimension","hotkey9Dimension", "hotkey10Dimension"}; //Used to set the default dimenion
     private static final HashSet<Integer> NUMERICAL_KEY_CODES = new HashSet<>(Arrays.asList(KeyEvent.VK_0, KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9, KeyEvent.VK_NUMPAD0, KeyEvent.VK_NUMPAD1, KeyEvent.VK_NUMPAD2, KeyEvent.VK_NUMPAD3, KeyEvent.VK_NUMPAD4, KeyEvent.VK_NUMPAD5, KeyEvent.VK_NUMPAD6, KeyEvent.VK_NUMPAD7, KeyEvent.VK_NUMPAD8, KeyEvent.VK_NUMPAD9)); //Used to disable numerical hotkeys while the bank pin container is open
     private static final Map.Entry<String, String> EXPORT_PREFIX = new AbstractMap.SimpleImmutableEntry<>("Client Resizer Prefix", "Client Resizer Export");
-    private static final String CONFIG_PREFIX = CONFIG_GROUP_NAME+".";
     private static final Map.Entry<String, String> EXPORT_SUFFIX = new AbstractMap.SimpleImmutableEntry<>("Client Resizer Suffix", "Client Resizer Export");
 
     @Inject
@@ -838,7 +837,7 @@ public class ClientResizerPlugin extends Plugin {
         exportedValues.put(EXPORT_PREFIX.getKey(), EXPORT_PREFIX.getValue()); //Add prefix, so we can check later on that it's the correct file
         //Loop over config keys and add the key & value to the map
         for (String configKey : configKeys) {
-            String processedConfigKey = configKey.replace(CONFIG_PREFIX, ""); //Remove config key prefix
+            String processedConfigKey = configKey.replace(CONFIG_GROUP_NAME + ".", ""); //Remove config key prefix
             String configValue = configManager.getConfiguration(CONFIG_GROUP_NAME, processedConfigKey); //Get config values
             exportedValues.put(processedConfigKey, configValue); //Add config key & value to LinkedHashMap
         }
@@ -870,7 +869,7 @@ public class ClientResizerPlugin extends Plugin {
                 Map<String, String> skippedKeyValues = new LinkedHashMap<>();
                 for (String configKey : clipboardData.keySet()) { //Prefix and suffix have already been removed
                     String configValue = clipboardData.get(configKey);
-                    String preprocessedConfigKey = CONFIG_PREFIX + configKey; //Add the config prefix again, so you can use the value to check if it's an existing config key.
+                    String preprocessedConfigKey = CONFIG_GROUP_NAME + "." + configKey; //Add the config prefix again, so you can use the value to check if it's an existing config key.
                     if (configKeys.contains(preprocessedConfigKey)) { //Check if the config actually exists, otherwise don't import it and send a message at the end that this key/value has not been imported.
                         configManager.setConfiguration(CONFIG_GROUP_NAME, configKey, configValue); //Set the configvalue. Tested for Strings, ints, booleans, dimensions, and MonitorAttributes and they all work.
                     } else {
