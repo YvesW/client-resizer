@@ -93,8 +93,8 @@ If you experience any issues or have any concerns, please reach out to YvesW via
 
 ## Changelog
 02-2024:
-- Disable numerical hotkeys (0-9, no modifiers) while entering the bank pin by default. A config option has been added in case the user wants to re-enable this setting.
-- Add ``::ClientResizerExport`` and ``::ClientResizerImportOverwrite`` commands to export and import your config to/from your clipboard. Keep in mind that importing will overwrite your config values. 
+- Disabled numerical hotkeys (0-9, no modifiers) while entering the bank pin by default. A config option has been added in case the user wants to re-enable this setting.
+- Added ``::ClientResizerExport`` and ``::ClientResizerImportOverwrite`` commands to export and import your config to/from your clipboard. Keep in mind that importing will overwrite your config values. 
 
 01-2024:
 - Fixed automatic resizing after the flatlaf changes. Please note that it is still recommended to have custom chrome enabled! The client will resize when your cursor leaves the menubar (title bar).
