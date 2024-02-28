@@ -358,16 +358,16 @@ public class ClientResizerPlugin extends Plugin {
 
         //Set draggingEdgesWorkaround based on the user's RuneLite settings during first startup
         //Check if the draggingEdgesWorkaround config has already been set once. If it has, then don't change it again
-        //Using an integer instead of boolean here in case I ever want to implement a version "2" instead of "1" for some reason in the future
+        //Using an integer instead of a boolean here in case I want to implement a version "2" instead of "1" for some reason in the future
         if (configManager.getConfiguration(CONFIG_GROUP_NAME, "draggingEdgesWorkaroundDefaultSet", Integer.class) == null) { //Config value has never been set
             //Retrieve lock window size config value in RuneLiteConfig and if it's not enabled, enable the workaround
             boolean lockWindowSizeRLConfig = configManager.getConfiguration("runelite", "lockWindowSize", Boolean.class);
             if (!lockWindowSizeRLConfig) {
-                configManager.setConfiguration(CONFIG_GROUP_NAME, "draggingEdgesWorkaround", "True"); //Enable workaround, disabled by default
+                configManager.setConfiguration(CONFIG_GROUP_NAME, "draggingEdgesWorkaround", "True"); //Enable workaround; it's disabled by default
                 sendGameChatMessage(ResizerMessageType.DRAGGING_EDGES_WORKAROUND_ENABLED);
             }
             //Don't send a message when the workaround is not enabled, because leaving the workaround disabled with lock window size enabled, does not have any potentially negative effects for the user.
-            configManager.setConfiguration(CONFIG_GROUP_NAME, "draggingEdgesWorkaroundDefaultSet", 1); //Set the config value, so we know the defaults have been set once
+            configManager.setConfiguration(CONFIG_GROUP_NAME, "draggingEdgesWorkaroundDefaultSet", 1); //Set a config value, so we know the defaults for the workaround have been set once
         }
     }
 
@@ -482,7 +482,7 @@ public class ClientResizerPlugin extends Plugin {
         } else {
             //Disable workaround when enabling lock window size
             configManager.setConfiguration(CONFIG_GROUP_NAME, "draggingEdgesWorkaround", "False");
-            //Don't send a message because disabling the workaround when the window size is locked, does not have any potential negative effects for the user.
+            //Don't send a message because disabling the workaround when the window size is locked, does not have any potentially negative effects for the user.
         }
     }
 
@@ -500,6 +500,7 @@ public class ClientResizerPlugin extends Plugin {
                 currentMonitor = graphicsConfig.getDevice(); // Actually relevant here to refresh the current monitor since I opted to use static variables instead of local variable that update per method.
             });
             if (draggingEdgesWorkaround && draggingEdgesSecondResizeDimension != null) {
+                //This will trigger the second resize when the workaround is enabled
                 setGameSize(draggingEdgesSecondResizeDimension);
             }
             if (hasMonitorChanged()) {
@@ -784,15 +785,15 @@ public class ClientResizerPlugin extends Plugin {
         Dimension processedGameSize = new Dimension(processedWidth, processedHeight);
         Dimension currentSize = configManager.getConfiguration("runelite", "gameSize", Dimension.class);
 
-        //Workaround for people that also resize the client by dragging its edges (this does not change the config value in the RuneLite config)
-        //Originally this workaround just increased the width by 1 so the value changed, then currentSize would not equal processedGameSize, so it'd trigger a second resize
-        //In practice it turns out that for some reason the client cannot process these config values quickly enough to actually resize
-        //Config values do get changed properly based on printlns of configManager.getConfiguration("runelite", "gameSize", Dimension.class)
+        //Workaround for people that also resize the client by dragging its edges (dragging does not change the config value in the RuneLite config).
+        //Originally this workaround just increased the width by 1 so the config value changed, then currentSize would not equal processedGameSize, so it'd trigger a second resize.
+        //In practice, it turns out that for some reason the client cannot process these config changes quickly enough to actually resize.
+        //Config values do get changed correctly based on printlns of configManager.getConfiguration("runelite", "gameSize", Dimension.class)
         //But it does not change the size of the client if the edges have been dragged manually. I've not looked into core to find out why this is happening.
-        //Just added a workaround that adds a tick of delay in between the first and second resizes if the current config value equals the value it's going to get set to
+        //I just added a workaround that adds a tick of delay in between the first and second resizes if the current config value equals the value it's going to get set to.
         if (draggingEdgesWorkaround && draggingEdgesSecondResizeDimension == null && currentSize.equals(processedGameSize)) {
             //draggingEdgesSecondResizeDimension == null means it's not doing the second resize. This is important because otherwise it could get stuck in a loop, increasing the client width by 1 every tick
-            //workaround only activates when resizing to a size that's the same as the config value
+            //The workaround only activates when resizing to a size that's the same as the config value to prevent unnecessary +1 width resizes.
             Dimension processedGameSizePlus1 = new Dimension(processedWidth+1, processedHeight);
             configManager.setConfiguration("runelite", "gameSize", processedGameSizePlus1);
             draggingEdgesSecondResizeDimension = processedGameSize;
