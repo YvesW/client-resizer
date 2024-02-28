@@ -67,6 +67,7 @@ public class ClientResizerPlugin extends Plugin {
     private static boolean showChatMessageReposition;
     private static boolean showChatMessageContain;
     private static boolean enableHotkeysDuringBankPin;
+    private static boolean draggingEdgesWorkaround;
     private static MonitorAttribute copyAttribute;
     private static boolean copyPosition;
     //------------- End of wall of config vars -------------
@@ -98,6 +99,7 @@ public class ClientResizerPlugin extends Plugin {
     private static boolean containInScreenChatMessageFlag; //Default = false
     private static boolean customChromeChatMessageFlag; //Default = false
     private static boolean lockWindowSizeChatMessageFlag; //Default = false
+    private static boolean draggingEdgesWorkaroundEnabledFlag; //Default = false
     private static MouseInputListener mouseInputListenerMenubar;
     private static boolean mouseInMenuBar; //Default = false. Might be dragging the client while this is active.
     private static boolean isCustomChromeEnabled = true; //Assume true, otherwise set to false in StartUp
@@ -105,6 +107,7 @@ public class ClientResizerPlugin extends Plugin {
     private static final HashSet<Integer> NUMERICAL_KEY_CODES = new HashSet<>(Arrays.asList(KeyEvent.VK_0, KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9, KeyEvent.VK_NUMPAD0, KeyEvent.VK_NUMPAD1, KeyEvent.VK_NUMPAD2, KeyEvent.VK_NUMPAD3, KeyEvent.VK_NUMPAD4, KeyEvent.VK_NUMPAD5, KeyEvent.VK_NUMPAD6, KeyEvent.VK_NUMPAD7, KeyEvent.VK_NUMPAD8, KeyEvent.VK_NUMPAD9)); //Used to disable numerical hotkeys while the bank pin container is open
     private static final Map.Entry<String, String> EXPORT_PREFIX = new AbstractMap.SimpleImmutableEntry<>("Client Resizer Prefix", "Client Resizer Export");
     private static final Map.Entry<String, String> EXPORT_SUFFIX = new AbstractMap.SimpleImmutableEntry<>("Client Resizer Suffix", "Client Resizer Export");
+    private static Dimension draggingEdgesSecondResizeDimension;
 
     @Inject
     private Client client;
@@ -131,9 +134,10 @@ public class ClientResizerPlugin extends Plugin {
 
     @Override
     public void startUp() throws Exception {
+        currentGameState = client.getGameState();
         defaultResizableScaling = configManager.getConfiguration("stretchedmode", "scalingFactor", Integer.class); //Default might be set to 50 initially, but will set to its current value on reset at least. PM Can't do this on value initialization because then configManager hasn't been injected yet.
         updateConfig();
-        setDefaultDimensions();
+        setDefaultConfigSettings();
         keyManager.registerKeyListener(keyListener);
 
         mouseInputListenerMenubar = new MouseInputListener() {
@@ -251,6 +255,7 @@ public class ClientResizerPlugin extends Plugin {
                     if (newConfigValue.equals("false")) {
                         checkAutomaticResizeContainSettings(configKey);
                     }
+                    setDraggingEdgesWorkaround(newConfigValue);
                     break;
             }
         }
@@ -272,6 +277,7 @@ public class ClientResizerPlugin extends Plugin {
         showChatMessageReposition = config.showChatMessageReposition();
         showChatMessageContain = config.showChatMessageContain();
         enableHotkeysDuringBankPin = config.enableHotkeysDuringBankPin();
+        draggingEdgesWorkaround = config.draggingEdgesWorkaround();
         copyAttribute = config.copyAttribute();
         copyPosition = config.copyPosition();
 
@@ -337,17 +343,32 @@ public class ClientResizerPlugin extends Plugin {
         }
     }
 
-    private void setDefaultDimensions() {
+    private void setDefaultConfigSettings() {
         //Set default dimensions to current game size so someone doesn't accidentally set their game size to Dimension(Constants.GAME_FIXED_WIDTH, Constants.GAME_FIXED_HEIGHT)
+        //PM configManager.setConfiguration does fire a ConfigChanged event, but obviously only if the config value is actually changed (not if the config value is already set to that value).
         for (int i = 0; i < dimensionsArray.length; i++) {
             setDefaultDimension(dimensionsArray[i], dimensionsStringArray[i]);
         }
         //Alternatively, you can move setConfiguration(copyAttribute) and updateConfig to onStartup and probably change the Config to just return:
         //return configManager.getConfiguration("runelite", "gameSize", Dimension.class);
         //Only potential advantage of current application is probably that the user can reset it to 0,0 but then on next restart it gets changed anyway so meh.
+
         configManager.setConfiguration(CONFIG_GROUP_NAME, "copyAttribute", MonitorAttribute.Disabled); //reset copyAttribute setting back to disabled on plugin start
         configManager.setConfiguration(CONFIG_GROUP_NAME, "copyPosition", "False"); //reset copyPosition setting back to disabled on plugin start
-        updateConfig(); //configManager.setConfiguration doesn't seem to trigger onConfigChanged?
+
+        //Set draggingEdgesWorkaround based on the user's RuneLite settings during first startup
+        //Check if the draggingEdgesWorkaround config has already been set once. If it has, then don't change it again
+        //Using an integer instead of boolean here in case I ever want to implement a version "2" instead of "1" for some reason in the future
+        if (configManager.getConfiguration(CONFIG_GROUP_NAME, "draggingEdgesWorkaroundDefaultSet", Integer.class) == null) { //Config value has never been set
+            //Retrieve lock window size config value in RuneLiteConfig and if it's not enabled, enable the workaround
+            boolean lockWindowSizeRLConfig = configManager.getConfiguration("runelite", "lockWindowSize", Boolean.class);
+            if (!lockWindowSizeRLConfig) {
+                configManager.setConfiguration(CONFIG_GROUP_NAME, "draggingEdgesWorkaround", "True"); //Enable workaround, disabled by default
+                sendGameChatMessage(ResizerMessageType.DRAGGING_EDGES_WORKAROUND_ENABLED);
+            }
+            //Don't send a message when the workaround is not enabled, because leaving the workaround disabled with lock window size enabled, does not have any potentially negative effects for the user.
+            configManager.setConfiguration(CONFIG_GROUP_NAME, "draggingEdgesWorkaroundDefaultSet", 1); //Set the config value, so we know the defaults have been set once
+        }
     }
 
     private void setDefaultDimension(Dimension dimension, String dimensionName) {
@@ -447,6 +468,24 @@ public class ClientResizerPlugin extends Plugin {
         }
     }
 
+    private void setDraggingEdgesWorkaround(String newConfigValue) {
+        //Set the dragging edges workaround when the config value changes
+        //Check the gamestate first, so it's not done on every RL startup
+        if (currentGameState == null || currentGameState == GameState.STARTING || currentGameState == GameState.UNKNOWN) {
+            return;
+        }
+
+        if (newConfigValue.equals("false")) {
+            //Enable workaround when disabling lock window size
+            configManager.setConfiguration(CONFIG_GROUP_NAME, "draggingEdgesWorkaround", "True");
+            sendGameChatMessage(ResizerMessageType.DRAGGING_EDGES_WORKAROUND_ENABLED); //Send a game message that the config value has been enabled. The user can opt to disable the advanced config value if they so desire.
+        } else {
+            //Disable workaround when enabling lock window size
+            configManager.setConfiguration(CONFIG_GROUP_NAME, "draggingEdgesWorkaround", "False");
+            //Don't send a message because disabling the workaround when the window size is locked, does not have any potential negative effects for the user.
+        }
+    }
+
     private void monitorCheck() {
         //Specifically opted to not use an EventListener/ComponentListener for window positioning and running the code in there with custom chrome disabled =>
         // Problem is that it might be jarring with custom chrome disabled (MouseListener to disable the code while the cursor is in the MenuBar does not work) and the 'soft' snap back would not work since it polls it too frequently instead of once a tick.
@@ -460,6 +499,9 @@ public class ClientResizerPlugin extends Plugin {
                 graphicsConfig = clientUI.getGraphicsConfiguration();
                 currentMonitor = graphicsConfig.getDevice(); // Actually relevant here to refresh the current monitor since I opted to use static variables instead of local variable that update per method.
             });
+            if (draggingEdgesWorkaround && draggingEdgesSecondResizeDimension != null) {
+                setGameSize(draggingEdgesSecondResizeDimension);
+            }
             if (hasMonitorChanged()) {
                 copyAttributeToClipboard();
                 resizeClient();
@@ -604,6 +646,13 @@ public class ClientResizerPlugin extends Plugin {
                     lockWindowSizeChatMessageFlag = true;
                 }
                 break;
+            case DRAGGING_EDGES_WORKAROUND_ENABLED:
+                if (currentGameState == GameState.LOGGED_IN || currentGameState == GameState.LOADING) {
+                    actuallySendMessage("Client Resizer plugin: The workaround to make client resizer compatible with resizing the client by dragging its edges has been enabled in the advanced config section, because you disabled 'Lock window size' in the 'RuneLite' config.");
+                } else {
+                    draggingEdgesWorkaroundEnabledFlag = true;
+                }
+                break;
         }
     }
 
@@ -727,25 +776,43 @@ public class ClientResizerPlugin extends Plugin {
     }
 
     private void setGameSize(Dimension dimension) {
+        //Actually set the game size
+
         //Processing probably irrelevant since ClientUI.java contains the same code, but why not.
         int processedWidth = Math.max(Math.min(dimension.width, 7680), Constants.GAME_FIXED_WIDTH);
         int processedHeight = Math.max(Math.min(dimension.height, 2160), Constants.GAME_FIXED_HEIGHT);
         Dimension processedGameSize = new Dimension(processedWidth, processedHeight);
         Dimension currentSize = configManager.getConfiguration("runelite", "gameSize", Dimension.class);
-        //Check if current size in config does not equal the size the config is going to get set to.
-        //Otherwise, every time it'd match but not resize, a chat message would be spammed.
-        //If client dimensions are unlocked and the edges are dragged, setting the config to the same value as already in there does not change it.
-        //Thus doing configManager.setConfiguration("runelite", "gameSize", processedGameSize) while currentSize.equals(processedGameSize) does nothing, meaning that doing that'd be pointless
-        if (!currentSize.equals(processedGameSize)) {
-            configManager.setConfiguration("runelite", "gameSize", processedGameSize);
-            //mouseReleased/mouseEntered doesn't report when clicked on undecorated title bar (custom chrome off)
-            //While dragging the client with custom chrome off, the resize gets briefly applied but then removed.
-            //Even bad workarounds like applying +1 and then back to preferable dimension when mouseReleased or mouseEntered (cursor can't be in title bar), didn't work. => Setting changed but client did not resize. Does still work on Win+Arrow key though for some reason...
-            //Same for injecting the client Applet and checking the size of that, then keep setting/switching the value till the Applet dimension = preferred dimension
 
-            if (showChatMessage) {
-                sendGameChatMessage(ResizerMessageType.RESIZE);
+        //Workaround for people that also resize the client by dragging its edges (this does not change the config value in the RuneLite config)
+        //Originally this workaround just increased the width by 1 so the value changed, then currentSize would not equal processedGameSize, so it'd trigger a second resize
+        //In practice it turns out that for some reason the client cannot process these config values quickly enough to actually resize
+        //Config values do get changed properly based on printlns of configManager.getConfiguration("runelite", "gameSize", Dimension.class)
+        //But it does not change the size of the client if the edges have been dragged manually. I've not looked into core to find out why this is happening.
+        //Just added a workaround that adds a tick of delay in between the first and second resizes if the current config value equals the value it's going to get set to
+        if (draggingEdgesWorkaround && draggingEdgesSecondResizeDimension == null && currentSize.equals(processedGameSize)) {
+            //draggingEdgesSecondResizeDimension == null means it's not doing the second resize. This is important because otherwise it could get stuck in a loop, increasing the client width by 1 every tick
+            //workaround only activates when resizing to a size that's the same as the config value
+            Dimension processedGameSizePlus1 = new Dimension(processedWidth+1, processedHeight);
+            configManager.setConfiguration("runelite", "gameSize", processedGameSizePlus1);
+            draggingEdgesSecondResizeDimension = processedGameSize;
+        } else {
+            //Check if current size in config does not equal the size the config is going to get set to.
+            //Otherwise, every time it'd match but not resize, a chat message would be spammed.
+            //If client dimensions are unlocked and the edges are dragged, setting the config to the same value as already in there does not change it.
+            //Thus doing configManager.setConfiguration("runelite", "gameSize", processedGameSize) while currentSize.equals(processedGameSize) does nothing, meaning that doing that'd be pointless
+            if (!currentSize.equals(processedGameSize)) {
+                configManager.setConfiguration("runelite", "gameSize", processedGameSize);
+                //mouseReleased/mouseEntered doesn't report when clicked on undecorated title bar (custom chrome off)
+                //While dragging the client with custom chrome off, the resize gets briefly applied but then removed.
+                //Even bad workarounds like applying +1 and then back to preferable dimension when mouseReleased or mouseEntered (cursor can't be in title bar), didn't work. => Setting changed but client did not resize. Does still work on Win+Arrow key though for some reason...
+                //Same for injecting the client Applet and checking the size of that, then keep setting/switching the value till the Applet dimension = preferred dimension
+
+                if (showChatMessage) {
+                    sendGameChatMessage(ResizerMessageType.RESIZE);
+                }
             }
+            draggingEdgesSecondResizeDimension = null; //Reset the dimension for the second resize to null
         }
     }
 
@@ -826,6 +893,10 @@ public class ClientResizerPlugin extends Plugin {
         if (lockWindowSizeChatMessageFlag) {
             lockWindowSizeChatMessageFlag = false;
             sendGameChatMessage(ResizerMessageType.LOCK_WINDOW_SIZE);
+        }
+        if (draggingEdgesWorkaroundEnabledFlag) {
+            draggingEdgesWorkaroundEnabledFlag = false;
+            sendGameChatMessage(ResizerMessageType.DRAGGING_EDGES_WORKAROUND_ENABLED);
         }
     }
 

@@ -1839,6 +1839,19 @@ public interface ClientResizerConfig extends Config {
     }
 
     @ConfigItem(
+            keyName = "draggingEdgesWorkaround",
+            name = "Dragging edges workaround",
+            description = "Workaround that allows for resizing of the client after the user has manually adjusted the client size by dragging the edges of the client.<br>"
+                    + "This might result in superfluous resizes by +1 pixel in width with one gametick of delay in between.<br>"
+                    + "Thus, it is recommended to only enable this setting if you do not have 'Lock window size' enabled in the 'RuneLite' config and drag the edges of the client.",
+            position = 4,
+            section = advancedSettings
+    )
+    default boolean draggingEdgesWorkaround() {
+        return false;
+    }
+
+    @ConfigItem(
             keyName = "copyAttribute",
             name = "Copy attribute of current monitor",
             description = "Copy this attribute of the current monitor to the clipboard<br>"
