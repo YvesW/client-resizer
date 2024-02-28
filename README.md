@@ -14,7 +14,7 @@ Also annoyed by having to change your client's size (game size), resizable scali
 The plugin still respects all the other settings in the ``RuneLite`` > ``Window Settings`` config. For that reason, I personally suggest using the following RuneLite Window Settings:<br>
 ![RuneLite window settings](docs/img/runelite-window-settings.png)<br>
 *It is recommended to **enable** ``Enable custom window chrome`` in ``RuneLite`` > ``Window Settings`` if you'd like to automatically resize the client or snap it back (contain the client in screen) when dragging it to a different monitor. Shift + Windows key + arrow or hotkey-based repositioning does still automatically resize the client with custom chrome disabled. However, moving the client to a different monitor by dragging the title bar will not work with custom chrome disabled when trying to automatically resize the client or properly snap the client back (contain in screen).<br>
-I generally also recommend **locking the window size**, so you don't accidentally use Windows's snap resize function.*
+I generally also recommend **locking the window size**, so you don't accidentally use Windows's snap resize function. The plugin is compatible with an unlocked window size though by using a workaround.*
 
 ## User Instructions / How to set up
 
@@ -92,6 +92,9 @@ Not tested on macOS or Linux; results may vary.
 If you experience any issues or have any concerns, please reach out to YvesW via a GitHub Issue, by Discord direct messaging or via the RuneLite Discord by mentioning @``YvesW``.
 
 ## Changelog
+03-2024:
+- Added a workaround that allows for resizing of the client after the user has manually adjusted the client size by dragging the edges of the client. The setting will be enabled or disabled automatically based on the ``Lock window size`` setting in the ``RuneLite`` config.
+
 02-2024:
 - Disabled numerical hotkeys (0-9, no modifiers) while entering the bank pin by default. A config option has been added in case the user wants to re-enable this setting.
 - Added ``::ClientResizerExport`` and ``::ClientResizerImportOverwrite`` commands to export and import your config to/from your clipboard. Keep in mind that importing will overwrite your config values. 
