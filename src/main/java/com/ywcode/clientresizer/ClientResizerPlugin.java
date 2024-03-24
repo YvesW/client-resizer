@@ -167,6 +167,7 @@ public class ClientResizerPlugin extends Plugin {
 
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
+				//This is never procced.
             }
 
             @Override
@@ -181,6 +182,12 @@ public class ClientResizerPlugin extends Plugin {
                 //Could technically use this with a boolean to know when the mouse is not dragging (because the mouse is moving), but no proper way to set this boolean back to false, so does not really work.
                 //If you ever want to use mouseDragged and mouseMoved also add a MouseMotionListener by doing customChromeMenuBar.addMouseMotionListener(mouseInputListenerMenubar);
             }
+			//You can technically add something like client anti-drag, but it'd be incredibly hacky. For example:
+			//if (mouseInMenuBar) -> poll location every tick via topFrameClient.getLocation -> keep resetting position
+			// to initial position if it changes, until the cursor/mouse hasn't moved for x seconds while mouseInMenuBar
+			// because the mouse can't move while dragging the title bar.
+			//Would likely be somewhat jarring and potentially kinda buggy. Can't consume the click/press because the
+			// events don't fire.
             //---------------------------------------------------------------
         };
 
