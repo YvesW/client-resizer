@@ -87,7 +87,7 @@ To set it up:
 - Open the config panel of Client Resizer (gear icon).
 - Open the ``Client anti-drag`` category.
 - Enable the ``Client anti-drag`` setting.
-- Enter the drag delay you prefer. This is how long the cursor will have to not move while in the title bar/menu bar (read: how long you need to drag for) for anti-drag to not engage.<br>
+- Enter the ``drag delay`` you prefer. This is how long the cursor will have to not move while in the title bar/menu bar (read: how long you need to drag for) for anti-drag to not engage.<br>
   ![Resizable scaling](docs/img/client-anti-drag.PNG)
 
 ### Importing and exporting settings
@@ -102,7 +102,7 @@ If you experience any issues or have any concerns, please reach out to YvesW via
 
 ## Changelog
 04-2024:
-- Added client anti-drag.
+- Added ``Client anti-drag``.
 
 03-2024:
 - Added a workaround that allows for resizing of the client after the user has manually adjusted the client size by dragging the edges of the client. The setting will be enabled or disabled automatically based on the ``Lock window size`` setting in the ``RuneLite`` config.
