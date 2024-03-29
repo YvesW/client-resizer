@@ -9,7 +9,7 @@ Also annoyed by having to change your client's size (game size), resizable scali
 - Resize your client when switching RL config profiles if this isn't done by the config profiles themselves yet. Set up automatic resizing for your monitors with different game sizes per RL config profile. Then enable ``Resize when switching RuneLite config profile``.
 - Change your resizable scaling (stretched mode plugin), either automatically or hotkey-based.
 - (Re)position your client using hotkeys. This allows you to e.g. get RL flush with your screen or position it in a specific position per activity. Furthermore, this allows you to position the client in ways the normal Windows window manager does not allow, e.g. in a way that the title bar is offscreen at the top of the screen.
-- Snap back/Contain the client in screen: the client will snap back **after your cursor leaves the menubar (title bar)** or after moving it using shift + Windows + arrow key. This can either be 'soft' or 'hard' snap back/contain in screen. Offsets can be added if the client is not in your preferred location after snapping back.
+- Snap back/Contain the client in screen: the client will snap back **after your cursor leaves the menubar (title bar) or after your cursor moves in the menubar (title bar)**, or after moving your client using shift + Windows + arrow key. This can either be 'soft' or 'hard' snap back/contain in screen. Offsets can be added if the client is not in your preferred location after snapping back.
 - Client anti-drag: the client will snap back if you do not drag the menubar (title bar) for long enough. This can be useful to prevent moving the client unintentionally.
 
 The plugin still respects all the other settings in the ``RuneLite`` > ``Window Settings`` config. For that reason, I personally suggest using the following RuneLite Window Settings:<br>
@@ -38,7 +38,7 @@ E.g. a fully configured monitor looks like this:<br>
 ![Fully configured monitor](docs/img/fully-configured-monitor.png)
 
 If you also want to resize your client when loading a different RuneLite config profile, then enable the ``Resize when switching RuneLite config profile`` option. If you don't understand what this means, you should probably leave this option disabled (default).
-Note: the client will resize when your cursor leaves the menubar (title bar).
+Note: the client will resize when your cursor leaves the menubar (title bar) or when you move your cursor in the menubar.
 
 ### Hotkey-based resizing
 - Open the config panel of Client Resizer (gear icon).
@@ -74,7 +74,7 @@ To set it up:
 - Open the ``Snap back/contain in screen`` category.
 - Tick the boxes for the sides you want to enable snap back/contain in screen for.<br>
   ![Snap back](docs/img/contain-in-screen-booleans.PNG)<br>
-- The client will now be snapped back/contained in screen once your cursor leaves the menubar (title bar).<br>
+- The client will now be snapped back/contained in screen once your cursor leaves the menubar (title bar) or when you move your cursor in the menubar.<br>
   *Tip: even with a 'hard' snap back/contain in screen, you can use hotkey-based resizing to move your client to another monitor if desired.*
 - *Optional:* if your client is not in the desired location after snapping back or snaps back too soon/too late, increase or decrease the offset.<br>
   ![Snap back offsets](docs/img/contain-in-screen-offsets.PNG)<br>
@@ -87,7 +87,7 @@ To set it up:
 - Open the config panel of Client Resizer (gear icon).
 - Open the ``Client anti-drag`` category.
 - Enable the ``Client anti-drag`` setting.
-- Enter the ``drag delay`` you prefer. This is how long the cursor will have to not move while in the title bar/menu bar (read: how long you need to drag for) for anti-drag to not engage.<br>
+- Enter the ``drag delay`` you prefer. This is how long the cursor will have to not move while in the title bar/menubar (read: how long you need to drag for) for anti-drag to not engage.<br>
   ![Resizable scaling](docs/img/client-anti-drag.PNG)
 
 ### Importing and exporting settings
@@ -103,6 +103,7 @@ If you experience any issues or have any concerns, please reach out to YvesW via
 ## Changelog
 04-2024:
 - Added ``Client anti-drag``.
+- Improved snapiness when dragging the client to another monitor with custom chrome enabled by making it perform actions when the mouse is moved in the menubar (title bar).
 
 03-2024:
 - Added a workaround that allows for resizing of the client after the user has manually adjusted the client size by dragging the edges of the client. The setting will be enabled or disabled automatically based on the ``Lock window size`` setting in the ``RuneLite`` config.

@@ -94,7 +94,8 @@ public class ClientResizerPlugin extends Plugin {
     private static long previousLockSizeChatMessageNanoTime; // Default value is 0L
     private static long previousContainChatMessageNanoTime; // Default value is 0L
     private static long previousClientAntiDragChatMessageNanoTime; // Default value is 0L
-    private static final long TICK_IN_NANOSECONDS = 600000000;
+    private static long ONE_FOURTH_TICK_IN_NANOSECONDS = 150000000L;
+    private static final long TICK_IN_NANOSECONDS = 600000000L;
     private static final long TWENTY_SECONDS_IN_NANOSECONDS = 20000000000L;
     private static final long SIXTY_SECONDS_IN_NANOSECONDS = 60000000000L;
     private static boolean resizeChatMessageFlag; //Default = false
@@ -110,6 +111,7 @@ public class ClientResizerPlugin extends Plugin {
     private static boolean isCustomChromeEnabled = true; //Assume true, otherwise set to false in StartUp
     private static Point lastClientPosition;
     private static long lastMouseMoveMenuBar;
+    private static long lastMouseMoveMenuBarTickLimited;
     private static final String[] dimensionsStringArray = new String[]{"autoSize1Dimension", "autoSize2Dimension", "autoSize3Dimension", "autoSize4Dimension", "autoSize5Dimension", "autoSize6Dimension", "autoSize7Dimension", "autoSize8Dimension", "autoSize9Dimension", "autoSize10Dimension", "hotkey1Dimension","hotkey2Dimension","hotkey3Dimension","hotkey4Dimension", "hotkey5Dimension","hotkey6Dimension","hotkey7Dimension","hotkey8Dimension","hotkey9Dimension", "hotkey10Dimension"}; //Used to set the default dimenion
     private static final HashSet<Integer> NUMERICAL_KEY_CODES = new HashSet<>(Arrays.asList(KeyEvent.VK_0, KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9, KeyEvent.VK_NUMPAD0, KeyEvent.VK_NUMPAD1, KeyEvent.VK_NUMPAD2, KeyEvent.VK_NUMPAD3, KeyEvent.VK_NUMPAD4, KeyEvent.VK_NUMPAD5, KeyEvent.VK_NUMPAD6, KeyEvent.VK_NUMPAD7, KeyEvent.VK_NUMPAD8, KeyEvent.VK_NUMPAD9)); //Used to disable numerical hotkeys while the bank pin container is open
     private static final Map.Entry<String, String> EXPORT_PREFIX = new AbstractMap.SimpleImmutableEntry<>("Client Resizer Prefix", "Client Resizer Export");
@@ -190,10 +192,21 @@ public class ClientResizerPlugin extends Plugin {
 
             @Override
             public void mouseMoved(MouseEvent mouseEvent) {
-                //This works while moving the mouse over the menu bar, but during dragging, the mouse is not moved. Thus, this is pretty useless for detecting when the client is being dragged.
+                //This works while moving the mouse over the menubar, but during dragging, the mouse is not moved. Thus, this is pretty useless for detecting when the client is being dragged.
                 //Could technically use this with a boolean to know when the mouse is not dragging (because the mouse is moving), but no proper way to detect when the mouse stops moving and at that point the user can already be dragging the client.
                 //If you want to use mouseDragged and mouseMoved also add a MouseMotionListener by doing customChromeMenuBar.addMouseMotionListener(mouseInputListenerMenubar);
+
+                //clientAntiDrag. It is important to run this method before other methods so the position of the client is correct.
                 clientAntiDrag(); //Method already checks the config value, so no check is needed here.
+
+                //Run monitorCheck every 1/4th of a tick if the mouse is moving in the menubar/title bar to improve snappiness when dragging the client.
+                //A boolean override ensures the code will run while the cursor is in the menubar, and that other method calls are not running too frequently/quickly.
+                //Additionally, monitorCheck needs to remain a thing in GameTick and BeforeRender, because people can also move the client using Shift+Win+Arrow key etc. (or with custom chrome off)
+                long currentNanoTime = System.nanoTime();
+                if (currentNanoTime - lastMouseMoveMenuBarTickLimited > ONE_FOURTH_TICK_IN_NANOSECONDS) {
+                    monitorCheck(true);
+                    lastMouseMoveMenuBarTickLimited = currentNanoTime;
+                }
             }
             //---------------------------------------------------------------
         };
@@ -340,7 +353,7 @@ public class ClientResizerPlugin extends Plugin {
             //Simulate gametick behavior to make BeforeRender and GameTick feel more similar.
             long currentNanoTime = System.nanoTime();
             if (currentNanoTime - previousNanoTime > TICK_IN_NANOSECONDS) { //It will fire immediately once when starting the plugin in the right gamestate (desired behavior IMO) and also immediately when logging out, but that is fine probs.
-                monitorCheck();
+                monitorCheck(false);
                 previousNanoTime = currentNanoTime;
             }
         }
@@ -350,7 +363,7 @@ public class ClientResizerPlugin extends Plugin {
     public void onGameTick(GameTick gameTick) {
         //onGameTick only fires while logged in!
         checkChatMessageFlags();
-        monitorCheck();
+        monitorCheck(false);
     }
 
     @Subscribe
@@ -414,21 +427,21 @@ public class ClientResizerPlugin extends Plugin {
 
     private void clientAntiDrag() {
         //Client anti-drag; quite hacky but some people apparently really want this.
-        //Only called by mouseMoved listener for the menu bar/title bar
+        //Only called by mouseMoved listener for the menubar/title bar
         if (clientAntiDragEnabled) {
             //mouseEntered fires before mouseMoved, so lastClientPosition and lastMouseMoveMenuBar cannot really be outdated.
             //It can only be somewhat outdated if someone enables the config option by pressing their space bar with the cursor in the menubar.
             //For that case we set the values when the config changes.
 
-            //Get current client position, and the duration that the mouse was in the menu bar but did not move.
+            //Get current client position, and the duration that the mouse was in the menubar but did not move.
             JFrame topFrameClient = (JFrame) SwingUtilities.getWindowAncestor(client.getCanvas());
             Point currentClientPosition = topFrameClient.getLocation();
             long mouseMenuBarNotMovedDuration = System.nanoTime() - lastMouseMoveMenuBar;
-            //if the duration that the mouse has not moved in the menu bar (potentially dragging) is less than the config duration * TICK_IN_NANOSECONDS, and the client's position has changed, set the client back to its previous position.
+            //if the duration that the mouse has not moved in the menubar (potentially dragging) is less than the config duration * TICK_IN_NANOSECONDS, and the client's position has changed, set the client back to its previous position.
             if (mouseMenuBarNotMovedDuration < clientAntiDragDelay * TICK_IN_NANOSECONDS && !currentClientPosition.equals(lastClientPosition)) {
                 setClientPosition((int) lastClientPosition.getX(), (int) lastClientPosition.getY());
             }
-            //Set the value of the last client position and the last mouse movement in the menu bar
+            //Set the value of the last client position and the last mouse movement in the menubar
             lastClientPosition = topFrameClient.getLocation();
             lastMouseMoveMenuBar = System.nanoTime();
             if (showChatMessageClientAntiDrag) {
@@ -564,21 +577,27 @@ public class ClientResizerPlugin extends Plugin {
         }
     }
 
-    private void monitorCheck() {
+    private void monitorCheck(boolean mouseMovedListenerMenubarOverride) {
         //Specifically opted to not use an EventListener/ComponentListener for window positioning and running the code in there with custom chrome disabled =>
         // Problem is that it might be jarring with custom chrome disabled (MouseListener to disable the code while the cursor is in the MenuBar does not work) and the 'soft' snap back would not work since it polls it too frequently instead of once a tick.
         // With custom chrome enabled, this would technically not be a problem because the code will not activate while dragging (not jarring, and it won't check too frequently)
         // However, it does not seem to like working. Maybe it reports too frequently so SwingUtilities.invokelater isn't done yet or something like that? Also makes moving the client very laggy when copyPosition is enabled due to the reporting frequency. Might revisit at some point with a fresh look when I'm not this tired and/or got more ideas.
 
-        if (!mouseInMenuBar) { //Wait till we are done dragging the client! Might still be dragging if mouse in the menu bar (resulting in problems for both automatic resizing and containing in screen/snapping back)!
+        //This method is also ran every 1/4th of a tick in the mouseMoved mouseinputlistener for the menubar/title bar.
+        // That requires mouseMovedListenerMenubarOverride to be true, because the mouse is obviously in the menubar then.
+        // It also ensures that the draggingEdgesWorkaround that is supposed to run with at least 1 game tick in between, is not running too soon
+        // Additionally, monitorCheck needs to remain a thing in GameTick and BeforeRender, because people can also move the client using Shift+Win+Arrow key etc (or with custom chrome off)
+        if (!mouseInMenuBar || mouseMovedListenerMenubarOverride) { //Wait till we are done dragging the client! Might still be dragging if the mouse is in the menubar and the mouse is not moving (resulting in problems for both automatic resizing and containing in screen/snapping back)!
             containInScreen(); //Contain before getting the graphicsConfig (which does contain the current monitor!)
+
             //Alternatively use client.getCanvas().getGraphicsConfiguration() if this breaks!
             SwingUtilities.invokeLater(() -> {
                 graphicsConfig = clientUI.getGraphicsConfiguration();
                 currentMonitor = graphicsConfig.getDevice(); // Actually relevant here to refresh the current monitor since I opted to use static variables instead of local variable that update per method.
             });
-            if (draggingEdgesWorkaround && draggingEdgesSecondResizeDimension != null) {
+            if (draggingEdgesWorkaround && draggingEdgesSecondResizeDimension != null && !mouseMovedListenerMenubarOverride) {
                 //This will trigger the second resize when the workaround is enabled
+                //We check if we're not running the override from the mouseMoved mouseinputlistener, so the method isn't being called too early.
                 setGameSize(draggingEdgesSecondResizeDimension);
             }
             if (hasMonitorChanged()) {
@@ -586,7 +605,12 @@ public class ClientResizerPlugin extends Plugin {
                 resizeClient();
             }
         }
-        copyPositionToClipboard(); // Already checks if the boolean config var is enabled. Should not only run when the monitor has changed.
+        if (!mouseMovedListenerMenubarOverride) {
+            copyPositionToClipboard(); // Already checks if the boolean config var is enabled. Should not only run when the monitor has changed.
+            //For performance reasons we're not running this every 1/4th tick, but in practice it would not matter too much.
+            //It would only run every 1/4th of a tick while the mouse would be moved in the menubar, and I could not detect a significant performance impact on my machine + the boolean to call this, is often false anyway.
+            //However, running it every gametick when the config option is enabled is already enough (1/4th is overkill).
+        }
         //PS To get all monitors, you can do:
         //GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
         //GraphicsDevice[] allMonitors = graphicsEnvironment.getScreenDevices();
@@ -670,6 +694,8 @@ public class ClientResizerPlugin extends Plugin {
                     }
                     //Reposition the client to the new coords conform the config values of contain in screen
                     setClientPosition(coordsToRepositionToX, coordsToRepositionToY);
+                    //Set lastClientPosition for client anti-drag, so anti-drag does not snap the client back incorrectly after (soft) snap back has changed its position.
+                    lastClientPosition = topFrameClient.getLocation();
                 }
             }
         }

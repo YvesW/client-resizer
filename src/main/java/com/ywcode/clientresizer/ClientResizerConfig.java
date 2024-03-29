@@ -11,7 +11,7 @@ public interface ClientResizerConfig extends Config {
             name = "Automatic Resizing",
             description = "Automatic window resizing based on the current monitor.<br>"
                     + "Note: It's recommended to enable 'Enable custom window chrome' in 'RuneLite' > 'Window Settings'.<br>"
-                    + "The client will resize when your cursor leaves the menubar (title bar).",
+                    + "The client will resize when your cursor leaves the menubar (title bar) or when you move your cursor in the menubar.",
             position = 0,
             closedByDefault = true
     )
@@ -45,7 +45,8 @@ public interface ClientResizerConfig extends Config {
 
     @ConfigSection(
             name = "Snap back/contain in screen",
-            description = "Snap the client back into/contain in screen (sides, offset, hard/soft). Will snap back once your cursor leaves the menubar (title bar).<br>"
+            description = "Snap the client back into/contain in screen (sides, offset, hard/soft).<br>"
+                    + "Will snap back once your cursor leaves the menubar (title bar) or when you move your cursor in the menubar.<br>"
                     + "Note: It's recommended to enable 'Enable custom window chrome' in 'RuneLite' > 'Window Settings'<br>"
                     + "Tip: you can always switch monitors by using hotkey repositioning (see above).",
             position = 4,
