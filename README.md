@@ -1,7 +1,7 @@
 # Client Resizer
-Also annoyed by having to change your client's size (game size), resizable scaling, or position every time you move RuneLite to a different monitor or when doing a different activity? Or are you a big fan of snap back/contain in screen?<br>
+Also annoyed by having to change your client's size (game size), resizable scaling, or position every time you move RuneLite to a different monitor or when doing a different activity? Or are you a big fan of snap back/contain in screen, or client anti-drag?<br>
 
-**Client Resizer allows for automatic or hotkey-based resizing and repositioning of the client. It also allows for changing the resizable scaling, and for containing your client in screen (snapping back).** It's especially useful for people that have multiple monitors of different sizes or resolutions, or for people that like to resize or (re)position their client in specific scenarios (e.g. per activity).<br>
+**Client Resizer allows for automatic or hotkey-based resizing and repositioning of the client. It also allows for changing the resizable scaling, for containing your client in screen (snapping back), and for client anti-drag.** It's especially useful for people that have multiple monitors of different sizes or resolutions, or for people that like to resize or (re)position their client in specific scenarios (e.g. per activity).<br>
 
 **This plugin adds the following features:**
 - Automatically resize your client when it's moved to a different monitor. This can be configured per monitor attribute, e.g. per ID string (differs for every monitor), resolution (dimension) or refresh rate.
@@ -10,6 +10,7 @@ Also annoyed by having to change your client's size (game size), resizable scali
 - Change your resizable scaling (stretched mode plugin), either automatically or hotkey-based.
 - (Re)position your client using hotkeys. This allows you to e.g. get RL flush with your screen or position it in a specific position per activity. Furthermore, this allows you to position the client in ways the normal Windows window manager does not allow, e.g. in a way that the title bar is offscreen at the top of the screen.
 - Snap back/Contain the client in screen: the client will snap back **after your cursor leaves the menubar (title bar)** or after moving it using shift + Windows + arrow key. This can either be 'soft' or 'hard' snap back/contain in screen. Offsets can be added if the client is not in your preferred location after snapping back.
+- Client anti-drag: the client will snap back if you do not drag the menubar (title bar) for long enough. This can be useful to prevent moving the client unintentionally.
 
 The plugin still respects all the other settings in the ``RuneLite`` > ``Window Settings`` config. For that reason, I personally suggest using the following RuneLite Window Settings:<br>
 ![RuneLite window settings](docs/img/runelite-window-settings.png)<br>
@@ -81,6 +82,14 @@ To set it up:
   If you like your client to always be snapped back/contained in screen, keep this at a very high value (e.g. 100000).
   ![Snap back demo](docs/img/snap-back-demo-hard-soft.webp)<br>
 
+### Client anti-drag
+*Note: Requires ``Enable custom window chrome`` in ``RuneLite`` > ``Window Settings`` to be enabled!*
+- Open the config panel of Client Resizer (gear icon).
+- Open the ``Client anti-drag`` category.
+- Enable the ``Client anti-drag`` setting.
+- Enter the drag delay you prefer. This is how long the cursor will have to not move while in the title bar/menu bar (read: how long you need to drag for) for anti-drag to not engage.<br>
+  ![Resizable scaling](docs/img/client-anti-drag.PNG)
+
 ### Importing and exporting settings
 You can export and import your config to/from the clipboard to easily transfer your config settings to e.g. a different profile without having to duplicate the profile. Please keep in mind that **importing will overwrite your config settings**! 
 - Type the ``::ClientResizerExport`` command ingame to copy the config to your clipboard.
@@ -92,6 +101,9 @@ Not tested on macOS or Linux; results may vary.
 If you experience any issues or have any concerns, please reach out to YvesW via a GitHub Issue, by Discord direct messaging or via the RuneLite Discord by mentioning @``YvesW``.
 
 ## Changelog
+04-2024:
+- Added client anti-drag.
+
 03-2024:
 - Added a workaround that allows for resizing of the client after the user has manually adjusted the client size by dragging the edges of the client. The setting will be enabled or disabled automatically based on the ``Lock window size`` setting in the ``RuneLite`` config.
 

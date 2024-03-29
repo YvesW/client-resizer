@@ -32,8 +32,8 @@ import java.util.regex.*;
 @Slf4j
 @PluginDescriptor(
         name = "Client Resizer",
-        description = "Allows for automatic or hotkey-based resizing and repositioning, and for snapping the client back/containing it in screen.",
-        tags = {"client,resize,automatic,pixels,refresh rate,game size,size,screen size,monitor,display,screen,autoresize,hotkey,hot key,stretched mode,resizable scaling,scaling,position,reposition,location,menubar,title bar,contain,contain in screen,snap,snap back,edge,offset"}
+        description = "Allows for automatic or hotkey-based resizing and repositioning, for snapping the client back/containing it in screen, and for client anti-drag.",
+        tags = {"client,resize,automatic,pixels,refresh rate,game size,size,screen size,monitor,display,screen,autoresize,hotkey,hot key,stretched mode,resizable scaling,scaling,position,reposition,location,menubar,title bar,contain,contain in screen,snap,snap back,edge,offset,anti-drag,antidrag,anti drag,drag"}
 )
 
 public class ClientResizerPlugin extends Plugin {
@@ -63,9 +63,12 @@ public class ClientResizerPlugin extends Plugin {
     private static int containInScreenBottomOffset;
     private static int containInScreenLeftOffset;
     private static int containInScreenSnapBackPx;
+    private static boolean clientAntiDragEnabled;
+    private static int clientAntiDragDelay;
     private static boolean showChatMessage;
     private static boolean showChatMessageReposition;
     private static boolean showChatMessageContain;
+    private static boolean showChatMessageClientAntiDrag;
     private static boolean enableHotkeysDuringBankPin;
     private static boolean draggingEdgesWorkaround;
     private static MonitorAttribute copyAttribute;
@@ -86,10 +89,11 @@ public class ClientResizerPlugin extends Plugin {
     private static final Pattern NUMERIC_PATTERN = Pattern.compile("-?\\d+(\\.\\d+)?");
     @Getter
     private static int defaultResizableScaling = 50; //Stretched mode plugin default
-    private static long previousNanoTime; // Default value is 0
-    private static long previousCustomChromeChatMessageNanoTime; // Default value is 0
-    private static long previousLockSizeChatMessageNanoTime; // Default value is 0
-    private static long previousContainChatMessageNanoTime; // Default value is 0
+    private static long previousNanoTime; // Default value is 0L
+    private static long previousCustomChromeChatMessageNanoTime; // Default value is 0L
+    private static long previousLockSizeChatMessageNanoTime; // Default value is 0L
+    private static long previousContainChatMessageNanoTime; // Default value is 0L
+    private static long previousClientAntiDragChatMessageNanoTime; // Default value is 0L
     private static final long TICK_IN_NANOSECONDS = 600000000;
     private static final long TWENTY_SECONDS_IN_NANOSECONDS = 20000000000L;
     private static final long SIXTY_SECONDS_IN_NANOSECONDS = 60000000000L;
@@ -97,12 +101,15 @@ public class ClientResizerPlugin extends Plugin {
     private static boolean scaleChatMessageFlag; //Default = false
     private static boolean repositionChatMessageFlag; //Default = false
     private static boolean containInScreenChatMessageFlag; //Default = false
+    private static boolean clientAntiDragChatMessageFlag; //Default = false
     private static boolean customChromeChatMessageFlag; //Default = false
     private static boolean lockWindowSizeChatMessageFlag; //Default = false
     private static boolean draggingEdgesWorkaroundEnabledFlag; //Default = false
     private static MouseInputListener mouseInputListenerMenubar;
     private static boolean mouseInMenuBar; //Default = false. Might be dragging the client while this is active.
     private static boolean isCustomChromeEnabled = true; //Assume true, otherwise set to false in StartUp
+    private static Point lastClientPosition;
+    private static long lastMouseMoveMenuBar;
     private static final String[] dimensionsStringArray = new String[]{"autoSize1Dimension", "autoSize2Dimension", "autoSize3Dimension", "autoSize4Dimension", "autoSize5Dimension", "autoSize6Dimension", "autoSize7Dimension", "autoSize8Dimension", "autoSize9Dimension", "autoSize10Dimension", "hotkey1Dimension","hotkey2Dimension","hotkey3Dimension","hotkey4Dimension", "hotkey5Dimension","hotkey6Dimension","hotkey7Dimension","hotkey8Dimension","hotkey9Dimension", "hotkey10Dimension"}; //Used to set the default dimenion
     private static final HashSet<Integer> NUMERICAL_KEY_CODES = new HashSet<>(Arrays.asList(KeyEvent.VK_0, KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9, KeyEvent.VK_NUMPAD0, KeyEvent.VK_NUMPAD1, KeyEvent.VK_NUMPAD2, KeyEvent.VK_NUMPAD3, KeyEvent.VK_NUMPAD4, KeyEvent.VK_NUMPAD5, KeyEvent.VK_NUMPAD6, KeyEvent.VK_NUMPAD7, KeyEvent.VK_NUMPAD8, KeyEvent.VK_NUMPAD9)); //Used to disable numerical hotkeys while the bank pin container is open
     private static final Map.Entry<String, String> EXPORT_PREFIX = new AbstractMap.SimpleImmutableEntry<>("Client Resizer Prefix", "Client Resizer Export");
@@ -146,6 +153,11 @@ public class ClientResizerPlugin extends Plugin {
             @Override
             public void mouseEntered(MouseEvent mouseEvent) {
                 mouseInMenuBar = true;
+                if (clientAntiDragEnabled) {
+                    JFrame topFrameClient = (JFrame) SwingUtilities.getWindowAncestor(client.getCanvas());
+                    lastClientPosition = topFrameClient.getLocation();
+                    lastMouseMoveMenuBar = System.nanoTime();
+                }
             }
 
             @Override
@@ -178,16 +190,11 @@ public class ClientResizerPlugin extends Plugin {
 
             @Override
             public void mouseMoved(MouseEvent mouseEvent) {
-                //This works while moving the mouse over the menu bar, but during dragging, the mouse is not moved. Thus, this is pretty useless.
-                //Could technically use this with a boolean to know when the mouse is not dragging (because the mouse is moving), but no proper way to set this boolean back to false, so does not really work.
-                //If you ever want to use mouseDragged and mouseMoved also add a MouseMotionListener by doing customChromeMenuBar.addMouseMotionListener(mouseInputListenerMenubar);
+                //This works while moving the mouse over the menu bar, but during dragging, the mouse is not moved. Thus, this is pretty useless for detecting when the client is being dragged.
+                //Could technically use this with a boolean to know when the mouse is not dragging (because the mouse is moving), but no proper way to detect when the mouse stops moving and at that point the user can already be dragging the client.
+                //If you want to use mouseDragged and mouseMoved also add a MouseMotionListener by doing customChromeMenuBar.addMouseMotionListener(mouseInputListenerMenubar);
+                clientAntiDrag(); //Method already checks the config value, so no check is needed here.
             }
-			//You can technically add something like client anti-drag, but it'd be incredibly hacky. For example:
-			//if (mouseInMenuBar) -> poll location every tick via topFrameClient.getLocation -> keep resetting position
-			// to initial position if it changes, until the cursor/mouse hasn't moved for x seconds while mouseInMenuBar
-			// because the mouse can't move while dragging the title bar.
-			//Would likely be somewhat jarring and potentially kinda buggy. Can't consume the click/press because the
-			// events don't fire.
             //---------------------------------------------------------------
         };
 
@@ -196,6 +203,7 @@ public class ClientResizerPlugin extends Plugin {
         JMenuBar customChromeMenuBar = topFrameClient.getJMenuBar();
         if (customChromeMenuBar != null) { //Prevent NPE in case custom chrome is disabled
             customChromeMenuBar.addMouseListener(mouseInputListenerMenubar);
+            customChromeMenuBar.addMouseMotionListener(mouseInputListenerMenubar);
         } else {
             //Custom chrome is disabled
             isCustomChromeEnabled = false;
@@ -210,6 +218,7 @@ public class ClientResizerPlugin extends Plugin {
         JMenuBar customChromeMenuBar = topFrameClient.getJMenuBar();
         if (isCustomChromeEnabled) { //Prevent NPE in case custom chrome is disabled
             customChromeMenuBar.removeMouseListener(mouseInputListenerMenubar);
+            customChromeMenuBar.removeMouseMotionListener(mouseInputListenerMenubar);
         }
     }
 
@@ -253,6 +262,16 @@ public class ClientResizerPlugin extends Plugin {
                         checkChromeLockSettings();
                     }
                     break;
+                //Set the lastClientPosition and lastMouseMoveMenuBar in case the user enables the option with space bar while the cursor is in the menubar.
+                case "clientAntiDragEnabled":
+                    JFrame topFrameClient = (JFrame) SwingUtilities.getWindowAncestor(client.getCanvas());
+                    lastClientPosition = topFrameClient.getLocation();
+                    lastMouseMoveMenuBar = System.nanoTime();
+                    //Send message when client anti-drag gets enabled but custom chrome is disabled
+                    if (newConfigValue.equals("true")) {
+                        checkChromeSettings();
+                    }
+                    break;
             }
         }
         if (configGroupChanged.equals("runelite")) {
@@ -260,12 +279,13 @@ public class ClientResizerPlugin extends Plugin {
             String newConfigValue = configChanged.getNewValue();
             switch (configKey) {
                 case "uiEnableCustomChrome":
+                    checkAutomaticResizeContainAntiDragSettings(configKey, newConfigValue); //already checks is newConfigValue == "false"
+                    break;
                 case "lockWindowSize":
-                    if (newConfigValue.equals("false")) {
-                        checkAutomaticResizeContainSettings(configKey);
-                    }
+                    checkAutomaticResizeContainAntiDragSettings(configKey, newConfigValue);
                     setDraggingEdgesWorkaround(newConfigValue);
                     break;
+                    //Could technically remove the break and remove the superfluous code here, but too high of a risk that I forget about the missing break in the future.
             }
         }
     }
@@ -282,9 +302,12 @@ public class ClientResizerPlugin extends Plugin {
         containInScreenBottomOffset = config.containInScreenBottomOffset();
         containInScreenLeftOffset = config.containInScreenLeftOffset();
         containInScreenSnapBackPx = config.containInScreenSnapBackPx();
+        clientAntiDragEnabled = config.clientAntiDragEnabled();
+        clientAntiDragDelay = config.clientAntiDragDelay();
         showChatMessage = config.showChatMessage();
         showChatMessageReposition = config.showChatMessageReposition();
         showChatMessageContain = config.showChatMessageContain();
+        showChatMessageClientAntiDrag = config.showChatMessageClientAntiDrag();
         enableHotkeysDuringBankPin = config.enableHotkeysDuringBankPin();
         draggingEdgesWorkaround = config.draggingEdgesWorkaround();
         copyAttribute = config.copyAttribute();
@@ -389,6 +412,36 @@ public class ClientResizerPlugin extends Plugin {
         }
     }
 
+    private void clientAntiDrag() {
+        //Client anti-drag; quite hacky but some people apparently really want this.
+        //Only called by mouseMoved listener for the menu bar/title bar
+        if (clientAntiDragEnabled) {
+            //mouseEntered fires before mouseMoved, so lastClientPosition and lastMouseMoveMenuBar cannot really be outdated.
+            //It can only be somewhat outdated if someone enables the config option by pressing their space bar with the cursor in the menubar.
+            //For that case we set the values when the config changes.
+
+            //Get current client position, and the duration that the mouse was in the menu bar but did not move.
+            JFrame topFrameClient = (JFrame) SwingUtilities.getWindowAncestor(client.getCanvas());
+            Point currentClientPosition = topFrameClient.getLocation();
+            long mouseMenuBarNotMovedDuration = System.nanoTime() - lastMouseMoveMenuBar;
+            //if the duration that the mouse has not moved in the menu bar (potentially dragging) is less than the config duration * TICK_IN_NANOSECONDS, and the client's position has changed, set the client back to its previous position.
+            if (mouseMenuBarNotMovedDuration < clientAntiDragDelay * TICK_IN_NANOSECONDS && !currentClientPosition.equals(lastClientPosition)) {
+                setClientPosition((int) lastClientPosition.getX(), (int) lastClientPosition.getY());
+            }
+            //Set the value of the last client position and the last mouse movement in the menu bar
+            lastClientPosition = topFrameClient.getLocation();
+            lastMouseMoveMenuBar = System.nanoTime();
+            if (showChatMessageClientAntiDrag) {
+                //Send a chat message, but only do it every 60 seconds as to not spam the user
+                long currentNanoTime = System.nanoTime();
+                if (currentNanoTime - previousClientAntiDragChatMessageNanoTime > SIXTY_SECONDS_IN_NANOSECONDS) {
+                    sendGameChatMessage(ResizerMessageType.CLIENT_ANTI_DRAG);
+                    previousClientAntiDragChatMessageNanoTime = currentNanoTime;
+                }
+            }
+        }
+    }
+
     private void copyAttributeToClipboard() { //Copy value of specified attribute to clipboard, so it can be pasted in the String input boxes
         if (copyAttribute != MonitorAttribute.Disabled && currentMonitorValueForAttribute(copyAttribute) != null) {
             String valueToCopy = currentMonitorValueForAttribute(copyAttribute).toString(); //Hush IntelliJ, already checked if currentMonitorValueForAttribute(copyAttribute) != null so .toString() cannot produce a NPE AFAIK...
@@ -427,11 +480,16 @@ public class ClientResizerPlugin extends Plugin {
 
     private void checkChromeLockSettings() {
         //Check if custom chrome is disabled and/or lock window size is disabled => check if enough time has passed, so we don't spam the user => send message
-        if (configManager.getConfiguration("runelite", "uiEnableCustomChrome", Boolean.class).equals(false)) {
-            sendCustomChromeWarning();
-        }
+        checkChromeSettings();
         if (configManager.getConfiguration("runelite", "lockWindowSize", Boolean.class).equals(false)) {
             sendLockWindowWarning();
+        }
+    }
+
+    private void checkChromeSettings() {
+        //Check if custom chrome is disabled => check if enough time has passed, so we don't spam the user => send message
+        if (configManager.getConfiguration("runelite", "uiEnableCustomChrome", Boolean.class).equals(false)) {
+            sendCustomChromeWarning();
         }
     }
 
@@ -453,25 +511,36 @@ public class ClientResizerPlugin extends Plugin {
         }
     }
 
-    private void checkAutomaticResizeContainSettings(String configKey) {
+    private void checkAutomaticResizeContainAntiDragSettings(String configKey, String newConfigValueString) {
         //Check if automatic resizing / contain in screen is enabled => if so, check if enough time has passed as to not spam the user (performed my the method that gets called) => send message
-        boolean shouldSendMessage = false;
-        for (MonitorAttribute monitorAttribute : attributesArray) {
-            if (monitorAttribute != MonitorAttribute.Disabled) {
-                shouldSendMessage = true;
-                break; //Boolean already set to true so can exit the for loop
+        if (newConfigValueString.equals("false")) {
+            boolean shouldSendMessageLock = false;
+            boolean shouldSendMessageChrome = false;
+            for (MonitorAttribute monitorAttribute : attributesArray) {
+                if (monitorAttribute != MonitorAttribute.Disabled) {
+                    shouldSendMessageLock = true;
+                    shouldSendMessageChrome = true;
+                    break; //Boolean already set to true so can exit the for loop
+                }
             }
-        }
-        if (containInScreenTop || containInScreenRight || containInScreenBottom || containInScreenLeft) {
-            shouldSendMessage = true;
-        }
-        if (shouldSendMessage) { //Send msg if code above determined that it should be sent.
+            if (containInScreenTop || containInScreenRight || containInScreenBottom || containInScreenLeft) {
+                shouldSendMessageLock = true;
+                shouldSendMessageChrome = true;
+            }
+            if (clientAntiDragEnabled) {
+                shouldSendMessageChrome = true;
+            }
+            //Send msg if code above determined that it should be sent.
             switch (configKey) {
                 case "uiEnableCustomChrome":
-                    sendCustomChromeWarning();
+                    if (shouldSendMessageChrome) {
+                        sendCustomChromeWarning();
+                    }
                     break;
                 case "lockWindowSize":
-                    sendLockWindowWarning();
+                    if (shouldSendMessageLock) {
+                        sendLockWindowWarning();
+                    }
                     break;
             }
         }
@@ -592,7 +661,7 @@ public class ClientResizerPlugin extends Plugin {
                 //If we need to reposition, then reposition to the new coords
                 if (shouldReposition) {
                     if (showChatMessageContain) {
-                        //Send a chat message, but only do it every 30 seconds as to not spam the user
+                        //Send a chat message, but only do it every 60 seconds as to not spam the user
                         long currentNanoTime = System.nanoTime();
                         if (currentNanoTime - previousContainChatMessageNanoTime > SIXTY_SECONDS_IN_NANOSECONDS) { //It will fire immediately once when starting the plugin in the right gamestate (desired behavior IMO) and also immediately when logging out, but that is fine probs.
                             sendGameChatMessage(ResizerMessageType.CONTAIN_IN_SCREEN);
@@ -642,9 +711,16 @@ public class ClientResizerPlugin extends Plugin {
                     containInScreenChatMessageFlag = true;
                 }
                 break;
+            case CLIENT_ANTI_DRAG:
+                if (currentGameState == GameState.LOGGED_IN || currentGameState == GameState.LOADING) {
+                    actuallySendMessage("Your client was snapped back by the Client Resizer plugin because of client anti-drag. Check your config if you'd like to change this.");
+                } else {
+                    clientAntiDragChatMessageFlag = true;
+                }
+                break;
             case CUSTOM_CHROME:
                 if (currentGameState == GameState.LOGGED_IN || currentGameState == GameState.LOADING) {
-                    actuallySendMessage("<col=FF0000>Client Resizer plugin: It is recommended to enable custom chrome when using automatic resizing or snap back/contain in screen. You can enable this in the 'RuneLite' config > 'Windows Settings' > 'Enable custom window chrome'");
+                    actuallySendMessage("<col=FF0000>Client Resizer plugin: It is strongly recommended to enable custom chrome when using automatic resizing, snap back/contain in screen, or client anti-drag. You can enable this in the 'RuneLite' config > 'Windows Settings' > 'Enable custom window chrome'. Certain features might otherwise not function.");
                 } else {
                     customChromeChatMessageFlag = true;
                 }
@@ -895,6 +971,10 @@ public class ClientResizerPlugin extends Plugin {
         if (containInScreenChatMessageFlag) {
             containInScreenChatMessageFlag = false;
             sendGameChatMessage(ResizerMessageType.CONTAIN_IN_SCREEN);
+        }
+        if (clientAntiDragChatMessageFlag) {
+            clientAntiDragChatMessageFlag = false;
+            sendGameChatMessage(ResizerMessageType.CLIENT_ANTI_DRAG);
         }
         if (customChromeChatMessageFlag) {
             customChromeChatMessageFlag = false;

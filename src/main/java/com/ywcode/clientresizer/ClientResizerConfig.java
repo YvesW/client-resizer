@@ -54,9 +54,18 @@ public interface ClientResizerConfig extends Config {
     String containInScreenSettings = "containInScreenSettings";
 
     @ConfigSection(
+            name = "Client anti-drag",
+            description = "Snap the client back to the previous position if you don't drag it for long enough.<br>"
+                    + "Note: Requires 'Enable custom window chrome' to be enabled in 'RuneLite' > 'Window Settings'.",
+            position = 5,
+            closedByDefault = true
+    )
+    String clientAntiDragSettings = "clientAntiDragSettings";
+
+    @ConfigSection(
             name = "Advanced",
             description = "Advanced settings",
-            position = 5,
+            position = 6,
             closedByDefault = true
     )
     String advancedSettings = "advancedSettings";
@@ -64,7 +73,7 @@ public interface ClientResizerConfig extends Config {
     @ConfigSection(
             name = "Current Monitor Info",
             description = "Information about the current monitor",
-            position = 6
+            position = 7
             //closedByDefault = false //Redundant default parameter value assignment; default is false already.
     )
     String currentMonitorInfoSettings = "currentMonitorInfoSettings";
@@ -1789,6 +1798,36 @@ public interface ClientResizerConfig extends Config {
     }
 
     @ConfigItem(
+            keyName = "clientAntiDragEnabled",
+            name = "Client anti-drag",
+            description = "Snap the client back to the previous position if you don't drag it for long enough.<br>"
+                    + "Note: Requires 'Enable custom window chrome' to be enabled in 'RuneLite' > 'Window Settings'.",
+            position = 0,
+            section = clientAntiDragSettings
+    )
+    default boolean clientAntiDragEnabled() {
+        return false;
+    }
+
+    @ConfigItem(
+            keyName = "clientAntiDragDelay",
+            name = "Drag delay",
+            description = "If dragged for less time than this, the client will snap back to the previous position.<br>"
+                    + "Note: Requires 'Enable custom window chrome' to be enabled in 'RuneLite' > 'Window Settings'.",
+            position = 1,
+            section = clientAntiDragSettings
+    )
+    @Range(
+            min = 1
+    )
+    @Units(
+            Units.TICKS
+    )
+    default int clientAntiDragDelay() {
+        return 3;
+    }
+
+    @ConfigItem(
             keyName = "showChatMessage",
             name = "Show resize chat message",
             description = "Show the chat message when changing the game size / client size or when changing the resizable scaling (stretched mode plugin).<br>"
@@ -1828,10 +1867,23 @@ public interface ClientResizerConfig extends Config {
     }
 
     @ConfigItem(
+            keyName = "showChatMessageClientAntiDrag",
+            name = "Show client anti-drag chat message",
+            description = "Show the chat message when client anti-drag engages.<br>"
+                    + "This setting is enabled by default. If you disable it, then DO remember that you are using this plugin!<br>"
+                    + "Do NOT complain in the RuneLite Discord that your client randomly repositions/tries to snap itself back when you try to move it.",
+            position = 3,
+            section = advancedSettings
+    )
+    default boolean showChatMessageClientAntiDrag() {
+        return true;
+    }
+
+    @ConfigItem(
             keyName = "enableHotkeysDuringBankPin",
             name = "Enable numerical hotkeys during bank pin",
             description = "Let client resizer accept numerical hotkeys (0-9, no modifiers) while entering your bank pin.",
-            position = 3,
+            position = 4,
             section = advancedSettings
     )
     default boolean enableHotkeysDuringBankPin() {
@@ -1844,7 +1896,7 @@ public interface ClientResizerConfig extends Config {
             description = "Workaround that allows for resizing of the client after the user has manually adjusted the client size by dragging the edges of the client.<br>"
                     + "This might result in superfluous resizes by +1 pixel in width with one gametick of delay in between.<br>"
                     + "Thus, it is recommended to only enable this setting if you do not have 'Lock window size' enabled in the 'RuneLite' config and drag the edges of the client.",
-            position = 4,
+            position = 5,
             section = advancedSettings
     )
     default boolean draggingEdgesWorkaround() {
