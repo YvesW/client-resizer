@@ -103,7 +103,7 @@ If you experience any issues or have any concerns, please reach out to YvesW via
 ## Changelog
 04-2024:
 - Added ``Client anti-drag``.
-- Improved snapiness when dragging the client to another monitor with custom chrome enabled by making it perform actions when the mouse is moved in the menubar (title bar).
+- Improved snappiness when dragging the client to another monitor with custom chrome enabled by making it perform actions when the mouse is moved in the menubar (title bar).
 
 03-2024:
 - Added a workaround that allows for resizing of the client after the user has manually adjusted the client size by dragging the edges of the client. The setting will be enabled or disabled automatically based on the ``Lock window size`` setting in the ``RuneLite`` config.
