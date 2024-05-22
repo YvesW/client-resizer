@@ -101,6 +101,9 @@ Not tested on macOS or Linux; results may vary.
 If you experience any issues or have any concerns, please reach out to YvesW via a GitHub Issue, by Discord direct messaging or via the RuneLite Discord by mentioning @``YvesW``.
 
 ## Changelog
+05-2024:
+- Added an advanced config option that prevents the plugin from resizing the client. This can be used with very niche setups to only let the plugin change resizable scaling (stretched mode plugin). Generally, I recommend just setting the plugin config to the preferred client size and not messing with this advanced config option.
+
 04-2024:
 - Added ``Client anti-drag``.
 - Improved snappiness when dragging the client to another monitor with custom chrome enabled by making it perform actions when the mouse is moved in the menubar (title bar).

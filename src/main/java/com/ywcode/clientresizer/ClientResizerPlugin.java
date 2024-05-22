@@ -71,6 +71,7 @@ public class ClientResizerPlugin extends Plugin {
     private static boolean showChatMessageClientAntiDrag;
     private static boolean enableHotkeysDuringBankPin;
     private static boolean draggingEdgesWorkaround;
+    private static boolean preventClientResizing;
     private static MonitorAttribute copyAttribute;
     private static boolean copyPosition;
     //------------- End of wall of config vars -------------
@@ -323,6 +324,7 @@ public class ClientResizerPlugin extends Plugin {
         showChatMessageClientAntiDrag = config.showChatMessageClientAntiDrag();
         enableHotkeysDuringBankPin = config.enableHotkeysDuringBankPin();
         draggingEdgesWorkaround = config.draggingEdgesWorkaround();
+        preventClientResizing = config.preventClientResizing();
         copyAttribute = config.copyAttribute();
         copyPosition = config.copyPosition();
 
@@ -889,6 +891,13 @@ public class ClientResizerPlugin extends Plugin {
 
     private void setGameSize(Dimension dimension) {
         //Actually set the game size
+
+        if (preventClientResizing) {
+            //if the advanced config option is checked to not resize the client, return.
+            //The advanced option is only useful in very niche setups such as https://github.com/YvesW/client-resizer/issues/8
+            //In all other scenarios I'd recommend just setting the plugin config to the preferred client size.
+            return;
+        }
 
         //Processing probably irrelevant since ClientUI.java contains the same code, but why not.
         int processedWidth = Math.max(Math.min(dimension.width, 7680), Constants.GAME_FIXED_WIDTH);

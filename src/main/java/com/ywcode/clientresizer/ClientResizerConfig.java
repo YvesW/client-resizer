@@ -1905,6 +1905,19 @@ public interface ClientResizerConfig extends Config {
     }
 
     @ConfigItem(
+            keyName = "preventClientResizing",
+            name = "Prevent client resizing",
+            description = "When enabled, the plugin will not change the client size. Do NOT enable this setting if you don't know what you are doing.<br>"
+                    + "Can be used with very niche setups to only let the plugin change resizable scaling (stretched mode plugin).<br>"
+                    + "Do NOT complain that the plugin does not resize your client if you enabled this config item.",
+            position = 6,
+            section = advancedSettings
+    )
+    default boolean preventClientResizing() {
+        return false;
+    }
+
+    @ConfigItem(
             keyName = "copyAttribute",
             name = "Copy attribute of current monitor",
             description = "Copy this attribute of the current monitor to the clipboard<br>"
