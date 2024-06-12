@@ -95,7 +95,7 @@ public class ClientResizerPlugin extends Plugin {
     private static long previousLockSizeChatMessageNanoTime; // Default value is 0L
     private static long previousContainChatMessageNanoTime; // Default value is 0L
     private static long previousClientAntiDragChatMessageNanoTime; // Default value is 0L
-    private static long ONE_FOURTH_TICK_IN_NANOSECONDS = 150000000L;
+    private static final long ONE_FOURTH_TICK_IN_NANOSECONDS = 150000000L;
     private static final long TICK_IN_NANOSECONDS = 600000000L;
     private static final long TWENTY_SECONDS_IN_NANOSECONDS = 20000000000L;
     private static final long SIXTY_SECONDS_IN_NANOSECONDS = 60000000000L;
