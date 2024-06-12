@@ -442,18 +442,18 @@ public class ClientResizerPlugin extends Plugin {
             //if the duration that the mouse has not moved in the menubar (potentially dragging) is less than the config duration * TICK_IN_NANOSECONDS, and the client's position has changed, set the client back to its previous position.
             if (mouseMenuBarNotMovedDuration < clientAntiDragDelay * TICK_IN_NANOSECONDS && !currentClientPosition.equals(lastClientPosition)) {
                 setClientPosition((int) lastClientPosition.getX(), (int) lastClientPosition.getY());
+                //Send a chat message, but only do it every 60 seconds as to not spam the user
+                if (showChatMessageClientAntiDrag) {
+                    long currentNanoTime = System.nanoTime();
+                    if (currentNanoTime - previousClientAntiDragChatMessageNanoTime > SIXTY_SECONDS_IN_NANOSECONDS) {
+                        sendGameChatMessage(ResizerMessageType.CLIENT_ANTI_DRAG);
+                        previousClientAntiDragChatMessageNanoTime = currentNanoTime;
+                    }
+                }
             }
             //Set the value of the last client position and the last mouse movement in the menubar
             lastClientPosition = topFrameClient.getLocation();
             lastMouseMoveMenuBar = System.nanoTime();
-            if (showChatMessageClientAntiDrag) {
-                //Send a chat message, but only do it every 60 seconds as to not spam the user
-                long currentNanoTime = System.nanoTime();
-                if (currentNanoTime - previousClientAntiDragChatMessageNanoTime > SIXTY_SECONDS_IN_NANOSECONDS) {
-                    sendGameChatMessage(ResizerMessageType.CLIENT_ANTI_DRAG);
-                    previousClientAntiDragChatMessageNanoTime = currentNanoTime;
-                }
-            }
         }
     }
 
