@@ -242,7 +242,7 @@ public class ClientResizerPlugin extends Plugin {
         if (configGroupChanged.equals(CONFIG_GROUP_NAME)) {
             updateConfig();
             String configKey = configChanged.getKey();
-            String newConfigValue = configChanged.getNewValue();
+            String newConfigValue = configChanged.getNewValue() != null ? configChanged.getNewValue() : "null";
             switch (configKey) {
                 case "copyAttribute": //Only called when the user changes the config value and hasMonitorChanged
                     copyAttributeToClipboard();
@@ -290,7 +290,7 @@ public class ClientResizerPlugin extends Plugin {
         }
         if (configGroupChanged.equals("runelite")) {
             String configKey = configChanged.getKey();
-            String newConfigValue = configChanged.getNewValue();
+            String newConfigValue = configChanged.getNewValue() != null ? configChanged.getNewValue() : "null";
             switch (configKey) {
                 case "uiEnableCustomChrome":
                     checkAutomaticResizeContainAntiDragSettings(configKey, newConfigValue); //already checks is newConfigValue == "false"
