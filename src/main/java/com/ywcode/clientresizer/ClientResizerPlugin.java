@@ -1,5 +1,6 @@
 package com.ywcode.clientresizer;
 
+import com.google.common.base.MoreObjects;
 import com.google.gson.*;
 import com.google.gson.reflect.*;
 import com.google.inject.*;
@@ -713,56 +714,56 @@ public class ClientResizerPlugin extends Plugin {
         switch (type) {
             case RESIZE:
                 if (currentGameState == GameState.LOGGED_IN || currentGameState == GameState.LOADING) {
-                    actuallySendMessage("Your RuneLite game size / client size was changed by the Client Resizer plugin. Check your config if you'd like to change this.");
+                    actuallySendMessage(getColoredPluginName() + "Your RuneLite game size / client size has been changed. Check your config if you'd like to change this.");
                 } else {
                     resizeChatMessageFlag = true;
                 }
                 break;
             case SCALE:
                 if (currentGameState == GameState.LOGGED_IN || currentGameState == GameState.LOADING) {
-                    actuallySendMessage("Your resizable scaling (stretched mode plugin) was changed by the Client Resizer plugin. Check your config if you'd like to change this.");
+                    actuallySendMessage(getColoredPluginName() + "Your resizable scaling (stretched mode plugin) has been changed. Check your config if you'd like to change this.");
                 } else {
                     scaleChatMessageFlag = true;
                 }
                 break;
             case REPOSITION:
                 if (currentGameState == GameState.LOGGED_IN || currentGameState == GameState.LOADING) {
-                    actuallySendMessage("Your client was repositioned by the Client Resizer plugin. Check your config if you'd like to change this.");
+                    actuallySendMessage(getColoredPluginName() + "Your client has been repositioned. Check your config if you'd like to change this.");
                 } else {
                     repositionChatMessageFlag = true;
                 }
                 break;
             case CONTAIN_IN_SCREEN:
                 if (currentGameState == GameState.LOGGED_IN || currentGameState == GameState.LOADING) {
-                    actuallySendMessage("Your client was contained in the screen by the Client Resizer plugin. Check your config if you'd like to change this.");
+                    actuallySendMessage(getColoredPluginName() + "Your client was contained in the screen. Check your config if you'd like to change this.");
                 } else {
                     containInScreenChatMessageFlag = true;
                 }
                 break;
             case CLIENT_ANTI_DRAG:
                 if (currentGameState == GameState.LOGGED_IN || currentGameState == GameState.LOADING) {
-                    actuallySendMessage("Your client was snapped back by the Client Resizer plugin because of client anti-drag. Check your config if you'd like to change this.");
+                    actuallySendMessage(getColoredPluginName() + "Your client was snapped back because of client anti-drag. Check your config if you'd like to change this.");
                 } else {
                     clientAntiDragChatMessageFlag = true;
                 }
                 break;
             case CUSTOM_CHROME:
                 if (currentGameState == GameState.LOGGED_IN || currentGameState == GameState.LOADING) {
-                    actuallySendMessage("<col=FF0000>Client Resizer plugin: It is strongly recommended to enable custom chrome when using automatic resizing, snap back/contain in screen, or client anti-drag. You can enable this in the 'RuneLite' config > 'Windows Settings' > 'Enable custom window chrome'. Certain features might otherwise not function.");
+                    actuallySendMessage(getColoredPluginName() + "<col=FF0000>It is strongly recommended to enable custom chrome when using automatic resizing, snap back/contain in screen, or client anti-drag. You can enable this in the 'RuneLite' config > 'Windows Settings' > 'Enable custom window chrome'. Certain features might otherwise not function.");
                 } else {
                     customChromeChatMessageFlag = true;
                 }
                 break;
             case LOCK_WINDOW_SIZE:
                 if (currentGameState == GameState.LOGGED_IN || currentGameState == GameState.LOADING) {
-                    actuallySendMessage("Client Resizer plugin: It is recommended to lock the window size when using automatic resizing or snap back/contain in screen, so your client does not snap-resize when dragging. You can change this in the 'RuneLite' config. The plugin is compatible with an unlocked window size though.");
+                    actuallySendMessage(getColoredPluginName() + "It is recommended to lock the window size when using automatic resizing or snap back/contain in screen, so your client does not snap-resize when dragging. You can change this in the 'RuneLite' config. The plugin is compatible with an unlocked window size though.");
                 } else {
                     lockWindowSizeChatMessageFlag = true;
                 }
                 break;
             case DRAGGING_EDGES_WORKAROUND_ENABLED:
                 if (currentGameState == GameState.LOGGED_IN || currentGameState == GameState.LOADING) {
-                    actuallySendMessage("Client Resizer plugin: The workaround to make client resizer compatible with resizing the client by dragging its edges has been enabled in the advanced config section, because you disabled 'Lock window size' in the 'RuneLite' config.");
+                    actuallySendMessage(getColoredPluginName() + "The workaround to make client resizer compatible with resizing the client by dragging its edges has been enabled in the advanced config section, because you disabled 'Lock window size' in the 'RuneLite' config.");
                 } else {
                     draggingEdgesWorkaroundEnabledFlag = true;
                 }
@@ -776,6 +777,25 @@ public class ClientResizerPlugin extends Plugin {
         clientThread.invokeLater(() -> {
             client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", message, "");
         });
+    }
+
+    //Get the plugin name wrapped in the appropriate color tags, [], and with a space behind it to use in chat messages
+    private String getColoredPluginName() {
+        return "[" + getColorWrappedString("Client Resizer plugin") + "] ";
+    }
+
+    //Get the string wrapped in the appropriate color tags to use in chat messages
+    //Value could be inlined, but decided not to in this case so I can also easily use it for other stuff in the future
+    @SuppressWarnings("SameParameterValue")
+    private String getColorWrappedString(String stringToWrap) {
+        //Get the opaque color from chat color plugin or ingame color
+        Color color = MoreObjects.firstNonNull(configManager.getConfiguration("textrecolor", "opaqueFriendsChatChannelName", Color.class), JagexColors.CHAT_FC_NAME_OPAQUE_BACKGROUND);
+        if (client.isResized() && client.getVarbitValue(Varbits.TRANSPARENT_CHATBOX) == 1) {
+            //Replace color if using transparent chatbox
+            color = MoreObjects.firstNonNull(configManager.getConfiguration("textrecolor", "transparentFriendsChatChannelName", Color.class), JagexColors.CHAT_FC_NAME_TRANSPARENT_BACKGROUND);
+        }
+        //Wrap string in color tags and return the value
+        return ColorUtil.wrapWithColorTag(stringToWrap, color);
     }
 
     private void setClientPosition(int pointX, int pointY) {
