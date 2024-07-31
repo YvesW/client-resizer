@@ -1,6 +1,7 @@
 package com.ywcode.clientresizer;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
