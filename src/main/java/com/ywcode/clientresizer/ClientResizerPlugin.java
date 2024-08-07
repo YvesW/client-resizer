@@ -392,7 +392,6 @@ public class ClientResizerPlugin extends Plugin {
 
     @Subscribe
     public void onProfileChanged(ProfileChanged profileChanged) {
-        updateConfig();
         if (resizeWhenConfigProfileChanged) {
             hasProfileChanged = true; //Attribute doesn't change when switching profiles so use bool as workaround in case "Resize if attribute is unchanged" is disabled.
             resizeClient();
