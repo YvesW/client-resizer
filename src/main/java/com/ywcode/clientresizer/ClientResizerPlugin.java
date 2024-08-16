@@ -49,6 +49,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 @Slf4j
@@ -136,7 +137,7 @@ public class ClientResizerPlugin extends Plugin {
     private static long lastMouseMoveMenuBar;
     private static long lastMouseMoveMenuBarTickLimited;
     private static final String[] dimensionsStringArray = new String[]{"autoSize1Dimension", "autoSize2Dimension", "autoSize3Dimension", "autoSize4Dimension", "autoSize5Dimension", "autoSize6Dimension", "autoSize7Dimension", "autoSize8Dimension", "autoSize9Dimension", "autoSize10Dimension", "hotkey1Dimension","hotkey2Dimension","hotkey3Dimension","hotkey4Dimension", "hotkey5Dimension","hotkey6Dimension","hotkey7Dimension","hotkey8Dimension","hotkey9Dimension", "hotkey10Dimension"}; //Used to set the default dimenion
-    private static final HashSet<Integer> NUMERICAL_KEY_CODES = new HashSet<>(Arrays.asList(KeyEvent.VK_0, KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9, KeyEvent.VK_NUMPAD0, KeyEvent.VK_NUMPAD1, KeyEvent.VK_NUMPAD2, KeyEvent.VK_NUMPAD3, KeyEvent.VK_NUMPAD4, KeyEvent.VK_NUMPAD5, KeyEvent.VK_NUMPAD6, KeyEvent.VK_NUMPAD7, KeyEvent.VK_NUMPAD8, KeyEvent.VK_NUMPAD9)); //Used to disable numerical hotkeys while the bank pin container is open
+    private static final Set<Integer> NUMERICAL_KEY_CODES = new HashSet<>(Arrays.asList(KeyEvent.VK_0, KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9, KeyEvent.VK_NUMPAD0, KeyEvent.VK_NUMPAD1, KeyEvent.VK_NUMPAD2, KeyEvent.VK_NUMPAD3, KeyEvent.VK_NUMPAD4, KeyEvent.VK_NUMPAD5, KeyEvent.VK_NUMPAD6, KeyEvent.VK_NUMPAD7, KeyEvent.VK_NUMPAD8, KeyEvent.VK_NUMPAD9)); //Used to disable numerical hotkeys while the bank pin container is open
     private static final Map.Entry<String, String> EXPORT_PREFIX = new AbstractMap.SimpleImmutableEntry<>("Client Resizer Prefix", "Client Resizer Export");
     private static final Map.Entry<String, String> EXPORT_SUFFIX = new AbstractMap.SimpleImmutableEntry<>("Client Resizer Suffix", "Client Resizer Export");
     private static Dimension draggingEdgesSecondResizeDimension;
@@ -1069,7 +1070,7 @@ public class ClientResizerPlugin extends Plugin {
         //Used to export the config in a json Map<String, String> format to the clipboard
         //Get list of all config keys
         List<String> configKeys = configManager.getConfigurationKeys(CONFIG_GROUP_NAME);
-        Map<String, String> exportedValues = new LinkedHashMap<>(); //Use LinkeHashMap so insertion order is maintained for prefix and suffix, and add prefix
+        final Map<String, String> exportedValues = new LinkedHashMap<>(); //Use LinkeHashMap so insertion order is maintained for prefix and suffix, and add prefix
         exportedValues.put(EXPORT_PREFIX.getKey(), EXPORT_PREFIX.getValue()); //Add prefix, so we can check later on that it's the correct file
         //Loop over config keys and add the key & value to the map
         for (String configKey : configKeys) {
@@ -1089,11 +1090,11 @@ public class ClientResizerPlugin extends Plugin {
     private void importConfigFromClipboard() {
         try {
             String clipboardDataString = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor); //Get data from clipboard and interpret it as a string
-            Map<String, String> clipboardData = gson.fromJson(clipboardDataString, new TypeToken<Map<String, String>>() {}.getType()); //Convert Gson string to non-Gson Map<String, String>
+            final Map<String, String> clipboardData = gson.fromJson(clipboardDataString, new TypeToken<Map<String, String>>() {}.getType()); //Convert Gson string to non-Gson Map<String, String>
 
             //Check if the data contains the EXPORT_PREFIX and EXPORT_SUFFIX as the first and last entry. If it does not, the user did something wrong with copying.
-            Map.Entry<String, String> firstEntry = clipboardData.entrySet().iterator().next(); //Get first entry
-            Map.Entry<String, String> lastEntry = clipboardData.entrySet().stream().skip(clipboardData.size() - 1).findFirst().orElse(new AbstractMap.SimpleEntry<>("entry", "not found")); //Get the final entry by skipping the other entries, and if it can't find it, return the ("entry", "not found") entry.
+            final Map.Entry<String, String> firstEntry = clipboardData.entrySet().iterator().next(); //Get first entry
+            final Map.Entry<String, String> lastEntry = clipboardData.entrySet().stream().skip(clipboardData.size() - 1).findFirst().orElse(new AbstractMap.SimpleEntry<>("entry", "not found")); //Get the final entry by skipping the other entries, and if it can't find it, return the ("entry", "not found") entry.
             if (!firstEntry.equals(EXPORT_PREFIX) || !lastEntry.equals(EXPORT_SUFFIX)) {
                 actuallySendMessage("<col=FF0000>Error importing Client Resizer config from clipboard. Make sure it's the right format and properly copied to clipboard. Malformed format.");
             } else {
@@ -1102,7 +1103,7 @@ public class ClientResizerPlugin extends Plugin {
                 clipboardData.remove(EXPORT_SUFFIX.getKey());
                 //Get existing config keys, so we can later check if the imported config key is an actually existing config key
                 List<String> configKeys = configManager.getConfigurationKeys(CONFIG_GROUP_NAME);
-                Map<String, String> skippedKeyValues = new LinkedHashMap<>();
+                final Map<String, String> skippedKeyValues = new LinkedHashMap<>();
                 for (String configKey : clipboardData.keySet()) { //Prefix and suffix have already been removed
                     String configValue = clipboardData.get(configKey);
                     String preprocessedConfigKey = CONFIG_GROUP_NAME + "." + configKey; //Add the config prefix again, so you can use the value to check if it's an existing config key.
