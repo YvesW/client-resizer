@@ -31,6 +31,7 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.ClientUI;
 import net.runelite.client.ui.JagexColors;
 import net.runelite.client.util.ColorUtil;
+import net.runelite.client.util.LinkBrowser;
 import net.runelite.client.util.Text;
 
 import javax.swing.*;
@@ -309,6 +310,13 @@ public class ClientResizerPlugin extends Plugin {
                         checkChromeSettings();
                     }
                     break;
+                case "openInstructions":
+                    if (newConfigValue.equals("true")) {
+                        //Open the url and set the config back to false.
+                        openURL("https://runelite.net/plugin-hub/show/client-resizer");
+                        configManager.setConfiguration(CONFIG_GROUP_NAME, configKey, false);
+                    }
+                    break;
             }
         }
         if (configGroupChanged.equals("runelite")) {
@@ -423,7 +431,7 @@ public class ClientResizerPlugin extends Plugin {
         //Only potential advantage of current application is probably that the user can reset it to 0,0 but then on next restart it gets changed anyway so meh.
 
         configManager.setConfiguration(CONFIG_GROUP_NAME, "copyAttribute", MonitorAttribute.Disabled); //reset copyAttribute setting back to disabled on plugin start
-        configManager.setConfiguration(CONFIG_GROUP_NAME, "copyPosition", "False"); //reset copyPosition setting back to disabled on plugin start
+        configManager.setConfiguration(CONFIG_GROUP_NAME, "copyPosition", false); //reset copyPosition setting back to disabled on plugin start
 
         //Set draggingEdgesWorkaround based on the user's RuneLite settings during first startup
         //Check if the draggingEdgesWorkaround config has already been set once. If it has, then don't change it again
@@ -432,7 +440,7 @@ public class ClientResizerPlugin extends Plugin {
             //Retrieve lock window size config value in RuneLiteConfig and if it's not enabled, enable the workaround
             boolean lockWindowSizeRLConfig = configManager.getConfiguration("runelite", "lockWindowSize", Boolean.class);
             if (!lockWindowSizeRLConfig) {
-                configManager.setConfiguration(CONFIG_GROUP_NAME, "draggingEdgesWorkaround", "True"); //Enable workaround; it's disabled by default
+                configManager.setConfiguration(CONFIG_GROUP_NAME, "draggingEdgesWorkaround", true); //Enable workaround; it's disabled by default
                 sendGameChatMessage(ResizerMessageType.DRAGGING_EDGES_WORKAROUND_ENABLED);
             }
             //Don't send a message when the workaround is not enabled, because leaving the workaround disabled with lock window size enabled, does not have any potentially negative effects for the user.
@@ -548,6 +556,14 @@ public class ClientResizerPlugin extends Plugin {
         }
     }
 
+    private void openURL(String url) {
+        //Open an URL and send a message that it's attempting to open this
+        //Could technically also set a flag in case the user is logged out and/or a cooldown.
+        //Decided to skip this for now since it's not that important, and LinkBrowser shows a MessageBox anyway if it fails.
+        actuallySendMessage(getColoredPluginName() + "Attemtping to open URL: " + url);
+        LinkBrowser.browse(url);
+    }
+
     private void checkAutomaticResizeContainAntiDragSettings(String configKey, String newConfigValueString) {
         //Check if automatic resizing / contain in screen is enabled => if so, check if enough time has passed as to not spam the user (performed my the method that gets called) => send message
         if (newConfigValueString.equals("false")) {
@@ -592,11 +608,11 @@ public class ClientResizerPlugin extends Plugin {
 
         if (newConfigValue.equals("false")) {
             //Enable workaround when disabling lock window size
-            configManager.setConfiguration(CONFIG_GROUP_NAME, "draggingEdgesWorkaround", "True");
+            configManager.setConfiguration(CONFIG_GROUP_NAME, "draggingEdgesWorkaround", true);
             sendGameChatMessage(ResizerMessageType.DRAGGING_EDGES_WORKAROUND_ENABLED); //Send a game message that the config value has been enabled. The user can opt to disable the advanced config value if they so desire.
         } else {
             //Disable workaround when enabling lock window size
-            configManager.setConfiguration(CONFIG_GROUP_NAME, "draggingEdgesWorkaround", "False");
+            configManager.setConfiguration(CONFIG_GROUP_NAME, "draggingEdgesWorkaround", false);
             //Don't send a message because disabling the workaround when the window size is locked, does not have any potentially negative effects for the user.
         }
     }

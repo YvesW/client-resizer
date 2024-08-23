@@ -1946,4 +1946,14 @@ public interface ClientResizerConfig extends Config {
     default boolean copyPosition() {
         return false;
     }
+
+    @ConfigItem(
+            keyName = "openInstructions",
+            name = "Open step-by-step instructions",
+            description = "Opens the readme (https://runelite.net/plugin-hub/show/client-resizer) for easy to follow step-by-step instructions.<br>",
+            position = 100
+    )
+    default boolean openInstructions() {
+        return false;
+    }
 }
