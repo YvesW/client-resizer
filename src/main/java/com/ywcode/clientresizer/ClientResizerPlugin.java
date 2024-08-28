@@ -560,7 +560,7 @@ public class ClientResizerPlugin extends Plugin {
         //Open an URL and send a message that it's attempting to open this
         //Could technically also set a flag in case the user is logged out and/or a cooldown.
         //Decided to skip this for now since it's not that important, and LinkBrowser shows a MessageBox anyway if it fails.
-        actuallySendMessage(getColoredPluginName() + "Attemtping to open URL: " + url);
+        actuallySendMessage(getColoredPluginName() + "Attempting to open URL: " + url);
         LinkBrowser.browse(url);
     }
 
@@ -1100,7 +1100,7 @@ public class ClientResizerPlugin extends Plugin {
         StringSelection stringSelection = new StringSelection(jsonArray);
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         clipboard.setContents(stringSelection, null);
-        actuallySendMessage("The Client Resizer config has been copied to clipboard. Keep in mind that importing will override your Client Resizer config settings.");
+        actuallySendMessage(getColoredPluginName() + "The config has been copied to clipboard. Keep in mind that importing will override your Client Resizer config settings.");
     }
 
     private void importConfigFromClipboard() {
@@ -1112,7 +1112,7 @@ public class ClientResizerPlugin extends Plugin {
             final Map.Entry<String, String> firstEntry = clipboardData.entrySet().iterator().next(); //Get first entry
             final Map.Entry<String, String> lastEntry = clipboardData.entrySet().stream().skip(clipboardData.size() - 1).findFirst().orElse(new AbstractMap.SimpleEntry<>("entry", "not found")); //Get the final entry by skipping the other entries, and if it can't find it, return the ("entry", "not found") entry.
             if (!firstEntry.equals(EXPORT_PREFIX) || !lastEntry.equals(EXPORT_SUFFIX)) {
-                actuallySendMessage("<col=FF0000>Error importing Client Resizer config from clipboard. Make sure it's the right format and properly copied to clipboard. Malformed format.");
+                actuallySendMessage(getColoredPluginName() + "<col=FF0000>Error importing config from clipboard. Make sure it's the right format and properly copied to clipboard. Malformed format.");
             } else {
                 //Should be the right format now because it contains the prefix and suffix. They can now be removed
                 clipboardData.remove(EXPORT_PREFIX.getKey());
@@ -1130,14 +1130,14 @@ public class ClientResizerPlugin extends Plugin {
                         skippedKeyValues.put(configKey, configValue);
                     }
                 }
-                actuallySendMessage("The Client Resizer config importing process has been completed. The config values have been replaced. Please close and reopen the Client Resizer config to review the changes in case it was open during importing.");
+                actuallySendMessage(getColoredPluginName() + "The config importing process has been completed. The config values have been replaced. Please close and reopen the Client Resizer config to review the changes in case it was open during importing.");
                 if (!skippedKeyValues.isEmpty()) { //If a key was skipped, output a message
                     actuallySendMessage("<col=FF0000>Some config keys were not imported because they do not exist in the current config. This is not a problem if the config key was created by an older version of the plugin. Alternatively, the clipboard contents were incorrectly formatted.");
                     actuallySendMessage("<col=FF0000>Config keys/values that were skipped: " + skippedKeyValues);
                 }
             }
         } catch (IOException | UnsupportedFlavorException error) {
-            actuallySendMessage("<col=FF0000>Error importing Client Resizer config from clipboard. Make sure it's the right format and properly copied to clipboard. Incorrect clipboard content.");
+            actuallySendMessage(getColoredPluginName() + "<col=FF0000>Error importing config from clipboard. Make sure it's the right format and properly copied to clipboard. Incorrect clipboard content.");
         }
     }
 
