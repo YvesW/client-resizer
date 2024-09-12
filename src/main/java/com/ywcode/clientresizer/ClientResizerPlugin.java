@@ -1,5 +1,6 @@
 package com.ywcode.clientresizer;
 
+import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
@@ -826,14 +827,10 @@ public class ClientResizerPlugin extends Plugin {
     @SuppressWarnings("SameParameterValue")
     private String getColorWrappedString(String stringToWrap) {
         //Get the opaque color from chat color plugin or ingame color
-        //Previously used MoreObjects.firstNonNull but swapped to this as to be less dependent on guava
-        Color chatColorConfigColor = configManager.getConfiguration(CHAT_COLOR_CONFIG_GROUP, "opaqueFriendsChatChannelName", Color.class);
-        Color color = chatColorConfigColor != null ? chatColorConfigColor : JagexColors.CHAT_FC_NAME_OPAQUE_BACKGROUND;
+        Color color = MoreObjects.firstNonNull(configManager.getConfiguration(CHAT_COLOR_CONFIG_GROUP, "opaqueFriendsChatChannelName", Color.class), JagexColors.CHAT_FC_NAME_OPAQUE_BACKGROUND);
         if (client.isResized() && client.getVarbitValue(Varbits.TRANSPARENT_CHATBOX) == 1) {
             //Replace color if using transparent chatbox
-            //Previously used MoreObjects.firstNonNull but swapped to this as to be less dependent on guava
-            chatColorConfigColor = configManager.getConfiguration(CHAT_COLOR_CONFIG_GROUP, "transparentFriendsChatChannelName", Color.class);
-            color = chatColorConfigColor != null ? chatColorConfigColor : JagexColors.CHAT_FC_NAME_TRANSPARENT_BACKGROUND;
+            color = MoreObjects.firstNonNull(configManager.getConfiguration(CHAT_COLOR_CONFIG_GROUP, "transparentFriendsChatChannelName", Color.class), JagexColors.CHAT_FC_NAME_TRANSPARENT_BACKGROUND);
         }
         //Wrap string in color tags and return the value
         return ColorUtil.wrapWithColorTag(stringToWrap, color);
