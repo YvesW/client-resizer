@@ -17,7 +17,7 @@ def runeLiteVersion = 'latest.release'
 def pluginMainClass = 'com.ywcode.clientresizer.ClientResizerTest'
 
 dependencies {
-    compileOnly group: 'net.runelite', name:'client', version: runeLiteVersion
+	compileOnly group: 'net.runelite', name:'client', version: runeLiteVersion
 
 	compileOnly 'org.projectlombok:lombok:1.18.30'
 	annotationProcessor 'org.projectlombok:lombok:1.18.30'
